@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:chatgpt/widgets/tabs.dart';
+import 'package:chatgpt/screens/tabs.dart';
 
 void main() {
   runApp(const App());

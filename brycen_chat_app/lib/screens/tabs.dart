@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//
+// import 'package:http/http.dart' as http;
 import 'package:chatgpt/screens/chat.dart';
 import 'package:chatgpt/screens/home.dart';
 import 'package:chatgpt/screens/summarize.dart';
@@ -16,6 +16,8 @@ class _TabsState extends State<Tabs> {
   var _enteredApiKey = '';
   var _apiKeyValue = TextEditingController();
 
+ 
+
   @override
   void initState() {
     super.initState();
@@ -23,10 +25,15 @@ class _TabsState extends State<Tabs> {
 
   void toSubmit(TextEditingController apiKeyValue) {
     _apiKeyValue = apiKeyValue;
-    if (apiKeyValue.text.isEmpty || apiKeyValue.text == '') {
+    if (apiKeyValue.text.isEmpty || apiKeyValue.text == '' || apiKeyValue.text.trim().length != 51 ||
+      apiKeyValue.text.substring(0,3) != "sk-" || getV.isAPI == false)
+    {
       showDialog(
         context: context,
         builder: (context) {
+          Future.delayed(Duration(seconds: 1), () {
+                    const CircularProgressIndicator();
+          });
           return const AlertDialog(
             // Retrieve the text the that user has entered by using the
             // TextEditingController.
@@ -36,6 +43,20 @@ class _TabsState extends State<Tabs> {
       );
     } else {
       _enteredApiKey = apiKeyValue.text;
+      
+      showDialog(
+        context: context,
+        builder: (context) {
+          Future.delayed(Duration(seconds: 1), () {
+                    const CircularProgressIndicator();
+          });
+          return const AlertDialog(
+            // Retrieve the text the that user has entered by using the
+            // TextEditingController.
+            content: Text('API Key corrected! Thanks for using our app!'),
+          );
+        },
+      );
     }
   }
 

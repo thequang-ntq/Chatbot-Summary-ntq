@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 // import 'package:firebase_auth/firebase_auth.dart';
 
 // final _firebase = FirebaseAuth.instance;
+
+
 class getV{
   static late var apiKey;
+  static late bool isAPI;
 }
 
 class HomeScreen extends StatefulWidget {
@@ -24,6 +28,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  
+
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
@@ -35,6 +41,25 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
   }
+
+   Future<void> checkApiKey(String apiKey) async {
+    final response = await http.get(
+      Uri.parse("https://api.openai.com/v1/models"),
+      headers: {"Authorization": "Bearer $apiKey"},
+    );
+    if (response.statusCode == 200) {
+      setState((){
+        getV.isAPI = true;
+      });
+      
+    } else {
+       setState((){
+        getV.isAPI = false;
+      });
+      
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -66,9 +91,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: TextField(
                   obscureText: true,
                   decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.key),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(25))),
                     hintText: 'Enter your Api Key',
                   ),
+                  autofocus: false,
+                  autocorrect: false,
                   controller: widget.apiKeyValue,
                 ),
               ),
@@ -76,13 +104,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 12,
               ),
               TextButton(
-                onPressed: () {
+                onPressed: ()  async{
+                  await checkApiKey(widget.apiKeyValue.text); 
+                  CircularProgressIndicator();
                   widget.toSubmit(widget.apiKeyValue);
-                  setState(() {
+                  
+                  setState((){
                     getV.apiKey = widget.apiKeyValue;
+                    
                   });
                 },
-                child: const Text('Submit', style: TextStyle(fontSize: 25)),
+                child: const Text('Submit', style: TextStyle(fontSize: 32)),
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.pink[100],
                 ),
@@ -100,44 +132,46 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 7),
               Padding(
                 padding: const EdgeInsets.only(
-                  left: 32,
+                  left: 34,
                 ),
-                child: Row(
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue[100],
-                        textStyle: const TextStyle(
-                          fontSize: 30,
-                          color: Colors.black,
+                child: Center(
+                  child: Row(
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[100],
+                          textStyle: const TextStyle(
+                            fontSize: 33,
+                            color: Colors.black,
+                          ),
+                        ),
+                        onPressed: widget.toChat,
+                        child: const Text(
+                          'Chat',
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
                         ),
                       ),
-                      onPressed: widget.toChat,
-                      child: const Text(
-                        'Chat',
-                        style: TextStyle(
-                          color: Colors.black,
+                      const SizedBox(width: 35),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[100],
+                          textStyle: const TextStyle(
+                            fontSize: 33,
+                            color: Colors.black,
+                          ),
+                        ),
+                        onPressed: widget.toSummarize,
+                        child: const Text(
+                          'Summary',
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 35),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue[100],
-                        textStyle: const TextStyle(
-                          fontSize: 30,
-                          color: Colors.black,
-                        ),
-                      ),
-                      onPressed: widget.toSummarize,
-                      child: const Text(
-                        'Summary',
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  )
                 ),
               ),
             ],

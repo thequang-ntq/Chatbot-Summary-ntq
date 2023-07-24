@@ -7,7 +7,7 @@ import 'package:chatgpt/chat_gpt_file/widgets/chat_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-import 'package:chatgpt/widgets/tabs.dart';
+import 'package:chatgpt/screens/tabs.dart';
 
 import 'package:chatgpt/chat_gpt_file/providers/models_provider.dart';
 import 'package:chatgpt/chat_gpt_file/services/assets_manager.dart';
