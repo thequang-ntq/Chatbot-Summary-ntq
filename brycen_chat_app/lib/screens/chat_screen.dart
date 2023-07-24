@@ -171,10 +171,6 @@ class _ChatScreenState extends State<ChatScreen> {
       });
       await chatProvider.sendMessageAndGetAnswers(
           msg: msg, chosenModelId: "gpt-3.5-turbo-0301");
-      // chatList.addAll(await ApiService.sendMessage(
-      //   message: textEditingController.text,
-      //   modelId: modelsProvider.getCurrentModel,
-      // ));
       setState(() {});
     } catch (error) {
       log("error $error");
