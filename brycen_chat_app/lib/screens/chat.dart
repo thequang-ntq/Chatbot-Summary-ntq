@@ -1,10 +1,7 @@
-import 'package:chatgpt/chat_gpt_file/providers/models_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'package:chatgpt/chat_gpt_file/constants/constants.dart';
-import 'package:chatgpt/chat_gpt_file/providers/chats_provider.dart';
-import 'package:chatgpt/chat_gpt_file/screens/chat_screen.dart';
+import 'package:chatgpt/providers/chats/chats_provider.dart';
+import 'package:chatgpt/screens/chat_screen.dart';
 
 class Chat extends StatefulWidget {
   const Chat({super.key});
@@ -19,9 +16,7 @@ class _ChatState extends State<Chat> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => ModelsProvider(),
-        ),
+        
         ChangeNotifierProvider(
           create: (_) => ChatProvider(),
         ),
@@ -30,9 +25,9 @@ class _ChatState extends State<Chat> {
         title: 'ChatBot',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            scaffoldBackgroundColor: scaffoldBackgroundColor,
-            appBarTheme: AppBarTheme(
-              color: cardColor,
+            scaffoldBackgroundColor: const Color(0xFF343541),
+            appBarTheme: const AppBarTheme(
+              color:  Color(0xFF444654),
             )),
         home: const ChatScreen(),
       ),

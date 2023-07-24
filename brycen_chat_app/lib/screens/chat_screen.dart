@@ -1,17 +1,11 @@
 import 'dart:developer';
-
-import 'package:chatgpt/chat_gpt_file/constants/constants.dart';
-import 'package:chatgpt/chat_gpt_file/providers/chats_provider.dart';
-// import 'package:chatgpt/chat_gpt_file/services/services.dart';
-import 'package:chatgpt/chat_gpt_file/widgets/chat_widget.dart';
+import 'package:chatgpt/providers/chats/chats_provider.dart';
+import 'package:chatgpt/widgets/chats/chat_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:chatgpt/screens/tabs.dart';
-
-import 'package:chatgpt/chat_gpt_file/providers/models_provider.dart';
-import 'package:chatgpt/chat_gpt_file/services/assets_manager.dart';
-import 'package:chatgpt/chat_gpt_file/widgets/text_widget.dart';
+import 'package:chatgpt/widgets/chats/text_widget.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -45,14 +39,13 @@ class _ChatScreenState extends State<ChatScreen> {
   // List<ChatModel> chatList = [];
   @override
   Widget build(BuildContext context) {
-    final modelsProvider = Provider.of<ModelsProvider>(context);
     final chatProvider = Provider.of<ChatProvider>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Image.asset(AssetsManager.openaiLogo),
+          child: Image.asset('assets/images/openai_logo.jpg'),
         ),
         title: const Text("ChatGPT"),
         actions: [
@@ -95,7 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
               height: 15,
             ),
             Material(
-              color: cardColor,
+              color: const Color(0xFF444654),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -107,7 +100,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         controller: textEditingController,
                         onSubmitted: (value) async {
                           await sendMessageFCT(
-                              modelsProvider: modelsProvider,
+                              
                               chatProvider: chatProvider);
                         },
                         decoration: const InputDecoration.collapsed(
@@ -118,7 +111,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     IconButton(
                         onPressed: () async {
                           await sendMessageFCT(
-                              modelsProvider: modelsProvider,
+                              
                               chatProvider: chatProvider);
                         },
                         icon: const Icon(
@@ -143,7 +136,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> sendMessageFCT(
-      {required ModelsProvider modelsProvider,
+      {
       required ChatProvider chatProvider}) async {
     if (_isTyping) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -177,7 +170,7 @@ class _ChatScreenState extends State<ChatScreen> {
         focusNode.unfocus();
       });
       await chatProvider.sendMessageAndGetAnswers(
-          msg: msg, chosenModelId: modelsProvider.getCurrentModel);
+          msg: msg, chosenModelId: "gpt-3.5-turbo-0301");
       // chatList.addAll(await ApiService.sendMessage(
       //   message: textEditingController.text,
       //   modelId: modelsProvider.getCurrentModel,

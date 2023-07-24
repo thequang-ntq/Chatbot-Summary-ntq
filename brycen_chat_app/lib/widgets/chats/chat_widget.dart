@@ -1,6 +1,4 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:chatgpt/chat_gpt_file/constants/constants.dart';
-import 'package:chatgpt/chat_gpt_file/services/assets_manager.dart';
 import 'package:flutter/material.dart';
 
 import 'text_widget.dart';
@@ -20,7 +18,7 @@ class ChatWidget extends StatelessWidget {
     return Column(
       children: [
         Material(
-          color: chatIndex == 0 ? scaffoldBackgroundColor : cardColor,
+          color: chatIndex == 0 ? const Color(0xFF343541) : const Color(0xFF444654),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -28,8 +26,8 @@ class ChatWidget extends StatelessWidget {
               children: [
                 Image.asset(
                   chatIndex == 0
-                      ? AssetsManager.userImage
-                      : AssetsManager.botImage,
+                      ? 'assets/images/person.png'
+                      : 'assets/images/chat_logo.png',
                   height: 30,
                   width: 30,
                 ),
@@ -68,10 +66,10 @@ class ChatWidget extends StatelessWidget {
                 ),
                 chatIndex == 0
                     ? const SizedBox.shrink()
-                    : Row(
+                    : const Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
-                        children: const [
+                        children: [
                           Icon(
                             Icons.thumb_up_alt_outlined,
                             color: Colors.white,

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -38,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
   }
 
@@ -59,10 +61,22 @@ class _HomeScreenState extends State<HomeScreen> {
       
     }
   }
+  void getValue() async{
+    final url = Uri.https('chatgpt-ntq-default-rtdb.firebaseio.com', 'api-key.json');
+    final response = await http.post(url);
+    final Map<String, dynamic> resData = json.decode(response.body);
+    if(resData.isNotEmpty){
+      setState(() {
+        widget.apiKeyValue.text = resData['api-key'];
+        getV.apiKey = resData['api-key'];
+      });
+    }
+  }
 
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chat GPT App'),
@@ -103,22 +117,38 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(
                 height: 12,
               ),
-              TextButton(
-                onPressed: ()  async{
-                  await checkApiKey(widget.apiKeyValue.text); 
-                  CircularProgressIndicator();
-                  widget.toSubmit(widget.apiKeyValue);
-                  
-                  setState((){
-                    getV.apiKey = widget.apiKeyValue;
-                    
-                  });
-                },
-                child: const Text('Submit', style: TextStyle(fontSize: 32)),
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.pink[100],
+              Center(
+                child: Row(
+                  children: [
+                    const SizedBox(width: 32,),
+                    TextButton(
+                      onPressed: getValue,
+                        child: const Text('Previous key', style: TextStyle(fontSize: 30)),
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.pink[100],
+                        ),
+                    ),
+                    const SizedBox(width: 14,),
+                    TextButton(
+                      onPressed: ()  async{
+                        await checkApiKey(widget.apiKeyValue.text); 
+                        CircularProgressIndicator();
+                        widget.toSubmit(widget.apiKeyValue);
+                        
+                        setState((){
+                          getV.apiKey = widget.apiKeyValue;
+                          
+                        });
+                      },
+                        child: const Text('Submit', style: TextStyle(fontSize: 30)),
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.pink[100],
+                        ),
+                    ),
+                  ],
                 ),
               ),
+                  
               Container(
                 margin: const EdgeInsets.only(
                   top: 20,
