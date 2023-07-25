@@ -1,8 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 
-import 'text_widget.dart';
-
 class ChatWidget extends StatelessWidget {
   const ChatWidget(
       {super.key,
@@ -18,18 +16,25 @@ class ChatWidget extends StatelessWidget {
     return Column(
       children: [
         Material(
-          color: chatIndex == 0 ? const Color(0xFF343541) : const Color(0xFF444654),
+          color: chatIndex%2 == 0 ? const Color(0xFF343541) : const Color(0xFF444654),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child:
-              chatIndex == 0 ?
+              chatIndex%2 == 0 ?
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.asset('assets/images/person.png', width: 40,),
                     const SizedBox(width: 8,),
                     Expanded(
-                      child: TextWidget(label: msg,),
+                      child: Text(
+                        msg,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                     const SizedBox.shrink(),
                   ],

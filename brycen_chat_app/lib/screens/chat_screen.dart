@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:chatgpt/screens/tabs.dart';
-import 'package:chatgpt/widgets/chats/text_widget.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -16,6 +17,9 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   bool _isTyping = false;
+  SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+  String _lastWords = '';
 
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
@@ -26,8 +30,56 @@ class _ChatScreenState extends State<ChatScreen> {
     textEditingController = TextEditingController();
     focusNode = FocusNode();
     super.initState();
+    _initSpeech();
   }
 
+  //////////////////////////
+  //////////////////////
+  //Speech to text Functions
+  //////////////////////////
+  //////////////////////////
+
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
+  }
+
+  /// Each time to start a speech recognition session
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {});
+  }
+
+  /// Manually stop the active speech recognition session
+  /// Note that there are also timeouts that each platform enforces
+  /// and the SpeechToText plugin supports setting timeouts on the
+  /// listen method.
+  void _stopListening({required ChatProvider chatProvider}) async {
+    await _speechToText.stop();
+    
+    if(_lastWords.isNotEmpty){
+      chatProvider.addUserMessage(msg: '--- Voice speech talked ---');
+      focusNode.unfocus();
+      await chatProvider.sendMessageAndGetAnswers(msg: _lastWords);
+      _lastWords = '';
+    }
+    setState(() {});
+  }
+    
+
+  /// This is the callback that the SpeechToText plugin calls when
+  /// the platform returns recognized words.
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      _lastWords = result.recognizedWords;
+    });
+  }
+  ///////////////////////////////
+  ///////////////////////////////
+  //Ending speech to text Functions
+  ////////////////////////////////
+  ////////////////////////////////
+  
   @override
   void dispose() {
     _listScrollController.dispose();
@@ -70,9 +122,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemBuilder: (context, index) {
                     return ChatWidget(
                       msg: chatProvider
-                          .getChatList[index].msg, // chatList[index].msg,
-                      chatIndex: chatProvider.getChatList[index]
-                          .chatIndex, //chatList[index].chatIndex,
+                          .getChatList[index], // chatList[index].msg,
+                      chatIndex: index, //chatList[index].chatIndex,
                       shouldAnimate:
                           chatProvider.getChatList.length - 1 == index,
                     );
@@ -104,7 +155,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               chatProvider: chatProvider);
                         },
                         decoration: const InputDecoration.collapsed(
-                            hintText: "How can I help you",
+                            hintText: "How can I help you? ...",
                             hintStyle: TextStyle(color: Colors.grey)),
                       ),
                     ),
@@ -114,10 +165,22 @@ class _ChatScreenState extends State<ChatScreen> {
                               
                               chatProvider: chatProvider);
                         },
+                        tooltip: 'Send message...',
                         icon: const Icon(
                           Icons.send,
                           color: Colors.white,
-                        ))
+                        ),
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        await sendVoice(chatProvider: chatProvider);
+                      },
+                      tooltip: 'Speak something...',
+                      icon: Icon(
+                        _speechToText.isNotListening ? Icons.mic : Icons.mic_off,
+                        color: Colors.white,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -135,15 +198,44 @@ class _ChatScreenState extends State<ChatScreen> {
         curve: Curves.easeOut);
   }
 
+  Future<void> sendVoice({required ChatProvider chatProvider}) async {
+    
+    _speechToText.isNotListening ? _startListening : _stopListening;
+    
+    if(!_speechEnabled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+            Text(
+              "The user has denied the use of speech recognition",
+              style:TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+
+  }
+
   Future<void> sendMessageFCT(
       {
       required ChatProvider chatProvider}) async {
     if (_isTyping) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: TextWidget(
-            label: "You cant send multiple messages at a time",
-          ),
+          content:
+            Text(
+              "You can't send multiple messages at a time",
+              style:TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           backgroundColor: Colors.red,
         ),
       );
@@ -152,9 +244,15 @@ class _ChatScreenState extends State<ChatScreen> {
     if (textEditingController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: TextWidget(
-            label: "Please type a message",
-          ),
+          content:
+            Text(
+              "Please type a message",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           backgroundColor: Colors.red,
         ),
       );
@@ -169,15 +267,20 @@ class _ChatScreenState extends State<ChatScreen> {
         textEditingController.clear();
         focusNode.unfocus();
       });
-      await chatProvider.sendMessageAndGetAnswers(
-          msg: msg, chosenModelId: "gpt-3.5-turbo-0301");
+      await chatProvider.sendMessageAndGetAnswers(msg: msg);
       setState(() {});
     } catch (error) {
       log("error $error");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: TextWidget(
-          label: error.toString(),
-        ),
+        content: 
+          Text(
+            error.toString(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         backgroundColor: Colors.red,
       ));
     } finally {
