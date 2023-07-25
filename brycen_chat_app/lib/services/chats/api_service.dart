@@ -16,7 +16,7 @@ class ApiService {
       var response = await http.post(
         Uri.parse("https://api.openai.com/v1/chat/completions"),
         headers: {
-          'Authorization': 'Bearer ${getV.apiKey.text}',
+          'Authorization': 'Bearer ${GetV.apiKey.text}',
           "Content-Type": "application/json"
         },
         body: jsonEncode(
@@ -64,7 +64,7 @@ class ApiService {
       var response = await http.post(
         Uri.parse("https://api.openai.com/v1/completions"),
         headers: {
-          'Authorization': 'Bearer ${getV.apiKey.text}',
+          'Authorization': 'Bearer ${GetV.apiKey.text}',
           "Content-Type": "application/json"
         },
         body: jsonEncode(

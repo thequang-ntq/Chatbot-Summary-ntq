@@ -7,9 +7,9 @@ import 'package:http/http.dart' as http;
 // final _firebase = FirebaseAuth.instance;
 
 
-class getV{
-  static late var apiKey;
-  static late bool isAPI;
+class GetV{
+  static late TextEditingController apiKey;
+  static bool isAPI = false;
 }
 
 class HomeScreen extends StatefulWidget {
@@ -21,7 +21,7 @@ class HomeScreen extends StatefulWidget {
       super.key});
 
   final TextEditingController apiKeyValue;
-  final void Function(TextEditingController _apiKeyValue) toSubmit;
+  final void Function(TextEditingController apiKeyValue) toSubmit;
   final void Function() toChat;
   final void Function() toSummarize;
 
@@ -30,7 +30,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  
 
   @override
   void dispose() {
@@ -51,24 +50,24 @@ class _HomeScreenState extends State<HomeScreen> {
     );
     if (response.statusCode == 200) {
       setState((){
-        getV.isAPI = true;
+        GetV.isAPI = true;
       });
       
     } else {
        setState((){
-        getV.isAPI = false;
+        GetV.isAPI = false;
       });
       
     }
   }
   void getValue() async{
-    final url = Uri.https('chatgpt-ntq-default-rtdb.firebaseio.com', 'api-key.json');
+    final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'apikey.json');
     final response = await http.post(url);
     final Map<String, dynamic> resData = json.decode(response.body);
     if(resData.isNotEmpty){
       setState(() {
         widget.apiKeyValue.text = resData['api-key'];
-        getV.apiKey = resData['api-key'];
+        GetV.apiKey = resData['api-key'];
       });
     }
   }
@@ -102,17 +101,31 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 22, right: 22),
-                child: TextField(
+                child: GetV.isAPI ?
+                TextField(
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.key),
+                    suffixIcon: Icon(Icons.check, color: Colors.green,),
+                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 8, color: Colors.green)),   
+                  ),
+                  autofocus: false,
+                  autocorrect: false,
+                  controller: TextEditingController(text: GetV.apiKey.text),
+                )
+                :
+                TextField(
                   obscureText: true,
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.key),
                     border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(25))),
-                    hintText: 'Enter your Api Key',
+                    hintText: 'Enter your Api Key',   
                   ),
                   autofocus: false,
                   autocorrect: false,
                   controller: widget.apiKeyValue,
-                ),
+                )
+                  
               ),
               const SizedBox(
                 height: 12,
@@ -123,27 +136,27 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(width: 32,),
                     TextButton(
                       onPressed: getValue,
-                        child: const Text('Previous key', style: TextStyle(fontSize: 30)),
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.pink[100],
                         ),
+                        child: const Text('Previous key', style: TextStyle(fontSize: 30)),
                     ),
                     const SizedBox(width: 14,),
                     TextButton(
                       onPressed: ()  async{
                         await checkApiKey(widget.apiKeyValue.text); 
-                        CircularProgressIndicator();
+                        const CircularProgressIndicator();
                         widget.toSubmit(widget.apiKeyValue);
                         
                         setState((){
-                          getV.apiKey = widget.apiKeyValue;
+                          GetV.apiKey = widget.apiKeyValue;
                           
                         });
                       },
-                        child: const Text('Submit', style: TextStyle(fontSize: 30)),
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.pink[100],
                         ),
+                        child: const Text('Submit', style: TextStyle(fontSize: 30)),
                     ),
                   ],
                 ),

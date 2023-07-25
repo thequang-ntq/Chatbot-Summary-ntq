@@ -111,8 +111,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                   padding: const EdgeInsets.all(32),
                   alignment: Alignment.center,
                   child: ElevatedButton(
-                    child: const Text('Pick File'),
                     onPressed: _uploadFile,
+                    child: const Text('Pick File'),
                   ),
                 ),
                 const SizedBox(
@@ -127,8 +127,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                         height: 5,
                       ),
                       ElevatedButton(
-                        child: const Text('Summarize'),
                         onPressed: _summarizeFile,
+                        child: const Text('Summarize'),
                       ),
                       Visibility(
                         visible: _hasSummarized,

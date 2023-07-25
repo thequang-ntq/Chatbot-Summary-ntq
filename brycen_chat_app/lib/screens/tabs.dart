@@ -27,12 +27,12 @@ class _TabsState extends State<Tabs> {
   void toSubmit(TextEditingController apiKeyValue) async{
     _apiKeyValue = apiKeyValue;
     if (apiKeyValue.text.isEmpty || apiKeyValue.text == '' || apiKeyValue.text.trim().length != 51 ||
-      apiKeyValue.text.substring(0,3) != "sk-" || getV.isAPI == false)
+      apiKeyValue.text.substring(0,3) != "sk-" || GetV.isAPI == false)
     {
       showDialog(
         context: context,
         builder: (context) {
-          Future.delayed(Duration(milliseconds: 500), () {
+          Future.delayed(const Duration(milliseconds: 500), () {
                     const CircularProgressIndicator();
           });
           return const AlertDialog(
@@ -47,7 +47,7 @@ class _TabsState extends State<Tabs> {
       showDialog(
         context: context,
         builder: (context) {
-          Future.delayed(Duration(milliseconds: 500), () {
+          Future.delayed(const Duration(milliseconds: 500), () {
                     const CircularProgressIndicator();
           });
           return const AlertDialog(
@@ -57,7 +57,7 @@ class _TabsState extends State<Tabs> {
           );
         },
       );
-      final url = Uri.https('chatgpt-ntq-default-rtdb.firebaseio.com', 'Api-key.json');
+      final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'apikey.json');
       await http.post(url, 
         headers: {
           'Content-Type':'API-Key.json',
