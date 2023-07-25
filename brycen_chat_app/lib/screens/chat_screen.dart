@@ -54,15 +54,8 @@ class _ChatScreenState extends State<ChatScreen> {
   /// Note that there are also timeouts that each platform enforces
   /// and the SpeechToText plugin supports setting timeouts on the
   /// listen method.
-  void _stopListening({required ChatProvider chatProvider}) async {
+  void _stopListening() async {
     await _speechToText.stop();
-    
-    if(_lastWords.isNotEmpty){
-      chatProvider.addUserMessage(msg: '--- Voice speech talked ---');
-      focusNode.unfocus();
-      await chatProvider.sendMessageAndGetAnswers(msg: _lastWords);
-      _lastWords = '';
-    }
     setState(() {});
   }
     
@@ -172,10 +165,11 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                     ),
                     IconButton(
-                      onPressed: () async {
+                      onPressed: () async{
+                        _speechToText.isNotListening ? _startListening : _stopListening;
                         await sendVoice(chatProvider: chatProvider);
                       },
-                      tooltip: 'Speak something...',
+                      tooltip: 'Click and speak something...',
                       icon: Icon(
                         _speechToText.isNotListening ? Icons.mic : Icons.mic_off,
                         color: Colors.white,
@@ -199,9 +193,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> sendVoice({required ChatProvider chatProvider}) async {
-    
-    _speechToText.isNotListening ? _startListening : _stopListening;
-    
     if(!_speechEnabled) {
         ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -217,6 +208,12 @@ class _ChatScreenState extends State<ChatScreen> {
           backgroundColor: Colors.red,
         ),
       );
+    }
+    if(_lastWords.isNotEmpty){
+      chatProvider.addUserMessage(msg: '--- Voice speech talked ---');
+      focusNode.unfocus();
+      await chatProvider.sendMessageAndGetAnswers(msg: _lastWords);
+      _lastWords = '';
     }
 
   }

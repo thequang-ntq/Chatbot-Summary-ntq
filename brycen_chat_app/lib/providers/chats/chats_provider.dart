@@ -8,7 +8,7 @@ import 'package:langchain_openai/langchain_openai.dart';
 
 class ChatProvider with ChangeNotifier {
   List<String> chatList = [];
-  String _voiceMessage = '';
+  final String _voiceMessage = '';
   List<String> get getChatList {
     return chatList;
   }

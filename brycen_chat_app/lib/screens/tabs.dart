@@ -57,10 +57,11 @@ class _TabsState extends State<Tabs> {
           );
         },
       );
-      final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'apikey.json');
+
+      final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'api-keys.json');
       await http.post(url, 
         headers: {
-          'Content-Type':'API-Key.json',
+          'Content-Type' : 'apikey/json',
         },
         body: json.encode({
           'api-key': apiKeyValue.text,

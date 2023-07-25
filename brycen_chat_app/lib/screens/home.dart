@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -30,7 +29,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
@@ -58,17 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
         GetV.isAPI = false;
       });
       
-    }
-  }
-  void getValue() async{
-    final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'apikey.json');
-    final response = await http.post(url);
-    final Map<String, dynamic> resData = json.decode(response.body);
-    if(resData.isNotEmpty){
-      setState(() {
-        widget.apiKeyValue.text = resData['api-key'];
-        GetV.apiKey = resData['api-key'];
-      });
     }
   }
 
@@ -104,10 +91,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GetV.isAPI ?
                 TextField(
                   obscureText: true,
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.key),
-                    suffixIcon: Icon(Icons.check, color: Colors.green,),
-                    enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 8, color: Colors.green)),   
+                  decoration: InputDecoration(
+                    prefixIcon: IconButton(
+                      icon: const Icon(Icons.key),
+                      onPressed: () async {
+                        final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'api-keys.json');
+                        final response = await http.get(url);
+                        final Map<String,dynamic> resData = json.decode(response.body);
+                        for(final item in resData.entries){
+                          GetV.apiKey.text = (item.value['api-key']);
+                        }
+                      }
+                    ),
+                    suffixIcon: const Icon(Icons.check, color: Colors.green,),
+                    enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 8, color: Colors.green)),   
                   ),
                   autofocus: false,
                   autocorrect: false,
@@ -116,14 +113,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 :
                 TextField(
                   obscureText: true,
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.key),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(25))),
+                  decoration: InputDecoration(
+                    prefixIcon: IconButton(
+                      icon: const Icon(Icons.key),
+                      onPressed: () async {
+                        final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'api-keys.json');
+                        final response = await http.get(url);
+                        final Map<String, dynamic> resData = json.decode(response.body);
+                        for(final item in resData.entries){
+                          widget.apiKeyValue.text = (item.value['api-key']);
+                        }
+                        
+                        // print(resData.entries);
+                      },
+                    ),
+                    border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(25))),
                     hintText: 'Enter your Api Key',   
                   ),
                   autofocus: false,
                   autocorrect: false,
-                  controller: widget.apiKeyValue,
+                  controller:  widget.apiKeyValue,               
                 )
                   
               ),
@@ -131,35 +140,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 12,
               ),
               Center(
-                child: Row(
-                  children: [
-                    const SizedBox(width: 32,),
-                    TextButton(
-                      onPressed: getValue,
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.pink[100],
-                        ),
-                        child: const Text('Previous key', style: TextStyle(fontSize: 30)),
+                child: TextButton(
+                  onPressed: ()  async{
+                    await checkApiKey(widget.apiKeyValue.text); 
+                    const CircularProgressIndicator();
+                    widget.toSubmit(widget.apiKeyValue);
+                    
+                    setState((){
+                      GetV.apiKey = widget.apiKeyValue;
+                      
+                    });
+                  },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.pink[100],
                     ),
-                    const SizedBox(width: 14,),
-                    TextButton(
-                      onPressed: ()  async{
-                        await checkApiKey(widget.apiKeyValue.text); 
-                        const CircularProgressIndicator();
-                        widget.toSubmit(widget.apiKeyValue);
-                        
-                        setState((){
-                          GetV.apiKey = widget.apiKeyValue;
-                          
-                        });
-                      },
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.pink[100],
-                        ),
-                        child: const Text('Submit', style: TextStyle(fontSize: 30)),
-                    ),
-                  ],
-                ),
+                    child: const Text('Submit', style: TextStyle(fontSize: 30)),
+                ),                                
               ),
                   
               Container(

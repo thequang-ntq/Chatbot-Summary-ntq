@@ -6,10 +6,11 @@ THIS IS AN APP FOR BRYCEN COMPANY DURING INTERNSHIP TO CHAT AND SUMMARY WITH AI 
 1. Download this code from Github. (.Zip files)
 2. Extract the files.
 3. Open VS Code, run 'flutter pub get' or simply just open 'pubspec.yaml' and 'Ctrl + S' to run.
-4. Create a Firebase app and add databases related to what this app use.
-5. Get a ChatGPT API-KEY . You can log in to 'https://platform.openai.com/account/api-keys' to get one or simply just borrow ones.
-6. Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
-7. In VS Code, Run -> Run without debugging.
+4. Create a Firebase app and add databases related to what this app use. Remember to change the link databases in this code to your databases!
+5. Set Rules of Realtime Database to 'true' all instead of 'false'.
+6. Get a ChatGPT API-KEY . You can log in to 'https://platform.openai.com/account/api-keys' to get one or simply just borrow ones.
+7. Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
+8. In VS Code, Run -> Run without debugging.
 
 ## Getting Started
 
