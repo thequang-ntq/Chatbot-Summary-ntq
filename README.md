@@ -7,7 +7,7 @@ THIS IS AN APP FOR BRYCEN COMPANY DURING INTERNSHIP TO CHAT AND SUMMARY WITH AI 
 2. Extract the files.
 3. Open VS Code, run 'flutter pub get' or simply just open 'pubspec.yaml' and 'Ctrl + S' to run.
 4. Create a Firebase app and add databases related to what this app use. Remember to change the link databases in this code to your databases!
-5. Set Rules of Realtime Database to 'true' all instead of 'false'.
+5. Set Rules of Realtime Database to 'true' all instead of 'false'. Set Rules of Firebase Firestore to 'true' instead of 'false'.
 6. Get a ChatGPT API-KEY . You can log in to 'https://platform.openai.com/account/api-keys' to get one or simply just borrow ones.
 7. Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
 8. In VS Code, Run -> Run without debugging.
@@ -24,3 +24,4 @@ THIS IS AN APP FOR BRYCEN COMPANY DURING INTERNSHIP TO CHAT AND SUMMARY WITH AI 
 - 23/07/2023: Fixed Chat Screen and add the first AI chatbot to chat with human in that Chat Screen. This chatbot not have memory yet.
 - 24/07/2023: Fixed check condition for api_key at the home screen. Fixed chat screen and do the save API KEY when first submiited at home screen but not done yet. Fixed chat screen the second time: human chat to the left, AIBot chat to the right, but AIBot not have memory yet.
 - 25/07/2023: Complete fixed the api key submit in home screen, not save to firebase yet(http error). Fixed chat app in chat screen(use langchain instead), but not have memory yet. Change depedencies, add micro icon to get speech to text from user (but not done yet).
+- 26/07/2023: Complete add memory for chatbot while chat with human in chat screen, using firebase firestore. 
