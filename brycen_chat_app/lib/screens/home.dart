@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     // Clean up the controller when the widget is disposed.
     widget.apiKeyValue.dispose();
+    GetV.apiKey.dispose();
     super.dispose();
   }
 
@@ -101,6 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         for(final item in resData.entries){
                           GetV.apiKey.text = (item.value['api-key']);
                         }
+                        widget.apiKeyValue.text = GetV.apiKey.text;
                       }
                     ),
                     suffixIcon: const Icon(Icons.check, color: Colors.green,),

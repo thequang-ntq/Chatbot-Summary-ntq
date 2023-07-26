@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:chatgpt/screens/tabs.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -46,7 +47,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   /// Each time to start a speech recognition session
   void _startListening() async {
-    await _speechToText.listen(onResult: _onSpeechResult);
+    print("Start");
+    await _speechToText.listen(onResult: _onSpeechResult, listenFor: const Duration(minutes: 10), cancelOnError: false, partialResults: true);
     setState(() {});
   }
 
@@ -55,6 +57,7 @@ class _ChatScreenState extends State<ChatScreen> {
   /// and the SpeechToText plugin supports setting timeouts on the
   /// listen method.
   void _stopListening() async {
+    print("Stop!");
     await _speechToText.stop();
     setState(() {});
   }
@@ -63,6 +66,7 @@ class _ChatScreenState extends State<ChatScreen> {
   /// This is the callback that the SpeechToText plugin calls when
   /// the platform returns recognized words.
   void _onSpeechResult(SpeechRecognitionResult result) {
+    print("onSpeechResult");
     setState(() {
       _lastWords = result.recognizedWords;
     });
@@ -105,6 +109,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       body: SafeArea(
         child: Column(
           children: [
@@ -164,24 +169,36 @@ class _ChatScreenState extends State<ChatScreen> {
                           color: Colors.white,
                         ),
                     ),
-                    IconButton(
-                      onPressed: () async{
-                        _speechToText.isNotListening ? _startListening : _stopListening;
-                        await sendVoice(chatProvider: chatProvider);
-                      },
-                      tooltip: 'Click and speak something...',
-                      icon: Icon(
-                        _speechToText.isNotListening ? Icons.mic : Icons.mic_off,
-                        color: Colors.white,
-                      ),
-                    ),
                   ],
+                  
                 ),
               ),
             ),
           ],
         ),
       ),
+      floatingActionButton: 
+        AvatarGlow(
+          animate: _speechToText.isListening,
+          glowColor: Theme.of(context).primaryColor,
+          endRadius: 75.0,
+          duration: const Duration(seconds: 2),
+          repeatPauseDuration: const Duration(milliseconds: 100),
+          repeat: true,
+          child: FloatingActionButton(
+            onPressed: () async{
+              setState(() {
+                _speechToText.isNotListening==true ? _startListening : _stopListening;
+              });
+              await sendVoice(chatProvider: chatProvider);
+            },
+            tooltip: 'Click and speak something...',
+            child: Icon(
+              _speechToText.isNotListening ? Icons.mic : Icons.mic_off,
+              color: Colors.white,
+            ),
+          ),
+        ),
     );
   }
 
@@ -193,6 +210,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> sendVoice({required ChatProvider chatProvider}) async {
+    
     if(!_speechEnabled) {
         ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -210,10 +228,9 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     }
     if(_lastWords.isNotEmpty){
-      chatProvider.addUserMessage(msg: '--- Voice speech talked ---');
-      focusNode.unfocus();
       await chatProvider.sendMessageAndGetAnswers(msg: _lastWords);
       _lastWords = '';
+      focusNode.unfocus();
     }
 
   }
