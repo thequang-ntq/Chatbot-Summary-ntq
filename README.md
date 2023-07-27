@@ -3,7 +3,7 @@
 <div style="display: flex;">
   <div style="flex: 1;">
     <a href="https://www.facebook.com/quang.nguyenthe.710">
-      <img src="brycen_chat_app/assets/images/myface.png"/>
+      <img src="brycen_chat_app/assets/images/myface.png" width="50%" height="50%">
     </a>
   </div>
   
