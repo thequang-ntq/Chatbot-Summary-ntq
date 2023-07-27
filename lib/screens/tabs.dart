@@ -122,7 +122,7 @@ class _TabsState extends State<Tabs> {
     }
 
     if (_activeScreen == 'summarize-screen') {
-      screenWidget = const SummarizeScreen();
+      screenWidget = const Summarize();
     }
 
     return MaterialApp(

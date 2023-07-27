@@ -41,7 +41,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (!_isListening) {
       bool available = await _speech.initialize(
           onStatus: (val) {
-            print("OnStatus: $val");
+            // print("OnStatus: $val");
             if (val == "done") {
               setState(() {
                 _isListening = false;
@@ -106,7 +106,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 MaterialPageRoute(builder: (context) => const Tabs()),
               );
             },
-            icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
+            icon: const Icon(Icons.exit_to_app, color: Colors.white),
           ),
         ],
       ),

@@ -38,4 +38,37 @@ class ChatProvider with ChangeNotifier {
       });
     notifyListeners();
   }
+
+  Future<void> sendMessageAndGetAnswersSummarize(
+      {required String msg}) async {
+      final llm = OpenAI(apiKey: GetV.apiKey.text, temperature: 0);
+      ConversationBufferMemory memo = ConversationBufferMemory();
+      final chatData = await FirebaseFirestore.instance.collection('SummarizeChat').get();
+      for(final item in chatData.docs){
+        await memo.saveContext(inputValues: {'humanChat' : item.data()['humanChat'] }, outputValues: {'aiChat': item.data()['aiChat']});
+      }
+      var conversation = ConversationChain(llm: llm, memory: memo);
+      final result = await conversation.call(msg, returnOnlyOutputs: true);
+      chatList.add(result['response']);
+      await FirebaseFirestore.instance.collection('SummarizeChat').add({
+        'humanChat' :  msg,
+        'aiChat' : result['response'], 
+      });
+    notifyListeners();
+  }
+
+  Future<void> saveDocsSummarize(
+      {required String msg}) async {
+      final llm = OpenAI(apiKey: GetV.apiKey.text, temperature: 0);
+      ConversationBufferMemory memo = ConversationBufferMemory();
+      var conversation = ConversationChain(llm: llm, memory: memo);
+      final result = await conversation.call(msg, returnOnlyOutputs: true);
+      
+      await FirebaseFirestore.instance.collection('SummarizeDocs').add({
+        'humanChat' :  msg,
+        'aiChat' : result['response'], 
+      });
+      
+    notifyListeners();
+  }
 }
