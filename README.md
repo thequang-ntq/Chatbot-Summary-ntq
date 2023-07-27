@@ -3,7 +3,7 @@
 <div style="display: flex;">
   <div style="flex: 1;">
     <a href="https://www.facebook.com/quang.nguyenthe.710">
-      <img src="https://www.facebook.com/photo?fbid=1083552388990387&set=a.100904640588505"/>
+      <img src="brycen_chat_app/assets/images/myface.png"/>
     </a>
   </div>
   
@@ -22,7 +22,7 @@
 
 | Screenshot 1                                 | Screenshot 2                                 | Screenshot 3                                 |
 |----------------------------------------------|----------------------------------------------|----------------------------------------------|
-| ![Home UI](screenshots/screenshot1.png) | ![Chat UI](screenshots/screenshot2.png) | ![Customize API](screenshots/screenshot3.png) |
+| ![Home UI](brycen_chat_app/screenshots/screenshot1.png) | ![Chat UI](brycen_chat_app/screenshots/screenshot2.png) | ![Customize API](brycen_chat_app/screenshots/screenshot3.png) |
 
 ## Getting Started
 
