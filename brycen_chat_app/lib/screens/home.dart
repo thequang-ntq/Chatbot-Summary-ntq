@@ -33,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     // Clean up the controller when the widget is disposed.
     widget.apiKeyValue.dispose();
-    GetV.apiKey.dispose();
     super.dispose();
   }
 
@@ -101,8 +100,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         final Map<String,dynamic> resData = json.decode(response.body);
                         for(final item in resData.entries){
                           GetV.apiKey.text = (item.value['api-key']);
+                          widget.apiKeyValue.text = (item.value['api-key']);
                         }
-                        widget.apiKeyValue.text = GetV.apiKey.text;
+                        setState(() {
+                          GetV.isAPI = false;
+                        });
                       }
                     ),
                     suffixIcon: const Icon(Icons.check, color: Colors.green,),

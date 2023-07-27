@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:chatgpt/screens/tabs.dart';
-import 'package:speech_to_text/speech_to_text.dart';
-import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:avatar_glow/avatar_glow.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -17,10 +15,9 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  late stt.SpeechToText _speech;
   bool _isTyping = false;
-  SpeechToText _speechToText = SpeechToText();
-  bool _speechEnabled = false;
-  String _lastWords = '';
+  bool _isListening = false;
 
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
@@ -31,7 +28,6 @@ class _ChatScreenState extends State<ChatScreen> {
     textEditingController = TextEditingController();
     focusNode = FocusNode();
     super.initState();
-    _initSpeech();
   }
 
   //////////////////////////
@@ -40,37 +36,41 @@ class _ChatScreenState extends State<ChatScreen> {
   //////////////////////////
   //////////////////////////
 
-  void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
-    setState(() {});
+  void onListen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+          onStatus: (val) {
+            print("OnStatus: $val");
+            if (val == "done") {
+              setState(() {
+                _isListening = false;
+                _speech.stop();
+              });
+            }
+          },
+          onError: (val) => print("error: $val"));
+      if (available) {
+        setState(() {
+          _isListening = true;
+        });
+        _speech.listen(
+            localeId: "vi_VN",
+            listenFor: const Duration(hours: 12),
+            onResult: (val) => setState(() {
+                  textEditingController.text = val.recognizedWords;
+                  if (_isTyping == true) {
+                    textEditingController.clear();
+                  }
+                }));
+      }
+    } else {
+      setState(() {
+        _isListening = false;
+        _speech.stop();
+      });
+    }
   }
 
-  /// Each time to start a speech recognition session
-  void _startListening() async {
-    print("Start");
-    await _speechToText.listen(onResult: _onSpeechResult, listenFor: const Duration(minutes: 10), cancelOnError: false, partialResults: true);
-    setState(() {});
-  }
-
-  /// Manually stop the active speech recognition session
-  /// Note that there are also timeouts that each platform enforces
-  /// and the SpeechToText plugin supports setting timeouts on the
-  /// listen method.
-  void _stopListening() async {
-    print("Stop!");
-    await _speechToText.stop();
-    setState(() {});
-  }
-    
-
-  /// This is the callback that the SpeechToText plugin calls when
-  /// the platform returns recognized words.
-  void _onSpeechResult(SpeechRecognitionResult result) {
-    print("onSpeechResult");
-    setState(() {
-      _lastWords = result.recognizedWords;
-    });
-  }
   ///////////////////////////////
   ///////////////////////////////
   //Ending speech to text Functions
@@ -109,7 +109,6 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       body: SafeArea(
         child: Column(
           children: [
@@ -169,6 +168,14 @@ class _ChatScreenState extends State<ChatScreen> {
                           color: Colors.white,
                         ),
                     ),
+                    FloatingActionButton(
+                      onPressed: () => onListen(),
+                      tooltip: 'Click and speak something...',
+                      child: Icon(
+                        _isListening ? Icons.mic_off : Icons.mic,
+                        color: Colors.white,
+                      ),
+                    ),
                   ],
                   
                 ),
@@ -177,28 +184,6 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
       ),
-      floatingActionButton: 
-        AvatarGlow(
-          animate: _speechToText.isListening,
-          glowColor: Theme.of(context).primaryColor,
-          endRadius: 75.0,
-          duration: const Duration(seconds: 2),
-          repeatPauseDuration: const Duration(milliseconds: 100),
-          repeat: true,
-          child: FloatingActionButton(
-            onPressed: () async{
-              setState(() {
-                _speechToText.isNotListening==true ? _startListening : _stopListening;
-              });
-              await sendVoice(chatProvider: chatProvider);
-            },
-            tooltip: 'Click and speak something...',
-            child: Icon(
-              _speechToText.isNotListening ? Icons.mic : Icons.mic_off,
-              color: Colors.white,
-            ),
-          ),
-        ),
     );
   }
 
@@ -209,31 +194,6 @@ class _ChatScreenState extends State<ChatScreen> {
         curve: Curves.easeOut);
   }
 
-  Future<void> sendVoice({required ChatProvider chatProvider}) async {
-    
-    if(!_speechEnabled) {
-        ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-            Text(
-              "The user has denied the use of speech recognition",
-              style:TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-    if(_lastWords.isNotEmpty){
-      await chatProvider.sendMessageAndGetAnswers(msg: _lastWords);
-      _lastWords = '';
-      focusNode.unfocus();
-    }
-
-  }
 
   Future<void> sendMessageFCT(
       {
