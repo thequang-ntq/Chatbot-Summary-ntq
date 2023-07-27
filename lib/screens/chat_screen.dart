@@ -28,6 +28,7 @@ class _ChatScreenState extends State<ChatScreen> {
     textEditingController = TextEditingController();
     focusNode = FocusNode();
     super.initState();
+    _speech = stt.SpeechToText();
   }
 
   //////////////////////////
@@ -234,6 +235,12 @@ class _ChatScreenState extends State<ChatScreen> {
     }
     try {
       String msg = textEditingController.text;
+      if (_isListening) {
+        setState(() {
+          _isListening = false;
+          _speech.stop();
+        });
+      }
       setState(() {
         _isTyping = true;
         // chatList.add(ChatModel(msg: textEditingController.text, chatIndex: 0));
