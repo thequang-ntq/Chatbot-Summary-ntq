@@ -57,3 +57,4 @@ To use this app, you must enter a GPT Api-key created before or borrowed, submit
 - 24/07/2023: Fixed check condition for api_key at the home screen. Fixed chat screen and do the save API KEY when first submiited at home screen but not done yet. Fixed chat screen the second time: human chat to the left, AIBot chat to the right, but AIBot not have memory yet.
 - 25/07/2023: Complete fixed the api key submit in home screen, not save to firebase yet(http error). Fixed chat app in chat screen(use langchain instead), but not have memory yet. Change depedencies, add micro icon to get speech to text from user (but not done yet).
 - 26/07/2023: Complete add memory for chatbot while chat with human in chat screen, using firebase firestore. Change Android SDK minVersion, fixed the UI for micro in chat app.
+- 27/07/2023: Completed fixed the microphone in chatscreen.
