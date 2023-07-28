@@ -218,6 +218,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                         Visibility(
                           visible: _hasSummarized,
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
                               const Text(
                                 'Text after summarize:',
@@ -238,6 +239,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                                       borderRadius: BorderRadius.all(Radius.circular(30.0)),
                                       borderSide: BorderSide(width: 20, color: Colors.black),
                                     ),
+                                    filled: true,
                                     focusColor: Colors.white,
                                     fillColor: Colors.white,
                                     hoverColor: Colors.white,
@@ -265,21 +267,38 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                                       child: TextField(
                                         cursorColor: Colors.black,
                                         controller: _askText,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                         textCapitalization:
                                             TextCapitalization.sentences,
                                         autocorrect: false,
                                         enableSuggestions: false,
+                                        onSubmitted: (value) async {
+                                          await sendMessageFCT(
+                                              
+                                              chatProvider: chatProvider);
+                                        },
                                         decoration: InputDecoration(
-                                            labelText: 'Send a message...',
+                                            hintText: 'Send a message...',
+                                            hintStyle: const TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                             border: const OutlineInputBorder(
                                               borderRadius: BorderRadius.all(Radius.circular(30.0)),
                                               borderSide: BorderSide(width: 20, color: Colors.blueAccent),
                                             ),
+                                          filled: true,
                                           focusColor: Colors.white,
                                           fillColor: Colors.white,
                                           hoverColor: Colors.white,
                                           suffixIcon: IconButton(
                                             onPressed: () async{
+                                              setState(() {
+                                                _hasAsked = true;
+                                              });
                                               await sendMessageFCT(chatProvider: chatProvider);
                                             },
                                             icon: const Icon(Icons.send, color: Colors.blue,)
@@ -291,28 +310,23 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                                   ],
                                 ),
                               ),
-                              Visibility(
-                                visible: _hasAsked,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 15, right: 1, bottom: 14),
-                                  child: Flexible(
-                                    child: 
-                                      ListView.builder(
-                                        controller: _listScrollController,
-                                        itemCount: chatProvider.getChatList.length, //chatList.length,
-                                        itemBuilder: (context, index) {
-                                          return ChatWidget(
-                                            msg: chatProvider
-                                                .getChatList[index], // chatList[index].msg,
-                                            chatIndex: index, //chatList[index].chatIndex,
-                                            shouldAnimate:
-                                                chatProvider.getChatList.length - 1 == index,
-                                    );
-                                                  }),
-                                            ),
+                                SizedBox(
+                                  height: 200,
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    controller: _listScrollController,
+                                    itemCount: chatProvider.getChatList.length, //chatList.length,
+                                    itemBuilder: (context, index) {
+                                      return ChatWidget(
+                                        msg: chatProvider
+                                            .getChatList[index], // chatList[index].msg,
+                                        chatIndex: index, //chatList[index].chatIndex,
+                                        shouldAnimate:
+                                            chatProvider.getChatList.length - 1 == index,
+                                                                        );
+                                    }),
                                 ),
-                              ),
+                
                               if (_isTyping) ...[
                                 const SpinKitThreeBounce(
                                   color: Colors.white,
@@ -342,9 +356,6 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   Future<void> sendMessageFCT(
         {
         required ChatProvider chatProvider}) async {
-      setState(() {
-        _hasAsked = true;
-      });
       if (_isTyping) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
