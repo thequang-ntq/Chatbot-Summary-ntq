@@ -72,12 +72,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+      
       appBar: AppBar(
-        title: const Text('Chat GPT App'),
+        title: const Text('Chat GPT App', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
         centerTitle: false,
         backgroundColor: Colors.grey[50],
       ),
-      backgroundColor: Colors.grey[400],
+      backgroundColor: Colors.grey[300],
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -106,7 +107,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 TextField(
                   obscureText: true,
                   decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
                     prefixIcon: IconButton(
+                      
                       icon: const Icon(Icons.key),
                       onPressed: () async {
                         final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'api-keys.json');
@@ -132,6 +136,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 TextField(
                   obscureText: true,
                   decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
                     prefixIcon: IconButton(
                       icon: const Icon(Icons.key),
                       onPressed: () async {

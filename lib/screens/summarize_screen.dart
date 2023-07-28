@@ -89,7 +89,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         'humanChat' :  humanChatFirst,
         'aiChat' : answerSummary, 
       });
-      _summarizeText.text = answerSummary ;
+      setState(() {
+        _summarizeText.text = answerSummary ;
+      });
     } else {
       return;
     }
@@ -103,10 +105,10 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           elevation: 2,
           leading: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset('assets/images/Docs.jpg'),
+            child: Image.asset('assets/images/Docs.png'),
           ),
           backgroundColor: Colors.grey[50],
-          title: const Text('Summarize App'),
+          title: const Text('Summarize App', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
           centerTitle: false,
           actions: [
             IconButton(
@@ -144,40 +146,80 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                       ),
                     ),
                     const SizedBox(
-                      height: 5,
+                      height: 30,
                     ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(15.0), // Đặt borderRadius
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(
-                            sigmaX: 5.0, sigmaY: 5.0), // Điều chỉnh độ mờ của viền
-                        child: Container(
-                          height: 100,
-                          width: 150,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15.0),
-                            color: Colors.black.withOpacity(0.2), // Đặt màu của viền mờ
-                          ),
-                          child: Image.asset(
-                            'assets/images/upload_pic.png',
-                            height: 100,
-                            width: 150,
-                            fit: BoxFit.cover,
+                    ElevatedButton(
+                      onPressed: _uploadFile,
+                      style: ButtonStyle(
+                        fixedSize: MaterialStateProperty.all(
+                          const Size(135, 150),
+                        ),
+                        backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.pressed)) {
+                              return Colors.green;
+                            }
+                            return Colors.orange;
+                          },
+                        ),
+                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
                           ),
                         ),
                       ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(15.0), 
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(
+                                  sigmaX: 5.0, sigmaY: 5.0), 
+                              child: Container(
+                                height: 100,
+                                width: 150,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  color: Colors.black.withOpacity(0.2), 
+                                ),
+                                child: Image.asset(
+                                  'assets/images/upload_pic.png',
+                                  height: 100,
+                                  width: 150,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 19),
+                          const Text(
+                              'Upload a file',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(height: 20),
                     Visibility(
                       visible: _hasFiled,
                       child: Column(
                         children: [
-                          Text(fileName, style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                            backgroundColor: Colors.amber[300],
-                      
-                          )),
+                          ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              backgroundColor: Colors.lightGreen,
+                            ),
+                            child: Text(fileName, style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                                                
+                            )),
+                          ),
                           const SizedBox(
                             height: 45,
                           ),
@@ -234,6 +276,11 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                                       focusColor: Colors.white,
                                       fillColor: Colors.white,
                                       hoverColor: Colors.white,
+                                    ),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 18,
+                                      color: Colors.black,
                                     ),
                                   ),
                                 ),
@@ -299,6 +346,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                                     ],
                                   ),
                                 ),
+                                const SizedBox(height: 10),
                                   SizedBox(
                                     height: 200,
                                     child: ListView.builder(

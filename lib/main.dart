@@ -16,8 +16,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Chat GPT App',
       debugShowCheckedModeBanner: false,
+      title: 'Chat GPT App',
       theme: ThemeData().copyWith(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(

@@ -126,6 +126,7 @@ class _TabsState extends State<Tabs> {
     }
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Container(
           decoration: const BoxDecoration(
