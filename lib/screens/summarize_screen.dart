@@ -1,5 +1,5 @@
 // import 'dart:async';
-// import 'dart:io';
+import 'dart:ui';
 import 'dart:developer';
 import 'dart:convert';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -33,7 +33,6 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   late TextEditingController _summarizeText;
   bool _hasFiled = false;
   bool _hasSummarized = false;
-  bool _hasAsked = false;
   bool _isTyping = false;
 
   @override
@@ -104,10 +103,10 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           elevation: 2,
           leading: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset('assets/images/summarize.jpg'),
+            child: Image.asset('assets/images/Docs.jpg'),
           ),
+          backgroundColor: Colors.grey[50],
           title: const Text('Summarize App'),
-          // backgroundColor: Color.fromARGB(255, 199, 113, 142),
           centerTitle: false,
           actions: [
             IconButton(
@@ -124,227 +123,213 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             ),
           ],
         ),
+        backgroundColor: Colors.grey[400],
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.all(25),
             child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  const Text(
-                    'Upload a file to summarize',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 24,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const SizedBox(
+                      height: 21,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 3,
-                  ),
-                  Container(
-                    constraints: const BoxConstraints(
-                      maxWidth: 220,
-                    ),
-                    padding: const EdgeInsets.all(35),
-                    alignment: Alignment.center,
-                    child: 
-                      ElevatedButton.icon(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              Color.fromARGB(255, 52, 63, 189)),
-                          side: MaterialStateProperty.all<BorderSide>(
-                            const BorderSide(
-                              color: Color.fromARGB(255, 47, 60, 143),
-                              width: 3.0,
-                            ),
-                          ),
-                          minimumSize: MaterialStateProperty.all<Size>(
-                            const Size(300,50),
-                          ),
-                        ),
-                        icon: const Icon(
-                          Icons.cloud_upload,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                        label: const Text(
-                          "Pick a File",
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 25),
-                        ),
-                        onPressed: () async{
-                          _uploadFile();
-                        },
+                    const Text(
+                      'Upload a file to summarize',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 28,
                       ),
-                  ),
-                  Visibility(
-                    visible: _hasFiled,
-                    child: Column(
-                      children: [
-                        Text(fileName, style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                          backgroundColor: Colors.amber[300],
-        
-                        )),
-                        const SizedBox(
-                          height: 45,
-                        ),
-                        ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                              const Color.fromARGB(255, 52, 63, 189)),
-                              side: MaterialStateProperty.all<BorderSide>(
-                                const BorderSide(
-                                  color: const Color.fromARGB(255, 47, 60, 143),
-                                  width: 3.0,
-                                ),
-                              ),
-                            minimumSize: MaterialStateProperty.all<Size>(
-                              const Size(300,50),
-                            ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(15.0), // Đặt borderRadius
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(
+                            sigmaX: 5.0, sigmaY: 5.0), // Điều chỉnh độ mờ của viền
+                        child: Container(
+                          height: 100,
+                          width: 150,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15.0),
+                            color: Colors.black.withOpacity(0.2), // Đặt màu của viền mờ
                           ),
-                          onPressed: () async{                          
-                            if(textLast.isNotEmpty){
-                              await chatProvider.saveDocsSummarize(msg: textLast);
-                            }
-                            _summarizeFile();
-                          },
-                          child: const Text('Summarize', style: TextStyle(
-                            color: Colors.white, fontSize: 25,
-                          )),
+                          child: Image.asset(
+                            'assets/images/upload_pic.png',
+                            height: 100,
+                            width: 150,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                        const SizedBox(height: 25,),
-                        Visibility(
-                          visible: _hasSummarized,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              const Text(
-                                'Text after summarize:',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: TextField(
-                                  cursorColor: Colors.black,
-                                  controller: _summarizeText,
-                                  obscureText: false,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                                      borderSide: BorderSide(width: 20, color: Colors.black),
-                                    ),
-                                    filled: true,
-                                    focusColor: Colors.white,
-                                    fillColor: Colors.white,
-                                    hoverColor: Colors.white,
+                      ),
+                    ),
+                    Visibility(
+                      visible: _hasFiled,
+                      child: Column(
+                        children: [
+                          Text(fileName, style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                            backgroundColor: Colors.amber[300],
+                      
+                          )),
+                          const SizedBox(
+                            height: 45,
+                          ),
+                          ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                const Color.fromARGB(255, 52, 63, 189)),
+                                side: MaterialStateProperty.all<BorderSide>(
+                                  const BorderSide(
+                                    color: const Color.fromARGB(255, 47, 60, 143),
+                                    width: 3.0,
                                   ),
                                 ),
+                              minimumSize: MaterialStateProperty.all<Size>(
+                                const Size(300,50),
                               ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              const Text(
-                                'Ask any question about the summarize text above:',
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 15,),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 15, right: 1, bottom: 14),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextField(
-                                        cursorColor: Colors.black,
-                                        controller: _askText,
-                                        style: const TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                        textCapitalization:
-                                            TextCapitalization.sentences,
-                                        autocorrect: false,
-                                        enableSuggestions: false,
-                                        onSubmitted: (value) async {
-                                          await sendMessageFCT(
-                                              
-                                              chatProvider: chatProvider);
-                                        },
-                                        decoration: InputDecoration(
-                                            hintText: 'Send a message...',
-                                            hintStyle: const TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                            border: const OutlineInputBorder(
-                                              borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                                              borderSide: BorderSide(width: 20, color: Colors.blueAccent),
-                                            ),
-                                          filled: true,
-                                          focusColor: Colors.white,
-                                          fillColor: Colors.white,
-                                          hoverColor: Colors.white,
-                                          suffixIcon: IconButton(
-                                            onPressed: () async{
-                                              setState(() {
-                                                _hasAsked = true;
-                                              });
-                                              await sendMessageFCT(chatProvider: chatProvider);
-                                            },
-                                            icon: const Icon(Icons.send, color: Colors.blue,)
-                                          ),
-                                        ),
-                                        
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                                SizedBox(
-                                  height: 200,
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    controller: _listScrollController,
-                                    itemCount: chatProvider.getChatList.length, //chatList.length,
-                                    itemBuilder: (context, index) {
-                                      return ChatWidget(
-                                        msg: chatProvider
-                                            .getChatList[index], // chatList[index].msg,
-                                        chatIndex: index, //chatList[index].chatIndex,
-                                        shouldAnimate:
-                                            chatProvider.getChatList.length - 1 == index,
-                                                                        );
-                                    }),
-                                ),
-                
-                              if (_isTyping) ...[
-                                const SpinKitThreeBounce(
-                                  color: Colors.white,
-                                  size: 18,
-                                ),
-                              ],
-                            ],
+                            ),
+                            onPressed: () async{                          
+                              if(textLast.isNotEmpty){
+                                await chatProvider.saveDocsSummarize(msg: textLast);
+                              }
+                              _summarizeFile();
+                            },
+                            child: const Text('Summarize', style: TextStyle(
+                              color: Colors.white, fontSize: 25,
+                            )),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 25,),
+                          Visibility(
+                            visible: _hasSummarized,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                const Text(
+                                  'Text after summarize:',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: TextField(
+                                    cursorColor: Colors.black,
+                                    controller: _summarizeText,
+                                    obscureText: false,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                                        borderSide: BorderSide(width: 20, color: Colors.black),
+                                      ),
+                                      filled: true,
+                                      focusColor: Colors.white,
+                                      fillColor: Colors.white,
+                                      hoverColor: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                const Text(
+                                  'Ask any question about the summarize text above:',
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 15,),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 15, right: 1, bottom: 14),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          cursorColor: Colors.black,
+                                          controller: _askText,
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                          textCapitalization:
+                                              TextCapitalization.sentences,
+                                          autocorrect: false,
+                                          enableSuggestions: false,
+                                          onSubmitted: (value) async {
+                                            await sendMessageFCT(
+                                                
+                                                chatProvider: chatProvider);
+                                          },
+                                          decoration: InputDecoration(
+                                              hintText: 'Send a message...',
+                                              hintStyle: const TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                              border: const OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                                                borderSide: BorderSide(width: 20, color: Colors.blueAccent),
+                                              ),
+                                            filled: true,
+                                            focusColor: Colors.white,
+                                            fillColor: Colors.white,
+                                            hoverColor: Colors.white,
+                                            suffixIcon: IconButton(
+                                              onPressed: () async{
+                                                
+                                                await sendMessageFCT(chatProvider: chatProvider);
+                                              },
+                                              icon: const Icon(Icons.send, color: Colors.blue,)
+                                            ),
+                                          ),
+                                          
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                  SizedBox(
+                                    height: 200,
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      controller: _listScrollController,
+                                      itemCount: chatProvider.getChatList.length, //chatList.length,
+                                      itemBuilder: (context, index) {
+                                        return ChatWidget(
+                                          msg: chatProvider
+                                              .getChatList[index], // chatList[index].msg,
+                                          chatIndex: index, //chatList[index].chatIndex,
+                                          shouldAnimate:
+                                              chatProvider.getChatList.length - 1 == index,
+                                                                          );
+                                      }),
+                                  ),
+                  
+                                if (_isTyping) ...[
+                                  const SpinKitThreeBounce(
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

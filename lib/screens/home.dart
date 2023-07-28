@@ -29,6 +29,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _isObscured = true;
+
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
@@ -59,6 +61,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isObscured = !_isObscured;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -67,27 +75,33 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Chat GPT App'),
         centerTitle: false,
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.grey[50],
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[400],
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'API-KEY',
+                'Brycen Chat App',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
-                  fontSize: 30,
+                  fontSize: 35,
                 ),
               ),
               const SizedBox(
                 height: 18,
               ),
+              Image.asset(
+                'assets/images/brycen.png',
+                height: 200,
+                width: 200,
+              ),
+              const SizedBox(height: 17),
               Padding(
-                padding: const EdgeInsets.only(left: 22, right: 22),
+                padding: const EdgeInsets.all(12),
                 child: GetV.isAPI ?
                 TextField(
                   obscureText: true,
@@ -131,6 +145,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         // print(resData.entries);
                       },
                     ),
+                    suffixIcon: IconButton(
+                      onPressed: _togglePasswordVisibility,
+                      icon: Icon(
+                        _isObscured ? Icons.visibility : Icons.visibility_off,
+                      ),
+                    ),
                     border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(25))),
                     hintText: 'Enter your Api Key',   
                   ),
@@ -156,67 +176,87 @@ class _HomeScreenState extends State<HomeScreen> {
                     });
                   },
                       style: TextButton.styleFrom(
-                        backgroundColor: Colors.pink[100],
+                        backgroundColor: Colors.green[300],
                     ),
-                    child: const Text('Submit', style: TextStyle(fontSize: 30)),
+                    child: const Text('Submit', style: TextStyle(fontSize: 29, color: Colors.black)),
                 ),                                
               ),
-                  
-              Container(
-                margin: const EdgeInsets.only(
-                  top: 20,
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
+              const SizedBox(height: 19),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                          onPressed: widget.toChat,
+                          style: ButtonStyle(
+                            fixedSize: MaterialStateProperty.all(
+                              const Size(180, 50),
+                            ),
+                            backgroundColor: 
+                              MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.pressed)) {
+                                    return Colors.green; 
+                                  }
+                                  return Colors.orange; 
+                              },
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                'assets/images/chatbot.png',
+                                height: 28,
+                                width: 30,
+                              ),
+                              const SizedBox(width: 18),
+                              const Text(
+                                'Chatbot',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        ElevatedButton(
+                          onPressed: widget.toSummarize,
+                          style: ButtonStyle(
+                            fixedSize: MaterialStateProperty.all(
+                              const Size(180, 50),
+                            ),
+                            backgroundColor: 
+                              MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.pressed)) {
+                                    return Colors.green; 
+                                  }
+                                  return Colors.orange; 
+                              },
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                'assets/images/Docs.png',
+                                height: 28,
+                                width: 30,
+                              ),
+                              const SizedBox(width: 18),
+                              const Text(
+                                'Summarize',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  ),
                 ),
-                width: 200,
-                child: Image.asset('assets/images/brycen.png'),
-              ),
-              const SizedBox(height: 7),
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 34,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[100],
-                          textStyle: const TextStyle(
-                            fontSize: 33,
-                            color: Colors.black,
-                          ),
-                        ),
-                        onPressed: widget.toChat,
-                        child: const Text(
-                          'Chat',
-                          style: TextStyle(
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 35),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[100],
-                          textStyle: const TextStyle(
-                            fontSize: 33,
-                            color: Colors.black,
-                          ),
-                        ),
-                        onPressed: widget.toSummarize,
-                        child: const Text(
-                          'Summary',
-                          style: TextStyle(
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                ),
-              ),
             ],
           ),
         ),
