@@ -60,13 +60,15 @@ class ChatProvider with ChangeNotifier {
   Future<void> saveDocsSummarize(
       {required String msg}) async {
       final llm = OpenAI(apiKey: GetV.apiKey.text, temperature: 0);
-      ConversationBufferMemory memo = ConversationBufferMemory();
-      var conversation = ConversationChain(llm: llm, memory: memo);
-      final result = await conversation.call(msg, returnOnlyOutputs: true);
+      final promptTemplate = PromptTemplate.fromTemplate(
+        'Summarize the following text: {subject}',
+      );
+      final prompt = promptTemplate.format({'subject': msg});
+      final result = await llm.call(prompt);
       
       await FirebaseFirestore.instance.collection('SummarizeDocs').add({
         'humanChat' :  msg,
-        'aiChat' : result['response'], 
+        'aiChat' : result, 
       });
       
     notifyListeners();

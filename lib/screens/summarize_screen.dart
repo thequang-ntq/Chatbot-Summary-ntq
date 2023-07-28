@@ -66,7 +66,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       fileType = file.name.split('.').last;
       fileName = file.name;
       fileText = utf8.decode(file.bytes!);
-      textLast = 'Summarize the following text: $fileText';
+      textLast = fileText;
       // FirebaseFirestore.instance.collection('SummarizeDocs').add({
       //   'Documents' : utf8.decode(file.bytes!),   
       // });
@@ -85,6 +85,11 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       for(final item in docsData.docs){
         answerSummary = item.data()['aiChat'];
       }
+      String humanChatFirst = 'Summarize the text: $textLast';
+      await FirebaseFirestore.instance.collection('SummarizeChat').add({
+        'humanChat' :  humanChatFirst,
+        'aiChat' : answerSummary, 
+      });
       _summarizeText.text = answerSummary ;
     } else {
       return;
