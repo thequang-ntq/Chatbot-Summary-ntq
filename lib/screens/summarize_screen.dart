@@ -84,7 +84,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       for(final item in docsData.docs){
         answerSummary = item.data()['aiChat'];
       }
-      String humanChatFirst = 'Summarize the text: $textLast';
+      String humanChatFirst = 'Summarize the following text: $textLast';
       await FirebaseFirestore.instance.collection('SummarizeChat').add({
         'humanChat' :  humanChatFirst,
         'aiChat' : answerSummary, 

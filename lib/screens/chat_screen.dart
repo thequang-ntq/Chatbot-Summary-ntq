@@ -170,6 +170,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                     ),
                     FloatingActionButton(
+                      backgroundColor: Colors.grey,
                       onPressed: () => onListen(),
                       tooltip: 'Click and speak something...',
                       child: Icon(
