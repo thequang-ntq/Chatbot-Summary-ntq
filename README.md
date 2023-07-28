@@ -27,7 +27,7 @@
 ## Getting Started
 
 -The purpose of the app (project):
-    + Home-Screen of the app, which have a submit API Key TextField, an Chat Button to swicth to Chat-Screen (Chat with AI) and Summary Button to switch to Summary-Screen (Summarize Text File, Audio File... and ask Question about it.)
+    + Home-Screen of the app, which have a submit API Key TextField, an Chat Button to switch to Chat-Screen (Chat with AI) and Summary Button to switch to Summary-Screen (Summarize Text File, Audio File... and ask Question about it.)
 -This app is for a small project and this is my first project SO It is not good and Have many places that not completed too. I am sorry for that. 
 
 ## HOW TO USE 
@@ -48,14 +48,18 @@ flutter build apk
 3. Use this app.
 
 ## Usage
-To use this app, you must enter a GPT Api-key created before or borrowed, submit it by button 'submit' for first time. After that, you can press the key button on the begin of textfield to take that key again. After submit, press 'Chat' to have chat with ChatBot, or press 'Summarize' to Summmarize a text or audio file, and ask question about it.
+To use this app, you must enter a GPT Api-key created before or borrowed, submit it by button 'submit' for first time. After that, you can press the key button on the begin of textfield to take that key again. After submit, press 'Chat' to have chat with ChatBot, or press 'Summarize' to summary a text or audio file, and ask question about it.
 
-## UPDATE:
-- 21/07/2023: First upload about the app. First code is about the UI of Home-Screen of the app, which have a submit API Key TextField, an Chat Button to swicth to Chat-Screen (Chat with AI) and Summary Button to switch to Summary-Screen (Summarize Text File, Audio File... and ask Question about it.). But I just have code about the UI of Home and Chat Screen, so it is not completed and just the beginning of project.
-- 22/07/2023: I'm  update the project app. I fixed the chat screen and add code to the summarize screen. But I have two problems: First is in the chat screen, because I run on Flutter IDE online so it can not read the ".env" file_path, so the app can not run. Second is: in summary app, I am using the 'Visibility' Widget but the Widget is not appear even after I set visisble to setState((){_variable}).
-- 23/07/2023: Fixed Chat Screen and add the first AI chatbot to chat with human in that Chat Screen. This chatbot not have memory yet.
-- 24/07/2023: Fixed check condition for api_key at the home screen. Fixed chat screen and do the save API KEY when first submiited at home screen but not done yet. Fixed chat screen the second time: human chat to the left, AIBot chat to the right, but AIBot not have memory yet.
-- 25/07/2023: Complete fixed the api key submit in home screen, not save to firebase yet(http error). Fixed chat app in chat screen(use langchain instead), but not have memory yet. Change depedencies, add micro icon to get speech to text from user (but not done yet).
-- 26/07/2023: Complete add memory for chatbot while chat with human in chat screen, using firebase firestore. Change Android SDK minVersion, fixed the UI for micro in chat app.
-- 27/07/2023: Completed fixed the microphone in chatscreen. Added the pick file and summarize text for summarize screen, but has error with send ask message.
-- 28/07/2023: Completed fixed the UI for Summarize screen, but not have output logics fors asking question yet (Asking non-related question -> AI: "Questions not related to text").
+## Time Tracking
+
+| Date         | Task                | Notes                                               |
+|--------------|---------------------|-----------------------------------------------------|
+| 20/07/2023     | Project setup       |                                                     |
+| 21/07/2023 | First Setup     | First upload about the app. First code is about the UI of Home-Screen of the app, which have a submit API Key TextField, an Chat Button to switch to Chat-Screen (Chat with AI) and Summary Button to switch to Summary-Screen           |
+| 22/07/2023 | Create Chat Screen  | Create the Chat Screen and add code to the Summarize Screen             |
+| 23/07/2023 | Update Chat Screen       | Fixed Chat Screen and add the first AI chatbot to chat with human in that Chat Screen. This chatbot not have memory yet.      |
+| 24/07/2023     | Update Home Screen and Chat Screen        | Fixed check condition for api_key at the Home Screen. Fixed Chat Screen and Save Api Key when Submit at Home Screen : Human chat at Left, AI chat at Right.   |
+| 25/07/2023 | Firebase Connection And Update App | Set up Firebase_CIL and implemented file upload to Firebase. Chat Screen: use LangChain, not have memory yet. Fixed API Key submit  |
+| 26/07/2023     | Update Chat Screen       |   Complete add memory for chatbot while chat with human in chat screen, using FirebaseFirestore. Change Android SDK minVersion, fixed the UI for micro in chat app.      |
+| 27/07/2023     | Update Chat Screen and Summarize Screen      |   Completed fixed the microphone in Chat Screen. Added the pick file and summarize text for summarize screen, but has error with send ask message.        |
+| 28/07/2023     | Update Chat Screen and Summarize Screen       |  Completed fixed the UI for all  |
