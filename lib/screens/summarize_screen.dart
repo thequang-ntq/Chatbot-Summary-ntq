@@ -1,5 +1,6 @@
 // import 'dart:async';
 import 'dart:ui';
+import 'dart:io';
 import 'dart:developer';
 import 'dart:convert';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -11,7 +12,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chatgpt/providers/chats/chats_provider.dart';
 import 'package:chatgpt/widgets/chats/chat_widget.dart';
 import 'package:provider/provider.dart';
-// import 'package:path_provider/path_provider.dart';
+import 'package:pdf_text/pdf_text.dart';
+import 'package:google_speech/google_speech.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:path_provider/path_provider.dart';
 
 class SummarizeScreen extends StatefulWidget {
   const SummarizeScreen({super.key});
@@ -22,6 +26,7 @@ class SummarizeScreen extends StatefulWidget {
 
 class _SummarizeScreenState extends State<SummarizeScreen> {
   late TextEditingController _askText;
+  late stt.SpeechToText _speech;
   String fileName = '';
   String fileType = '';
   String fileText = '';
@@ -42,6 +47,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     _listScrollController = ScrollController();
     focusNode = FocusNode();
     super.initState();
+    _speech = stt.SpeechToText();
   }
 
   @override
@@ -56,6 +62,14 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     OpenFile.open(file.path!);
   }
 
+  Future<List<int>> _getAudioContent(String name) async {
+    
+   final directory = await getApplicationDocumentsDirectory();
+   final path = directory.path + '/$name';
+   return File(path).readAsBytesSync().toList();
+ }
+
+
   void _uploadFile() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.any);
     if (result == null) {
@@ -64,11 +78,29 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       PlatformFile file = result.files.first;
       fileType = file.name.split('.').last;
       fileName = file.name;
-      fileText = utf8.decode(file.bytes!);
-      textLast = fileText;
-      // FirebaseFirestore.instance.collection('SummarizeDocs').add({
-      //   'Documents' : utf8.decode(file.bytes!),   
-      // });
+      if(fileType == "txt"){
+        fileText = utf8.decode(file.bytes!);
+        textLast = fileText;
+      }
+      else if (fileType == "pdf"){
+        PDFDoc doc = await PDFDoc.fromPath(file.path!);
+        fileText = await doc.text;
+        textLast = fileText;
+      }
+      else if (fileType == "mp3" || fileType == "wav"){
+         final config = RecognitionConfig(
+          encoding: AudioEncoding.LINEAR16,
+          model: RecognitionModel.basic,
+          enableAutomaticPunctuation: true,
+          sampleRateHertz: 16000,
+          languageCode: 'en-US');
+          // final speechToText = SpeechToText.viaServiceAccount(serviceAccount);
+
+          final audio = await _getAudioContent('test.wav');
+          // final response = await _speech.recognize(config, audio);
+          
+
+      }
       setState(() {
         _hasFiled = true;
       });

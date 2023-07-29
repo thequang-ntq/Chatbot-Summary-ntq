@@ -17,6 +17,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.2"
+  archive:
+    dependency: transitive
+    description:
+      name: archive
+      sha256: "0c8368c9b3f0abbc193b9d6133649a614204b528982bebc7026372d61677ce3a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.3.7"
+  args:
+    dependency: transitive
+    description:
+      name: args
+      sha256: eef6c46b622e0494a36c5a12d10d77fb4e855501a91c1b9ef9339326e58f0596
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.2"
   async:
     dependency: transitive
     description:
@@ -89,6 +105,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.17.1"
+  convert:
+    dependency: transitive
+    description:
+      name: convert
+      sha256: "0f08b14755d163f6e2134cb58222dd25ea2a2ee8a195e53983d57c075324d592"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.1"
   cross_file:
     dependency: transitive
     description:
@@ -97,6 +121,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.3+4"
+  crypto:
+    dependency: transitive
+    description:
+      name: crypto
+      sha256: ff625774173754681d66daaf4a448684fb04b78f902da9cb3d308c19cc5e8bab
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.3"
   csslib:
     dependency: transitive
     description:
@@ -185,6 +217,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.0"
+  fixnum:
+    dependency: transitive
+    description:
+      name: fixnum
+      sha256: "25517a4deb0c03aa0f32fd12db525856438902d9c16536311e76cdc57b31d7d1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -224,6 +264,30 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  google_speech:
+    dependency: "direct main"
+    description:
+      name: google_speech
+      sha256: "28e61723493489a35aca4309181b891563854fb3e459e3eb3108751f2fbe4518"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
+  googleapis_auth:
+    dependency: transitive
+    description:
+      name: googleapis_auth
+      sha256: af7c3a3edf9d0de2e1e0a77e994fae0a581c525fa7012af4fa0d4a52ed9484da
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.1"
+  grpc:
+    dependency: transitive
+    description:
+      name: grpc
+      sha256: "220ffb2218288f4e7dea487242e08b9c6277596d9b6f3f10ba50be96771a032d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.3"
   html:
     dependency: transitive
     description:
@@ -240,6 +304,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.13.6"
+  http2:
+    dependency: transitive
+    description:
+      name: http2
+      sha256: "38db0c4aa9f1cd238a5d2e86aa0cc7cc91c77e0c6c94ba64bbe85e4ff732a952"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   http_parser:
     dependency: transitive
     description:
@@ -416,6 +488,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.7"
+  pdf_text:
+    dependency: "direct main"
+    description:
+      name: pdf_text
+      sha256: ea906fbc95c3c13bf91be826daaec5524182db0a0bfa5eae702f78e8dd1d26c8
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0"
   pedantic:
     dependency: transitive
     description:
@@ -448,6 +528,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.5"
+  pointycastle:
+    dependency: transitive
+    description:
+      name: pointycastle
+      sha256: "7c1e5f0d23c9016c5bbd8b1473d0d3fb3fc851b876046039509e18e0c7485f2c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.7.3"
+  protobuf:
+    dependency: transitive
+    description:
+      name: protobuf
+      sha256: "01dd9bd0fa02548bf2ceee13545d4a0ec6046459d847b6b061d8a27237108a08"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   provider:
     dependency: "direct main"
     description:

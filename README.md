@@ -63,3 +63,4 @@ To use this app, you must enter a GPT Api-key created before or borrowed, submit
 | 26/07/2023     | Update Chat Screen       |   Complete add memory for chatbot while chat with human in chat screen, using FirebaseFirestore. Change Android SDK minVersion, fixed the UI for micro in chat app.      |
 | 27/07/2023     | Update Chat Screen and Summarize Screen      |   Completed fixed the microphone in Chat Screen. Added the pick file and summarize text for summarize screen, but has error with send ask message.        |
 | 28/07/2023     | Update UI for all / Chat Screen and Summarize Screen       |  Completed fixed the UI for all. Fixed language recognition for ChatBot response(response same language for what user ask)  |
+| 29/07/2023     | Update Summarize Screen       | Upload pick .txt and .pdf files. Need to find a way to upload audio file? And ask logic?    |
