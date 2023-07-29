@@ -181,8 +181,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       
                     });
                   },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.green[300],
+                    style: ButtonStyle(
+                      fixedSize: MaterialStateProperty.all(
+                        const Size(110, 40),
+                      ),
+                      backgroundColor: 
+                        MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.pressed)) {
+                              return Colors.lightBlue; 
+                            }
+                            return Colors.green; 
+                        },
+                      ),
                     ),
                     child: const Text('Submit', style: TextStyle(fontSize: 29, color: Colors.black)),
                 ),                                

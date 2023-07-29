@@ -83,7 +83,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         textLast = fileText;
       }
       else if (fileType == "pdf"){
-        PDFDoc doc = await PDFDoc.fromPath(file.path!);
+        final File pdfFile = File(file.path!);
+        PDFDoc doc = await PDFDoc.fromFile(pdfFile);
         fileText = await doc.text;
         textLast = fileText;
       }
@@ -96,7 +97,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           languageCode: 'en-US');
           // final speechToText = SpeechToText.viaServiceAccount(serviceAccount);
 
-          final audio = await _getAudioContent('test.wav');
+          final audio = await _getAudioContent(fileName);
           // final response = await _speech.recognize(config, audio);
           
 
