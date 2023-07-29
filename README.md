@@ -17,6 +17,8 @@
 
 * Advanced AI-chatbot and summarize text / audio file
 * My first projects -_-
+* Chat with AI: Enjoy dynamic conversations with AI Chatbot, enable voice and message chat.
+* Summarize: Extract key information from a text (.txt) file, and ask anything about that. 
 
 ## Screenshots
 
