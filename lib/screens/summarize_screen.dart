@@ -14,6 +14,7 @@ import 'package:chatgpt/widgets/chats/chat_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:pdf_text/pdf_text.dart';
 import 'package:google_speech/google_speech.dart';
+ import 'package:google_speech/speech_client_authenticator.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:path_provider/path_provider.dart';
 
@@ -95,10 +96,13 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           enableAutomaticPunctuation: true,
           sampleRateHertz: 16000,
           languageCode: 'en-US');
-          // final speechToText = SpeechToText.viaServiceAccount(serviceAccount);
+          final serviceAccount = ServiceAccount.fromFile(File('assets/service_account/brycen-chat-app-ntq-e5fd13b4cad3.json'));
+
+          final speechToText = SpeechToText.viaServiceAccount(serviceAccount);
 
           final audio = await _getAudioContent(fileName);
-          // final response = await _speech.recognize(config, audio);
+          final response = await speechToText.recognize(config, audio);
+          print(response);
           
 
       }

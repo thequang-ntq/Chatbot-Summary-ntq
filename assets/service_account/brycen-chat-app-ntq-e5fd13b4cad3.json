@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "brycen-chat-app-ntq",
+  "private_key_id": "e5fd13b4cad3fb6af21c918434a2a0e38a1ac237",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQD9mjh4ikAt7AYL\n05u5JiJHQGprn1TqY17ElgNy8wx6XliJ9++XfyUYFYI03VR1h9ZB+ch/oUJxMhfK\nA7x3jGqU9qGezEYt4Q7ZhwNhaApkKen975y41Wl3b5CecSoo4fUVaUbpuG6to4Qu\nSvD51sQEEBzsvdyeP1C2APD2nK6WWNiIBAEpCc9pXPNcIDF769s2fBAPACZ0NCx9\n4a7jfBtHCy4K/J3jidH0uX2HDtIiWXdjX1ajB3omXk4WaU4tax5etfYwY1qR2NQP\ntuHFqjvIB4BUsg7hwjKQOt5Y2295vxjsfscMN2nychPmEBKjtLRJYxvL1Zc+vc+c\nnlXbgVqnAgMBAAECggEAPyXqz+ElEApIiyNbEGR1fqaEmV3oaCDsVSlBnJr2zXW2\nuEw7pc6sLu4UKRO/1zBG4tDO4zEFeWhO0ifSAza8x3EOV5toEj6LUxEyf0vH4p8p\nO+kxbjj99RabvUhShjGVtIotdT9OmAAyhtB0ZtHap2RXv3+bcvAzKc7cMZxcQOVJ\nyO4KYHQCOH5f/GZJRb+7bTVpNFJJDHoIMYmCgyxDtIWxCWGtFZlplwSd3Ry91+BH\nOAd2hZpVR/GztjclQ+DSwW/4TuGI0GWXS2OPUP6gp3Egp+O3iq2ppHYiSXRDAVZ9\nmJX2EboV24Rf8u2cIIIq/N/w9dWfkiExa4sCdhCocQKBgQD+543Iy3xVdezj1JWc\nKgxaLoa5huoa0gb5VNvlL9dBevEkmBx8L6JIuAZ9/UKfRD/2UTZWHS9LA4daU3El\nlWmBDKK+rlvHSGM/Xb3vh6EPSmxwQTqFTbjLK/2U4w4SHhWJlRXBny5y55YTQnTf\nE7Gumd1bd+LVUKiyzU9x1r5QuQKBgQD+sTvz9hre2+nJPQ3X8WWAa5MpKxWhu5Kr\niQB0FfWYSmy/NzCpoNoy71OXHNMaDm4anN8nUPsTCTD4kC0ke7yMpBec/bHNZL+t\nLuxutjt4+wNNjdZUICroIn9poB4lkJlXIgSQx9CLZyDIoYLWmR8YNirImT7Nit1J\n6ix1B72WXwKBgEIdALNBw9/OlECLVLqKVWXWh277RSDrtI9aqSYKgIQlRQI+ybSU\nDj1aLaTj2THB2+0hJzyymR+VrLeKyN/8nr6v7k4Snw9TARrgT3Ee9nEm1nVPFcSZ\nYgKgSEcjlPSyBNgIaPotNTjsRAp+xB1P2Ff25Gji8VxubTLi+WYHUplRAoGAY81t\nsdahhuzj+rCLCTCV1rHQ09QHQP4wpjkkTVkBiTC41mE5F29psYXo2pE4A8Dd0l3g\ncBainD4Ay5Yrql02cGIowqMDFnpBRgraKTQNsAWksLJA52xHg/lotipBRfUYsXUq\nFtXF2aqKxTPNAmy0K5emQj8SxhaBSmKSEzX6S78CgYEA02HR2tkLD9KeBuJW6AXN\nTRTx79sIxRdbd3CGBbJkZal3ZjW8Pn87J4YwXmqf0MspTMAgP+0jxmfbPSNZKu8G\nMlmZ2YmXEJTu/RUqdXxcLTlMZdtDMCu2dHHfnnkx23MDRzY0xZxzHSgjn6rpPwXR\nmskC5YrUgpKl4FapmOVBRpE=\n-----END PRIVATE KEY-----\n",
+  "client_email": "testkeyntq@brycen-chat-app-ntq.iam.gserviceaccount.com",
+  "client_id": "114099961419084682332",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/testkeyntq%40brycen-chat-app-ntq.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
