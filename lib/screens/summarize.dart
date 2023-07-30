@@ -25,7 +25,7 @@ class _SummarizeState extends State<Summarize> {
         title: 'ChatBot',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            scaffoldBackgroundColor: Color.fromARGB(255, 201, 103, 160),
+            scaffoldBackgroundColor: const Color.fromARGB(255, 201, 103, 160),
             appBarTheme: const AppBarTheme(
               color:  Color.fromARGB(255, 216, 144, 184),
             )),
