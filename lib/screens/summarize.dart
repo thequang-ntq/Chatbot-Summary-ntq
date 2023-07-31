@@ -22,12 +22,12 @@ class _SummarizeState extends State<Summarize> {
         ),
       ],
       child: MaterialApp(
-        title: 'ChatBot',
+        title: 'Summarize',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            scaffoldBackgroundColor: const Color.fromARGB(255, 201, 103, 160),
+            scaffoldBackgroundColor: const Color(0xFF343541),
             appBarTheme: const AppBarTheme(
-              color:  Color.fromARGB(255, 216, 144, 184),
+              color: Color(0xFF444654),
             )),
         home: const SummarizeScreen(),
       ),

@@ -15,6 +15,9 @@ import 'package:provider/provider.dart';
 import 'package:pdf_text/pdf_text.dart';
 import 'package:google_speech/google_speech.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:chatgpt/screens/home.dart';
+import 'package:intl/intl.dart';
 
 class SummarizeScreen extends StatefulWidget {
   const SummarizeScreen({super.key});
@@ -32,11 +35,13 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   String answerSummary = 'Not have text';
   late ScrollController _listScrollController;
   late FocusNode focusNode;
+  late stt.SpeechToText _speech;
 
   late TextEditingController _summarizeText;
   bool _hasFiled = false;
   bool _hasSummarized = false;
   bool _isTyping = false;
+  bool _isListening = false;
 
   @override
   void initState() {
@@ -93,19 +98,6 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           sampleRateHertz: 16000,
           languageCode: 'en-US');
           final serviceAccount = ServiceAccount.fromFile(File('assets/service_account/brycen-chat-app-ntq-e5fd13b4cad3.json'));
-          // final serviceAccount = ServiceAccount.fromString(r'''{
-          //   "type": "service_account",
-          //   "project_id": "brycen-chat-app-ntq",
-          //   "private_key_id": "e5fd13b4cad3fb6af21c918434a2a0e38a1ac237",
-          //   "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQD9mjh4ikAt7AYL\n05u5JiJHQGprn1TqY17ElgNy8wx6XliJ9++XfyUYFYI03VR1h9ZB+ch/oUJxMhfK\nA7x3jGqU9qGezEYt4Q7ZhwNhaApkKen975y41Wl3b5CecSoo4fUVaUbpuG6to4Qu\nSvD51sQEEBzsvdyeP1C2APD2nK6WWNiIBAEpCc9pXPNcIDF769s2fBAPACZ0NCx9\n4a7jfBtHCy4K/J3jidH0uX2HDtIiWXdjX1ajB3omXk4WaU4tax5etfYwY1qR2NQP\ntuHFqjvIB4BUsg7hwjKQOt5Y2295vxjsfscMN2nychPmEBKjtLRJYxvL1Zc+vc+c\nnlXbgVqnAgMBAAECggEAPyXqz+ElEApIiyNbEGR1fqaEmV3oaCDsVSlBnJr2zXW2\nuEw7pc6sLu4UKRO/1zBG4tDO4zEFeWhO0ifSAza8x3EOV5toEj6LUxEyf0vH4p8p\nO+kxbjj99RabvUhShjGVtIotdT9OmAAyhtB0ZtHap2RXv3+bcvAzKc7cMZxcQOVJ\nyO4KYHQCOH5f/GZJRb+7bTVpNFJJDHoIMYmCgyxDtIWxCWGtFZlplwSd3Ry91+BH\nOAd2hZpVR/GztjclQ+DSwW/4TuGI0GWXS2OPUP6gp3Egp+O3iq2ppHYiSXRDAVZ9\nmJX2EboV24Rf8u2cIIIq/N/w9dWfkiExa4sCdhCocQKBgQD+543Iy3xVdezj1JWc\nKgxaLoa5huoa0gb5VNvlL9dBevEkmBx8L6JIuAZ9/UKfRD/2UTZWHS9LA4daU3El\nlWmBDKK+rlvHSGM/Xb3vh6EPSmxwQTqFTbjLK/2U4w4SHhWJlRXBny5y55YTQnTf\nE7Gumd1bd+LVUKiyzU9x1r5QuQKBgQD+sTvz9hre2+nJPQ3X8WWAa5MpKxWhu5Kr\niQB0FfWYSmy/NzCpoNoy71OXHNMaDm4anN8nUPsTCTD4kC0ke7yMpBec/bHNZL+t\nLuxutjt4+wNNjdZUICroIn9poB4lkJlXIgSQx9CLZyDIoYLWmR8YNirImT7Nit1J\n6ix1B72WXwKBgEIdALNBw9/OlECLVLqKVWXWh277RSDrtI9aqSYKgIQlRQI+ybSU\nDj1aLaTj2THB2+0hJzyymR+VrLeKyN/8nr6v7k4Snw9TARrgT3Ee9nEm1nVPFcSZ\nYgKgSEcjlPSyBNgIaPotNTjsRAp+xB1P2Ff25Gji8VxubTLi+WYHUplRAoGAY81t\nsdahhuzj+rCLCTCV1rHQ09QHQP4wpjkkTVkBiTC41mE5F29psYXo2pE4A8Dd0l3g\ncBainD4Ay5Yrql02cGIowqMDFnpBRgraKTQNsAWksLJA52xHg/lotipBRfUYsXUq\nFtXF2aqKxTPNAmy0K5emQj8SxhaBSmKSEzX6S78CgYEA02HR2tkLD9KeBuJW6AXN\nTRTx79sIxRdbd3CGBbJkZal3ZjW8Pn87J4YwXmqf0MspTMAgP+0jxmfbPSNZKu8G\nMlmZ2YmXEJTu/RUqdXxcLTlMZdtDMCu2dHHfnnkx23MDRzY0xZxzHSgjn6rpPwXR\nmskC5YrUgpKl4FapmOVBRpE=\n-----END PRIVATE KEY-----\n",
-          //   "client_email": "testkeyntq@brycen-chat-app-ntq.iam.gserviceaccount.com",
-          //   "client_id": "114099961419084682332",
-          //   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-          //   "token_uri": "https://oauth2.googleapis.com/token",
-          //   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-          //   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/testkeyntq%40brycen-chat-app-ntq.iam.gserviceaccount.com",
-          //   "universe_domain": "googleapis.com"
-          // }''');
           final speechToText = SpeechToText.viaServiceAccount(serviceAccount);
 
           final audio = await _getAudioContent(fileName);
@@ -146,6 +138,41 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
+  void onListen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+          onStatus: (val) {
+            // print("OnStatus: $val");
+            if (val == "done") {
+              setState(() {
+                _isListening = false;
+                _speech.stop();
+              });
+            }
+          },
+          onError: (val) => print("error: $val"));
+      if (available) {
+        setState(() {
+          _isListening = true;
+        });
+        _speech.listen(
+            localeId: "vi_VN",
+            listenFor: const Duration(hours: 12),
+            onResult: (val) => setState(() {
+                  _askText.text = val.recognizedWords;
+                  if (_isTyping == true) {
+                    _askText.clear();
+                  }
+                }));
+      }
+    } else {
+      setState(() {
+        _isListening = false;
+        _speech.stop();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context);
@@ -157,7 +184,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             child: Image.asset('assets/images/Docs.png'),
           ),
           backgroundColor: Colors.grey[50],
-          title: const Text('Summarize App', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
+          title: const Text('Summarize', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
           centerTitle: false,
           actions: [
             IconButton(
@@ -176,261 +203,167 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         ),
         backgroundColor: Colors.grey[400],
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(25),
-            child: SingleChildScrollView(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const SizedBox(
-                      height: 21,
-                    ),
-                    const Text(
-                      'Upload a file to summarize',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        fontSize: 28,
+          child: _hasFiled == false?
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: _uploadFile,
+                    style: ButtonStyle(
+                      fixedSize: MaterialStateProperty.all(
+                        const Size(135, 150),
+                      ),
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.pressed)) {
+                            return Colors.green;
+                          }
+                          return Colors.orange;
+                        },
+                      ),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    ElevatedButton(
-                      onPressed: _uploadFile,
-                      style: ButtonStyle(
-                        fixedSize: MaterialStateProperty.all(
-                          const Size(135, 150),
-                        ),
-                        backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                          (Set<MaterialState> states) {
-                            if (states.contains(MaterialState.pressed)) {
-                              return Colors.green;
-                            }
-                            return Colors.orange;
-                          },
-                        ),
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(15.0), 
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(
-                                  sigmaX: 5.0, sigmaY: 5.0), 
-                              child: Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(15.0), 
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(
+                                sigmaX: 5.0, sigmaY: 5.0), 
+                            child: Container(
+                              height: 100,
+                              width: 150,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15.0),
+                                color: Colors.black.withOpacity(0.2), 
+                              ),
+                              child: Image.asset(
+                                'assets/images/upload_pic.png',
                                 height: 100,
                                 width: 150,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  color: Colors.black.withOpacity(0.2), 
-                                ),
-                                child: Image.asset(
-                                  'assets/images/upload_pic.png',
-                                  height: 100,
-                                  width: 150,
-                                  fit: BoxFit.cover,
-                                ),
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
-                          const SizedBox(height: 19),
-                          const Text(
-                              'Upload a file',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 19),
+                        const Text(
+                            'Upload a file',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                    Visibility(
-                      visible: _hasFiled,
-                      child: Column(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              backgroundColor: Colors.lightGreen,
-                            ),
-                            child: Text(fileName, style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                                                
-                            )),
-                          ),
-                          const SizedBox(
-                            height: 45,
-                          ),
-                          ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                const Color.fromARGB(255, 52, 63, 189)),
-                                side: MaterialStateProperty.all<BorderSide>(
-                                  const BorderSide(
-                                    color: Color.fromARGB(255, 47, 60, 143),
-                                    width: 3.0,
-                                  ),
-                                ),
-                              minimumSize: MaterialStateProperty.all<Size>(
-                                const Size(300,50),
-                              ),
-                            ),
-                            onPressed: () async{                          
-                              if(textLast.isNotEmpty){
-                                await chatProvider.saveDocsSummarize(msg: textLast);
-                              }
-                              _summarizeFile();
-                            },
-                            child: const Text('Summarize', style: TextStyle(
-                              color: Colors.white, fontSize: 25,
-                            )),
-                          ),
-                          const SizedBox(height: 25,),
-                          Visibility(
-                            visible: _hasSummarized,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                const Text(
-                                  'Text after summarize:',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: TextField(
-                                    cursorColor: Colors.black,
-                                    controller: _summarizeText,
-                                    obscureText: false,
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                                        borderSide: BorderSide(width: 20, color: Colors.black),
-                                      ),
-                                      filled: true,
-                                      focusColor: Colors.white,
-                                      fillColor: Colors.white,
-                                      hoverColor: Colors.white,
-                                    ),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 18,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                const Text(
-                                  'Ask any question about the summarize text above:',
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 15,),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 15, right: 1, bottom: 14),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextField(
-                                          cursorColor: Colors.black,
-                                          controller: _askText,
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                          textCapitalization:
-                                              TextCapitalization.sentences,
-                                          autocorrect: false,
-                                          enableSuggestions: false,
-                                          onSubmitted: (value) async {
-                                            await sendMessageFCT(
-                                                
-                                                chatProvider: chatProvider);
-                                          },
-                                          decoration: InputDecoration(
-                                              hintText: 'Send a message...',
-                                              hintStyle: const TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                              border: const OutlineInputBorder(
-                                                borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                                                borderSide: BorderSide(width: 20, color: Colors.blueAccent),
-                                              ),
-                                            filled: true,
-                                            focusColor: Colors.white,
-                                            fillColor: Colors.white,
-                                            hoverColor: Colors.white,
-                                            suffixIcon: IconButton(
-                                              onPressed: () async{
-                                                
-                                                await sendMessageFCT(chatProvider: chatProvider);
-                                              },
-                                              icon: const Icon(Icons.send, color: Colors.blue,)
-                                            ),
-                                          ),
-                                          
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                  SizedBox(
-                                    height: 200,
-                                    child: ListView.builder(
-                                      shrinkWrap: true,
-                                      controller: _listScrollController,
-                                      itemCount: chatProvider.getChatList.length, //chatList.length,
-                                      itemBuilder: (context, index) {
-                                        return ChatWidget(
-                                          msg: chatProvider
-                                              .getChatList[index], // chatList[index].msg,
-                                          chatIndex: index, //chatList[index].chatIndex,
-                                          shouldAnimate:
-                                              chatProvider.getChatList.length - 1 == index,
-                                                                          );
-                                      }),
-                                  ),
-                  
-                                if (_isTyping) ...[
-                                  const SpinKitThreeBounce(
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ) 
+          : 
+            Column(
+              children: [
+                Flexible(
+                  child: StreamBuilder(
+                    stream: FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
+                      .collection('Summarize').orderBy('createdAt', descending:true).snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      
+                      if (snapshot.hasError) {
+                        return const Center(
+                          child: Text('Something went wrong...'),
+                        );
+                      }
+
+                      final loadedMessages = snapshot.data!.docs;
+                      return ListView.builder(
+                          controller: _listScrollController,
+                          itemCount: loadedMessages.length, 
+                          itemBuilder: (context, index) {
+                            final chatMessage = loadedMessages[index].data();
+                            DateTime time = chatMessage['createdAt'].toDate();
+                            String formattedDate = DateFormat('MM/dd/yyyy, hh:mm a').format(time);
+                            return ChatWidget(
+                              msg: chatProvider
+                                  .getChatList[index],
+                              dateTime: formattedDate,
+                              chatIndex: index, 
+                              shouldAnimate:
+                                  chatProvider.getChatList.length - 1 == index,
+                            );
+                          });
+                    }
+                  ),
+                ),
+                if (_isTyping) ...[
+                  const SpinKitThreeBounce(
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ],
+                const SizedBox(
+                  height: 15,
+                ),
+                Material(
+                  color: const Color(0xFF444654),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            focusNode: focusNode,
+                            style: const TextStyle(color: Colors.white),
+                            controller: _askText,
+                            onSubmitted: (value) async {
+                              await sendMessageFCT(
+                                  
+                                  chatProvider: chatProvider);
+                            },
+                            decoration: const InputDecoration.collapsed(
+                                hintText: "Ask something ...",
+                                hintStyle: TextStyle(color: Colors.grey)),
+                          ),
+                        ),
+                        IconButton(
+                            onPressed: () async {
+                              await sendMessageFCT(
+                                  
+                                  chatProvider: chatProvider);
+                            },
+                            tooltip: 'Send message...',
+                            icon: const Icon(
+                              Icons.send,
+                              color: Colors.white,
+                            ),
+                        ),
+                        FloatingActionButton(
+                          backgroundColor: Colors.grey,
+                          onPressed: () => onListen(),
+                          tooltip: 'Click and speak something...',
+                          child: Icon(
+                            _isListening ? Icons.mic_off : Icons.mic,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                      
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ));
+        ),
+    );
   }
 
   void scrollListToEND() {
@@ -511,4 +444,3 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }  
 
 }
-

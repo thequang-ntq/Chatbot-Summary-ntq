@@ -6,7 +6,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:chatgpt/screens/tabs.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-
+import 'package:chatgpt/screens/home.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -90,102 +92,125 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context);
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 2,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.asset('assets/images/openai_logo.jpg'),
-        ),
-        title: const Text("ChatGPT"),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Tabs()),
-              );
-            },
-            icon: const Icon(Icons.exit_to_app, color: Colors.white),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Flexible(
-              child: ListView.builder(
-                  controller: _listScrollController,
-                  itemCount: chatProvider.getChatList.length, //chatList.length,
-                  itemBuilder: (context, index) {
-                    return ChatWidget(
-                      msg: chatProvider
-                          .getChatList[index], // chatList[index].msg,
-                      chatIndex: index, //chatList[index].chatIndex,
-                      shouldAnimate:
-                          chatProvider.getChatList.length - 1 == index,
-                    );
-                  }),
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID)
+        .collection('Message').orderBy('createdAt', descending: false).snapshots(),
+      builder: (ctx, snapshot) {
+         if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return const Center(
+            child: Text('Something went wrong...'),
+          );
+        }
+
+        final loadedMessages = snapshot.data!.docs;
+
+        return Scaffold(
+          appBar: AppBar(
+            elevation: 2,
+            leading: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset('assets/images/openai_logo.jpg'),
             ),
-            if (_isTyping) ...[
-              const SpinKitThreeBounce(
-                color: Colors.white,
-                size: 18,
+            title: const Text("ChatGPT"),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Tabs()),
+                  );
+                },
+                icon: const Icon(Icons.exit_to_app, color: Colors.white),
               ),
             ],
-            const SizedBox(
-              height: 15,
-            ),
-            Material(
-              color: const Color(0xFF444654),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        focusNode: focusNode,
-                        style: const TextStyle(color: Colors.white),
-                        controller: textEditingController,
-                        onSubmitted: (value) async {
-                          await sendMessageFCT(
-                              
-                              chatProvider: chatProvider);
-                        },
-                        decoration: const InputDecoration.collapsed(
-                            hintText: "How can I help you? ...",
-                            hintStyle: TextStyle(color: Colors.grey)),
-                      ),
-                    ),
-                    IconButton(
-                        onPressed: () async {
-                          await sendMessageFCT(
-                              
-                              chatProvider: chatProvider);
-                        },
-                        tooltip: 'Send message...',
-                        icon: const Icon(
-                          Icons.send,
-                          color: Colors.white,
-                        ),
-                    ),
-                    FloatingActionButton(
-                      backgroundColor: Colors.grey,
-                      onPressed: () => onListen(),
-                      tooltip: 'Click and speak something...',
-                      child: Icon(
-                        _isListening ? Icons.mic_off : Icons.mic,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                  
+          ),
+          body: SafeArea(
+            child: Column(
+              children: [
+                Flexible(
+                  child: ListView.builder(
+                      controller: _listScrollController,
+                      itemCount: loadedMessages.length, 
+                      itemBuilder: (context, index) {
+                        final chatMessage = loadedMessages[index].data();
+                        DateTime time = chatMessage['createdAt'].toDate();
+                        String formattedDate = DateFormat('MM/dd/yyyy, hh:mm a').format(time);
+                        return ChatWidget(
+                          msg: chatMessage['text'],
+                          dateTime: formattedDate,
+                          chatIndex: chatMessage['index'], 
+                          shouldAnimate:
+                              chatMessage['index'] == 1,
+                        );
+                      }),
                 ),
-              ),
+                if (_isTyping) ...[
+                  const SpinKitThreeBounce(
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ],
+                const SizedBox(
+                  height: 15,
+                ),
+                Material(
+                  color: const Color(0xFF444654),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            focusNode: focusNode,
+                            style: const TextStyle(color: Colors.white),
+                            controller: textEditingController,
+                            onSubmitted: (value) async {
+                              await sendMessageFCT(
+                                  
+                                  chatProvider: chatProvider);
+                            },
+                            decoration: const InputDecoration.collapsed(
+                                hintText: "How can I help you? ...",
+                                hintStyle: TextStyle(color: Colors.grey)),
+                          ),
+                        ),
+                        IconButton(
+                            onPressed: () async {
+                              await sendMessageFCT(
+                                  
+                                  chatProvider: chatProvider);
+                            },
+                            tooltip: 'Send message...',
+                            icon: const Icon(
+                              Icons.send,
+                              color: Colors.white,
+                            ),
+                        ),
+                        FloatingActionButton(
+                          backgroundColor: Colors.grey,
+                          onPressed: () => onListen(),
+                          tooltip: 'Click and speak something...',
+                          child: Icon(
+                            _isListening ? Icons.mic_off : Icons.mic,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                      
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 
