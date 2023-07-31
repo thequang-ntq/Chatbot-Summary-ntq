@@ -165,7 +165,30 @@ class _TabsState extends State<Tabs> {
         },
       );
     } else {
-      
+      final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userSummaryID.json');
+      final response = await http.get(url);
+      if(response.body != 'null'){
+        final resData = await json.decode(response.body);
+        for(final item in resData.entries){
+            GetV.userSummaryID = item.value['user-summaryID'];
+        } 
+      }
+      else if (response.body == 'null'){
+        await FirebaseFirestore.instance.collection(GetV.userName.text).add(
+          {'Summary': 'Summary'}
+        ).then((DocumentReference doc){
+          GetV.userSummaryID = doc.id;
+        });
+        final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userSummaryID.json');
+        await http.post(url, 
+          headers: {
+            'Content-Type' : 'usersummaryid/json',
+          },
+          body: json.encode({
+            'user-summaryID': GetV.userSummaryID,
+          }),
+        );
+      }
       setState(() {
         _activeScreen = 'summarize-screen';
       });

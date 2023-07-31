@@ -12,8 +12,7 @@ class GetV{
   static late TextEditingController userName;
   static String userChatID = '';
   static String userSummaryID = '';
-  static String userSummaryDocsID = '';
-  static String userSummaryQaID = '';
+  static late String summaryText = '';
 }
 
 class HomeScreen extends StatefulWidget {

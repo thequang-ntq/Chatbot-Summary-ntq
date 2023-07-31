@@ -39,7 +39,6 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
 
   late TextEditingController _summarizeText;
   bool _hasFiled = false;
-  bool _hasSummarized = false;
   bool _isTyping = false;
   bool _isListening = false;
 
@@ -118,9 +117,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
 
   void _summarizeFile() async {
     if (fileName.isNotEmpty) {
-      setState(() {                       
-        _hasSummarized = true;
-      });
+      
       final docsData = await FirebaseFirestore.instance.collection('SummarizeDocs').get();
       for(final item in docsData.docs){
         answerSummary = item.data()['aiChat'];
@@ -130,9 +127,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         'humanChat' :  humanChatFirst,
         'aiChat' : answerSummary, 
       });
-      setState(() {
-        _summarizeText.text = answerSummary ;
-      });
+      
     } else {
       return;
     }
@@ -201,76 +196,147 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             ),
           ],
         ),
-        backgroundColor: Colors.grey[400],
+        backgroundColor: const Color(0xFF343541),
         body: SafeArea(
           child: _hasFiled == false?
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ElevatedButton(
-                    onPressed: _uploadFile,
-                    style: ButtonStyle(
-                      fixedSize: MaterialStateProperty.all(
-                        const Size(135, 150),
-                      ),
-                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.pressed)) {
-                            return Colors.green;
-                          }
-                          return Colors.orange;
-                        },
-                      ),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
+           
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children:[
+                  const SizedBox(height: 50),
+                  Flexible(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        _uploadFile();
+                        await chatProvider.saveDocsSummarize(msg: textLast);
+                      },
+                      style: ButtonStyle(
+                        fixedSize: MaterialStateProperty.all(
+                          const Size(150, 170),
+                        ),
+                        backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.pressed)) {
+                              return Colors.green;
+                            }
+                            return Colors.orange;
+                          },
+                        ),
+                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
                         ),
                       ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(15.0), 
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(
-                                sigmaX: 5.0, sigmaY: 5.0), 
-                            child: Container(
-                              height: 100,
-                              width: 150,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15.0),
-                                color: Colors.black.withOpacity(0.2), 
-                              ),
-                              child: Image.asset(
-                                'assets/images/upload_pic.png',
-                                height: 100,
-                                width: 150,
-                                fit: BoxFit.cover,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(15.0), 
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(
+                                  sigmaX: 5.0, sigmaY: 5.0), 
+                              child: Container(
+                                height: 110,
+                                width: 155,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  color: Colors.black.withOpacity(0.2), 
+                                ),
+                                child: Image.asset(
+                                  'assets/images/upload_pic.png',
+                                  height: 110,
+                                  width: 155,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 19),
-                        const Text(
-                            'Upload a file',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                      ],
+                          const SizedBox(height: 19),
+                          const Text(
+                              'Upload a file',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
+                  if (_isTyping) ...[
+                  const SpinKitThreeBounce(
+                    color: Colors.white,
+                    size: 18,
+                  ),
                 ],
-              ),
-            ) 
+                const SizedBox(
+                  height: 15,
+                ),
+                Material(
+                  color: const Color(0xFF444654),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            focusNode: focusNode,
+                            style: const TextStyle(color: Colors.white),
+                            controller: _askText,
+                            onSubmitted: (value){
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return const AlertDialog(
+                                    content: Text('You are not choose file yet ! Please choose a file'),
+                                  );
+                                },
+                              );
+                            },
+                            decoration: const InputDecoration.collapsed(
+                                hintText: "Ask something...",
+                                hintStyle: TextStyle(color: Colors.grey)),
+                          ),
+                        ),
+                        IconButton(
+                            onPressed: (){
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return const AlertDialog(
+                                    content: Text('You are not choose file yet ! Please choose a file'),
+                                  );
+                                },
+                              );
+                            },
+                            tooltip: 'Send message...',
+                            icon: const Icon(
+                              Icons.send,
+                              color: Colors.white,
+                            ),
+                        ),
+                        FloatingActionButton(
+                          backgroundColor: Colors.grey,
+                          onPressed: () => onListen(),
+                          tooltip: 'Click and speak something...',
+                          child: Icon(
+                            _isListening ? Icons.mic_off : Icons.mic,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                      
+                    ),
+                  ),
+                ),
+                ],
+              )
+            
           : 
             Column(
               children: [
                 Flexible(
                   child: StreamBuilder(
                     stream: FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
-                      .collection('Summarize').orderBy('createdAt', descending:true).snapshots(),
+                      .collection('Summarize').orderBy('createdAt', descending:false).snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(
@@ -293,12 +359,11 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                             DateTime time = chatMessage['createdAt'].toDate();
                             String formattedDate = DateFormat('MM/dd/yyyy, hh:mm a').format(time);
                             return ChatWidget(
-                              msg: chatProvider
-                                  .getChatList[index],
+                              msg: chatMessage['text'],
                               dateTime: formattedDate,
-                              chatIndex: index, 
+                              chatIndex: chatMessage['index'], 
                               shouldAnimate:
-                                  chatProvider.getChatList.length - 1 == index,
+                                  chatMessage['index'] == 1,
                             );
                           });
                     }

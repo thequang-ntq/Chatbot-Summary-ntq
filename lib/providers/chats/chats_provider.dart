@@ -53,16 +53,23 @@ class ChatProvider with ChangeNotifier {
       {required String msg}) async {
       final llm = ChatOpenAI(apiKey: GetV.apiKey.text, temperature: 0);
       ConversationBufferMemory memo = ConversationBufferMemory();
-      final chatData = await FirebaseFirestore.instance.collection('SummarizeChat').get();
-      for(final item in chatData.docs){
-        await memo.saveContext(inputValues: {'humanChat' : item.data()['humanChat'] }, outputValues: {'aiChat': item.data()['aiChat']});
+      final summaryData = await FirebaseFirestore.instance.collection(GetV.userName.text).doc
+        (GetV.userSummaryID).collection('Summarize').get();
+      for(final item in summaryData.docs){
+        await memo.saveContext(inputValues: {'humanChat' : item.data()['text'] }, outputValues: {'aiChat': item.data()['text']});
       }
       var conversation = ConversationChain(llm: llm, memory: memo);
       final result = await conversation.call(msg, returnOnlyOutputs: true);
       chatList.add(result['response']);
-      await FirebaseFirestore.instance.collection('SummarizeChat').add({
-        'humanChat' :  msg,
-        'aiChat' : result['response'], 
+      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
+        'text' : msg,
+        'index' : 0,
+        'createdAt': Timestamp.now(),
+      });
+      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
+        'text' : result['response'],
+        'index' : 1,
+        'createdAt': Timestamp.now(),
       });
     notifyListeners();
   }
@@ -75,10 +82,12 @@ class ChatProvider with ChangeNotifier {
       );
       final prompt = promptTemplate.format({'subject': msg});
       final result = await llm.predict(prompt);
-      await FirebaseFirestore.instance.collection('SummarizeDocs').add({
-        'humanChat' :  msg,
-        'aiChat' : result, 
+      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
+        'text' : result,
+        'index' : 1,
+        'createdAt': Timestamp.now(),
       });
+      GetV.summaryText = result;
       
     notifyListeners();
   }
