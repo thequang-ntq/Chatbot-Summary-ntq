@@ -86,7 +86,7 @@ class ChatProvider with ChangeNotifier {
       String q2 = 'What areas can this document be applied to?';
       String q3 = 'Can I use this document to practice creating my own PDFs?';
       await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
-        'text' : '$result\n\n >$q1\n\n >$q2 \n\n >$q3\n',
+        'text' : '$result\n\n ---------------------------------------\n\n > $q1\n\n > $q2 \n\n > $q3\n',
         'index' : 1,
         'createdAt': Timestamp.now(),
       });
