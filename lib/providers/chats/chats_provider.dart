@@ -1,7 +1,7 @@
 import 'dart:html';
 
 import 'package:flutter/cupertino.dart';
-
+import 'package:flutter/material.dart';
 import 'package:chatgpt/screens/home.dart';
 // import 'package:dart_openai/dart_openai.dart';
 import 'package:langchain/langchain.dart';
@@ -82,8 +82,11 @@ class ChatProvider with ChangeNotifier {
       );
       final prompt = promptTemplate.format({'subject': msg});
       final result = await llm.predict(prompt);
+      String q1 = 'What is the main topic of thí document?';
+      String q2 = 'What areas can this document be applied to?';
+      String q3 = 'Can I use this document to practice creating my own PDFs?';
       await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
-        'text' : result,
+        'text' : '$result\n\n >$q1\n\n >$q2 \n\n >$q3\n',
         'index' : 1,
         'createdAt': Timestamp.now(),
       });

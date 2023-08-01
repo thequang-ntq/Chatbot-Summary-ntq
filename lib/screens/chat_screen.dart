@@ -140,7 +140,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       itemBuilder: (context, index) {
                         final chatMessage = loadedMessages[index].data();
                         DateTime time = chatMessage['createdAt'].toDate();
-                        String formattedDate = DateFormat('MM/dd/yyyy, hh:mm a').format(time);
+                        String formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(time);
                         return ChatWidget(
                           msg: chatMessage['text'],
                           dateTime: formattedDate,
