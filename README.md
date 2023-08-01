@@ -37,13 +37,25 @@
 You can download the APK file from the releases section of this repository or build the app from source using the
 instructions below:
 
+1. Clone the repository
+
 ```bash
 git clone https://github.com/22T1020362/Chatbot-Summary-ntq
-cd chatgpt
-flutter build apk
+
+```
+2. Install dependencies
+
+```bash
+flutter pub get
+
+```
+3. Run the app
+
+```bash
+flutter run
 ```
 
-# After that, follow these steps: 
+## After that, follow these steps: 
 
 1. Get a ChatGPT API-KEY . You can log in to 'https://platform.openai.com/account/api-keys' to get one or simply just borrow ones.
 2. Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
@@ -67,3 +79,4 @@ To use this app, you must enter a GPT Api-key created before or borrowed, submit
 | 28/07/2023     | Update UI for all / Chat Screen and Summarize Screen       |  Completed fixed the UI for all. Fixed language recognition for ChatBot response(response same language for what user ask)  |
 | 29/07/2023     | Update Summarize Screen       | Upload pick .txt and .pdf files. Need to find a way to upload audio file? And ask logic?    |
 | 31/07/2023     | Fix BackEnd Firebase       | Fixed Firebase BackEnd for Chat App and complete chat screen. Fixed UI for summarize screen  |
+| 01/08/2023     | Fixed UI for Summarize Screen       |     Fixed      |

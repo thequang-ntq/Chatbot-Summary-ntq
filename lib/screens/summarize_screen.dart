@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'dart:io';
 import 'dart:developer';
 import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/material.dart';
 import 'package:chatgpt/screens/tabs.dart';
@@ -49,6 +50,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     _listScrollController = ScrollController();
     focusNode = FocusNode();
     super.initState();
+    _speech = stt.SpeechToText();
   }
 
   @override
@@ -115,23 +117,6 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
-  void _summarizeFile() async {
-    if (fileName.isNotEmpty) {
-      
-      final docsData = await FirebaseFirestore.instance.collection('SummarizeDocs').get();
-      for(final item in docsData.docs){
-        answerSummary = item.data()['aiChat'];
-      }
-      String humanChatFirst = 'Summarize the following text: $textLast';
-      await FirebaseFirestore.instance.collection('SummarizeChat').add({
-        'humanChat' :  humanChatFirst,
-        'aiChat' : answerSummary, 
-      });
-      
-    } else {
-      return;
-    }
-  }
 
   void onListen() async {
     if (!_isListening) {
@@ -208,6 +193,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                     child: ElevatedButton(
                       onPressed: () async {
                         _uploadFile();
+                        print("Yes");
                         await chatProvider.saveDocsSummarize(msg: textLast);
                       },
                       style: ButtonStyle(
@@ -333,6 +319,81 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           : 
             Column(
               children: [
+                TextButton(
+                  onPressed: () {
+                    final snackBar = SnackBar(
+                      backgroundColor: Colors.white,
+                      content: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(height: 2),
+                            Text('FileName: $fileName', style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                            )),
+                            const SizedBox(width: 40,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.min,
+                              children:[
+                                
+                                const Text('Topic', style:TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                )),
+                                IconButton(
+                                  onPressed: () {
+                                    Clipboard.setData(ClipboardData(text: fileText));
+                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                      content: const Text('Text Copied to Clipboard!'),
+                                      duration: const Duration(milliseconds: 1000),
+                                      action: SnackBarAction(
+                                        label: 'ok',
+                                        onPressed: () {},
+                                      ),
+                                    ));
+                                  },
+                                  icon: const Icon(Icons.text_snippet_sharp),
+                                  color: Colors.black,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 3,),
+                            Flexible(
+                              child: Text(fileText, style: const TextStyle(
+                                backgroundColor: Color.fromARGB(255, 173, 172, 172),
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              )),
+                            ),
+                          ]
+                        ),
+                      ),
+                      action: SnackBarAction(
+                        label: 'Ok',
+                        textColor: Colors.black,
+                        onPressed: () {
+                        },
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  },
+                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.grey[100])),
+                  child: Text(
+                    fileName, style: const TextStyle(
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                      fontSize: 19,
+                      
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
                 Flexible(
                   child: StreamBuilder(
                     stream: FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
