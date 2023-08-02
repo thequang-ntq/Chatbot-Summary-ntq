@@ -78,10 +78,10 @@ class _TabsState extends State<Tabs> {
           );
         },
       );
-
+      // GetV.userName.text = _enteredUserName;
       final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'api-keys.json');
       final response = await http.get(url);
-      if(response.body == 'null'){
+      if(response.body.contains(apiKeyValue.text)==false){
         await http.post(url, 
         headers: {
           'Content-Type' : 'apikey/json',
@@ -94,15 +94,72 @@ class _TabsState extends State<Tabs> {
       
       final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userNames.json');
       final response2 = await http.get(url2);
-      if(response2.body == 'null'){
+      if(response2.body.contains(userName.text)==false){
         await http.post(url2, 
-        headers: {
-          'Content-Type' : 'userName/json',
-        },
-        body: json.encode({
-          'user-name': userName.text,
-        }),
-      );
+          headers: {
+            'Content-Type' : 'userName/json',
+          },
+          body: json.encode({
+            'user-name': userName.text,
+          }),
+        );
+        await FirebaseFirestore.instance.collection(userName.text).add(
+          {'Chat': 'Chat'}
+        ).then((DocumentReference doc){
+          GetV.userChatID = doc.id;
+        });
+        final url3 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userChatID.json');
+        await http.post(url3, 
+          headers: {
+            'Content-Type' : 'userchatid/json',
+          },
+          body: json.encode({
+            'user-chatID': GetV.userChatID,
+            'user-name': userName.text,
+          }),
+        );
+        await FirebaseFirestore.instance.collection(userName.text).add(
+          {'Summary': 'Summary'}
+        ).then((DocumentReference doc){
+          GetV.userSummaryID = doc.id;
+        });
+        final url4 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userSummaryID.json');
+        await http.post(url4, 
+          headers: {
+            'Content-Type' : 'usersummaryid/json',
+          },
+          body: json.encode({
+            'user-summaryID': GetV.userSummaryID,
+            'user-name': userName.text,
+          }),
+        );
+        GetV.userName.text = _enteredUserName;
+      }
+      else if(response2.body.contains(userName.text)==true){
+        final url5 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userChatID.json');
+        final response5 = await http.get(url5);
+        final resData5 = await json.decode(response5.body);
+        for(final item in resData5.entries){
+          if(_enteredUserName == item.value['user-name']){
+            GetV.userChatID = item.value['user-chatID'];
+            GetV.userName.text = _enteredUserName;
+            // print(GetV.userName.text);
+            // break;
+          }
+        }
+
+        final url6 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userSummaryID.json');
+        final response6 = await http.get(url6);
+
+        final resData6 = await json.decode(response6.body);
+        for(final item in resData6.entries){
+          if(_enteredUserName == item.value['user-name']){
+            GetV.userSummaryID = item.value['user-summaryID'];
+            GetV.userName.text = _enteredUserName;
+            // break;
+          }
+        } 
+        GetV.userName.text = _enteredUserName;
       }
     }
   }
@@ -120,32 +177,6 @@ class _TabsState extends State<Tabs> {
         },
       );
     } else {
-      final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userChatID.json');
-      final response = await http.get(url);
-      if(response.body != 'null'){
-        final resData = await json.decode(response.body);
-        for(final item in resData.entries){
-            GetV.userChatID = item.value['user-chatID'];
-        } 
-      }
-      else if (response.body == 'null'){
-        await FirebaseFirestore.instance.collection(GetV.userName.text).add(
-          {'Chat': 'Chat'}
-        ).then((DocumentReference doc){
-          GetV.userChatID = doc.id;
-        });
-        final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userChatID.json');
-        await http.post(url, 
-          headers: {
-            'Content-Type' : 'userchatid/json',
-          },
-          body: json.encode({
-            'user-chatID': GetV.userChatID,
-          }),
-        );
-      }
-      
-      
       setState(() {
         _activeScreen = 'chat-screen';
       });
@@ -165,30 +196,6 @@ class _TabsState extends State<Tabs> {
         },
       );
     } else {
-      final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userSummaryID.json');
-      final response = await http.get(url);
-      if(response.body != 'null'){
-        final resData = await json.decode(response.body);
-        for(final item in resData.entries){
-            GetV.userSummaryID = item.value['user-summaryID'];
-        } 
-      }
-      else if (response.body == 'null'){
-        await FirebaseFirestore.instance.collection(GetV.userName.text).add(
-          {'Summary': 'Summary'}
-        ).then((DocumentReference doc){
-          GetV.userSummaryID = doc.id;
-        });
-        final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userSummaryID.json');
-        await http.post(url, 
-          headers: {
-            'Content-Type' : 'usersummaryid/json',
-          },
-          body: json.encode({
-            'user-summaryID': GetV.userSummaryID,
-          }),
-        );
-      }
       setState(() {
         _activeScreen = 'summarize-screen';
       });

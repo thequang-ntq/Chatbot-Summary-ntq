@@ -80,3 +80,4 @@ To use this app, you must enter a GPT Api-key created before or borrowed, submit
 | 29/07/2023     | Update Summarize Screen       | Upload pick .txt and .pdf files. Need to find a way to upload audio file? And ask logic?    |
 | 31/07/2023     | Fix BackEnd Firebase       | Fixed Firebase BackEnd for Chat App and complete chat screen. Fixed UI for summarize screen  |
 | 01/08/2023     | Fixed UI for Summarize Screen       |     Fixed      |
+| 01/08/2023     | Fixed Firebase and Summarize Screen      |     Fixed      |

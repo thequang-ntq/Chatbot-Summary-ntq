@@ -18,6 +18,7 @@ import 'package:google_speech/google_speech.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:chatgpt/screens/home.dart';
+import 'package:chatgpt/widgets/chats/docs_widget.dart';
 import 'package:intl/intl.dart';
 
 class SummarizeScreen extends StatefulWidget {
@@ -33,6 +34,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   String fileType = '';
   String fileText = '';
   String textLast = '';
+  String q1 = 'What is the main topic of this document?';
+  String q2 = 'What areas can this document be applied to?';
+  String q3 = 'Can I use this document to practice\n creating my own PDFs?';
   String answerSummary = 'Not have text';
   late ScrollController _listScrollController;
   late FocusNode focusNode;
@@ -42,6 +46,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   bool _hasFiled = false;
   bool _isTyping = false;
   bool _isListening = false;
+  bool _first = true;
 
   @override
   void initState() {
@@ -153,6 +158,12 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
+  void onPress(String question){
+    setState(() {
+      _askText.text = question;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context);
@@ -193,7 +204,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                     child: ElevatedButton(
                       onPressed: () async {
                         _uploadFile();
-                        print("Yes");
+                        // print("Yes");
                         await chatProvider.saveDocsSummarize(msg: textLast);
                       },
                       style: ButtonStyle(
@@ -412,21 +423,28 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                       }
 
                       final loadedMessages = snapshot.data!.docs;
-                      return ListView.builder(
+                      return 
+                        ListView.builder(
                           controller: _listScrollController,
                           itemCount: loadedMessages.length, 
                           itemBuilder: (context, index) {
                             final chatMessage = loadedMessages[index].data();
                             DateTime time = chatMessage['createdAt'].toDate();
                             String formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(time);
-                            return ChatWidget(
+                            return DocsWidget(
                               msg: chatMessage['text'],
+                              q1: q1,
+                              q2: q2,
+                              q3: q3,
+                              chatIndex: chatMessage['index'],
                               dateTime: formattedDate,
-                              chatIndex: chatMessage['index'], 
+                              onPress: onPress,
                               shouldAnimate:
                                   chatMessage['index'] == 1,
                             );
-                          });
+                          }
+                        );
+                          
                     }
                   ),
                 ),
@@ -540,6 +558,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         String msg = _askText.text;
         setState(() {
           _isTyping = true;
+          _first = false;
           // chatList.add(ChatModel(msg: textEditingController.text, chatIndex: 0));
           chatProvider.addUserMessage(msg: msg);
           _askText.clear();

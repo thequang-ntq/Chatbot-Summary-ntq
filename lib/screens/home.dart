@@ -40,8 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    widget.apiKeyValue.dispose();
-    widget.name.dispose();
+    // widget.apiKeyValue.dispose();
+    // widget.name.dispose();
     super.dispose();
   }
 
