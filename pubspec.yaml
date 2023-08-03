@@ -51,6 +51,7 @@ dependencies:
   speech_to_text: ^6.3.0
   flutter_tts: ^3.7.0
   intl: ^0.18.1
+  docx_to_text: ^1.0.1
 
 dev_dependencies:
   flutter_test:

@@ -74,21 +74,5 @@ class ChatProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveDocsSummarize(
-      {required String msg}) async {
-      final llm = ChatOpenAI(apiKey: GetV.apiKey.text, temperature: 0);
-      final promptTemplate = PromptTemplate.fromTemplate(
-        'Summarize the following text: {subject}',
-      );
-      final prompt = promptTemplate.format({'subject': msg});
-      final result = await llm.predict(prompt);
-      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
-        'text' : result,
-        'index' : 3,
-        'createdAt': Timestamp.now(),
-      });
-      GetV.summaryText = result;
-      
-    notifyListeners();
-  }
+  
 }

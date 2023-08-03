@@ -13,6 +13,7 @@ class GetV{
   static String userChatID = '';
   static String userSummaryID = '';
   static late String summaryText = '';
+  static late String text;
 }
 
 class HomeScreen extends StatefulWidget {
