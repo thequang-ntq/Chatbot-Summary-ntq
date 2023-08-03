@@ -431,7 +431,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                             final chatMessage = loadedMessages[index].data();
                             DateTime time = chatMessage['createdAt'].toDate();
                             String formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(time);
-                            return _first?
+                            return 
                               DocsWidget(
                                 msg: chatMessage['text'],
                                 q1: q1,
@@ -441,17 +441,11 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                                 dateTime: formattedDate,
                                 onPress: onPress,
                                 shouldAnimate:
-                                    chatMessage['index'] == 1,
-                              )
-                            :
-                              ChatWidget(
-                                msg: chatMessage['text'],
-                                dateTime: formattedDate,
-                                chatIndex: chatMessage['index'], 
-                                shouldAnimate:
-                                chatMessage['index'] == 1,
+                                    chatMessage['index']%2 == 1,
                               );
-                            }
+                          }
+                            
+                            
                         );
                           
                     }

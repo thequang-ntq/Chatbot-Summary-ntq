@@ -161,137 +161,149 @@ class DocsWidget extends StatelessWidget {
                   ),
                   // const SizedBox(height: 4),
                   
-                  DefaultTextStyle(
-                    textAlign: TextAlign.end,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                        ),
-                    child: AnimatedTextKit(
-                      isRepeatingAnimation: false,
-                      repeatForever: false,
-                      displayFullTextOnTap: true,
-                      totalRepeatCount: 1,
-                      animatedTexts: [
-                        TyperAnimatedText(
-                          textAlign: TextAlign.end,
-                          '---------------------------------------------',
-                        ),
-                      ],
+                  Visibility(
+                    visible: chatIndex==3,
+                    child: DefaultTextStyle(
+                      textAlign: TextAlign.end,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          ),
+                      child: AnimatedTextKit(
+                        isRepeatingAnimation: false,
+                        repeatForever: false,
+                        displayFullTextOnTap: true,
+                        totalRepeatCount: 1,
+                        animatedTexts: [
+                          TyperAnimatedText(
+                            textAlign: TextAlign.end,
+                            '---------------------------------------------',
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   
                   // const SizedBox(height: 4),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed:() {
-                          onPress(q1);
-                        },
-                        style: const ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(Colors.blue),
-                          foregroundColor: MaterialStatePropertyAll(Colors.blue),
+                  Visibility(
+                    visible: chatIndex==3,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed:() {
+                            onPress(q1);
+                          },
+                          style: const ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(Colors.blue),
+                            foregroundColor: MaterialStatePropertyAll(Colors.blue),
+                          ),
+                          icon: const Icon(Icons.send, color: Colors.blue),
                         ),
-                        icon: const Icon(Icons.send),
-                      ),
-                      const SizedBox(width: 5),
-                      DefaultTextStyle(
-                        textAlign: TextAlign.end,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                            ),
-                        child: AnimatedTextKit(
-                          isRepeatingAnimation: false,
-                          repeatForever: false,
-                          displayFullTextOnTap: true,
-                          totalRepeatCount: 1,
-                          animatedTexts: [
-                            TyperAnimatedText(
-                              textAlign: TextAlign.end,
-                              q1.trim(),
-                            ),
-                          ],
+                        const SizedBox(width: 5),
+                        DefaultTextStyle(
+                          textAlign: TextAlign.end,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              ),
+                          child: AnimatedTextKit(
+                            isRepeatingAnimation: false,
+                            repeatForever: false,
+                            displayFullTextOnTap: true,
+                            totalRepeatCount: 1,
+                            animatedTexts: [
+                              TyperAnimatedText(
+                                textAlign: TextAlign.end,
+                                q1.trim(),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                       // const SizedBox(height: 4),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed:() {
-                          onPress(q2);
-                        },
-                        style: const ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(Colors.blue),
-                          foregroundColor: MaterialStatePropertyAll(Colors.blue),
+                  Visibility(
+                    visible: chatIndex==3,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed:() {
+                            onPress(q2);
+                          },
+                          style: const ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(Colors.blue),
+                            foregroundColor: MaterialStatePropertyAll(Colors.blue),
+                          ),
+                          icon: const Icon(Icons.send, color: Colors.blue),
                         ),
-                        icon: const Icon(Icons.send),
-                      ),
-                      const SizedBox(width: 5),
-                      DefaultTextStyle(
-                        textAlign: TextAlign.end,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                            ),
-                        child: AnimatedTextKit(
-                          isRepeatingAnimation: false,
-                          repeatForever: false,
-                          displayFullTextOnTap: true,
-                          totalRepeatCount: 1,
-                          animatedTexts: [
-                            TyperAnimatedText(
-                              textAlign: TextAlign.end,
-                              q2.trim(),
-                            ),
-                          ],
+                        const SizedBox(width: 5),
+                        DefaultTextStyle(
+                          textAlign: TextAlign.end,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              ),
+                          child: AnimatedTextKit(
+                            isRepeatingAnimation: false,
+                            repeatForever: false,
+                            displayFullTextOnTap: true,
+                            totalRepeatCount: 1,
+                            animatedTexts: [
+                              TyperAnimatedText(
+                                textAlign: TextAlign.end,
+                                q2.trim(),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                       // const SizedBox(height: 4),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed:() {
-                          onPress(q3);
-                        },
-                        style: const ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(Colors.blue),
-                          foregroundColor: MaterialStatePropertyAll(Colors.blue),
+                  Visibility(
+                    visible: chatIndex==3,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed:() {
+                            onPress(q3);
+                          },
+                          style: const ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(Colors.blue),
+                            foregroundColor: MaterialStatePropertyAll(Colors.blue),
+                          ),
+                          icon: const Icon(Icons.send, color: Colors.blue),
                         ),
-                        icon: const Icon(Icons.send),
-                      ),
-                      const SizedBox(width: 5),
-                      DefaultTextStyle(
-                        textAlign: TextAlign.end,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                            ),
-                        child: AnimatedTextKit(
-                          isRepeatingAnimation: false,
-                          repeatForever: false,
-                          displayFullTextOnTap: true,
-                          totalRepeatCount: 1,
-                          animatedTexts: [
-                            TyperAnimatedText(
-                              textAlign: TextAlign.end,
-                              q3.trim(),
-                            ),
-                          ],
+                        const SizedBox(width: 5),
+                        DefaultTextStyle(
+                          textAlign: TextAlign.end,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              ),
+                          child: AnimatedTextKit(
+                            isRepeatingAnimation: false,
+                            repeatForever: false,
+                            displayFullTextOnTap: true,
+                            totalRepeatCount: 1,
+                            animatedTexts: [
+                              TyperAnimatedText(
+                                textAlign: TextAlign.end,
+                                q3.trim(),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],    
               ),

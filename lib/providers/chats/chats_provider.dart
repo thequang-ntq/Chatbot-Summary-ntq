@@ -84,7 +84,7 @@ class ChatProvider with ChangeNotifier {
       final result = await llm.predict(prompt);
       await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
         'text' : result,
-        'index' : 1,
+        'index' : 3,
         'createdAt': Timestamp.now(),
       });
       GetV.summaryText = result;
