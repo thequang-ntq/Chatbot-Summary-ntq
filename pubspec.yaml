@@ -52,6 +52,8 @@ dependencies:
   flutter_tts: ^3.7.0
   intl: ^0.18.1
   docx_to_text: ^1.0.1
+  collection: ^1.17.1
+  sidebarx: ^0.16.1
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +81,7 @@ flutter:
   assets:
    - assets/images/
    - assets/service_account/
+   - assets/files/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

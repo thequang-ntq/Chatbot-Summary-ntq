@@ -82,3 +82,4 @@ To use this app, you must enter a GPT Api-key created before or borrowed, submit
 | 01/08/2023     | Fixed UI for Summarize Screen       |     Fixed      |
 | 02/08/2023     | Fixed Firebase and Summarize Screen      |     Fixed      |
 | 03/08/2023     | Fixed UI of Summarize Screen      |     Continue fixed display of suggest question      |
+| 04/08/2023     | Fixed Summarize...      |   Fix QA & summarize  |
