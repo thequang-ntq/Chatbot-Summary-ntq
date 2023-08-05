@@ -177,6 +177,74 @@ class _TabsState extends State<Tabs> {
         },
       );
     } else {
+        
+        final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatNum.json');
+        final response2 = await http.get(url2);
+        if (response2.body.contains(_enteredUserName) == true){
+          final Map<String,dynamic> resData2 = json.decode(response2.body);
+          for(final item in resData2.entries){
+            if(_enteredUserName == item.value['user-name']){
+              
+              int temp = item.value['chat-num'] + 1;
+              await http.delete(url2, 
+                headers: {
+                  'Content-Type' : 'chatNum/json',
+                },
+              );
+
+              await http.post(url2, 
+                headers: {
+                  'Content-Type' : 'chatNum/json',
+                },
+                body: json.encode({
+                  'chat-num': temp,
+                  'user-name': _enteredUserName,
+                }),
+              );
+              GetV.chatNum = temp;
+              
+              // break;
+            }
+          }
+        }
+        else if (response2.body.contains(_enteredUserName) == false){
+          await http.post(url2, 
+            headers: {
+              'Content-Type' : 'chatNum/json',
+            },
+            body: json.encode({
+              'chat-num': 1,
+              'user-name': _enteredUserName,
+            }),
+          );
+          GetV.chatNum = 1;
+        }
+
+        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message').add({
+            'text' : 'ChatItem${GetV.chatNum}',
+            'Index' : '${GetV.chatNum}',
+            'createdAt': Timestamp.now(),
+          }).then((DocumentReference doc){
+            GetV.messageChatID = doc.id;
+          }); 
+
+        final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatItemNumber.json');
+        final response = await http.get(url);
+        if(response.body.contains('${GetV.chatNum}') == false){
+          await http.post(url, 
+            headers: {
+              'Content-Type' : 'chatItemNumber/json',
+            },
+            body: json.encode({
+              'chat-ItemNumber': GetV.chatNum,
+              'user-name': _enteredUserName,
+              'ID' : GetV.messageChatID,
+            }),
+          );
+        }
+        else if(response.body.contains('${GetV.chatNum}') == true){
+          //
+        }
       setState(() {
         _activeScreen = 'chat-screen';
       });

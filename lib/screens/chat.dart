@@ -27,7 +27,7 @@ class _ChatState extends State<Chat> {
         theme: ThemeData(
             scaffoldBackgroundColor: const Color(0xFF343541),
             appBarTheme: const AppBarTheme(
-              color:  Color(0xFF444654),
+              color:  Colors.black,
             )),
         home: const ChatScreen(),
       ),

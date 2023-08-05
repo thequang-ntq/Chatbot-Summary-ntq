@@ -37,12 +37,12 @@ class ChatProvider with ChangeNotifier {
       var conversation = ConversationChain(llm: llm, memory: memo);
       final result = await conversation.call(msg, returnOnlyOutputs: true);
       chatList.add(result['response']);
-      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message').add({
+      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message').doc(GetV.messageChatID).collection('ChatItem${GetV.chatNum}').add({
         'text' : msg,
         'index' : 0,
         'createdAt': Timestamp.now(),
       });
-      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message').add({
+      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message').doc(GetV.messageChatID).collection('ChatItem${GetV.chatNum}').add({
         'text' : result['response'],
         'index' : 1,
         'createdAt': Timestamp.now(),

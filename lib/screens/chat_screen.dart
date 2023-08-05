@@ -8,6 +8,7 @@ import 'package:chatgpt/screens/tabs.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:chatgpt/screens/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chatgpt/menubar/menu.dart';
 import 'package:intl/intl.dart';
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -94,7 +95,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final chatProvider = Provider.of<ChatProvider>(context);
     return StreamBuilder(
       stream: FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID)
-        .collection('Message').orderBy('createdAt', descending: false).snapshots(),
+        .collection('Message').doc(GetV.messageChatID)
+        .collection('ChatItem${GetV.chatNum}').orderBy('createdAt', descending: false).snapshots(),
       builder: (ctx, snapshot) {
          if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -113,11 +115,8 @@ class _ChatScreenState extends State<ChatScreen> {
         return Scaffold(
           appBar: AppBar(
             elevation: 2,
-            leading: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset('assets/images/openai_logo.jpg'),
-            ),
-            title: const Text("ChatGPT"),
+            
+            title: const Text("New Chat"),
             actions: [
               IconButton(
                 onPressed: () {
@@ -130,6 +129,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ],
           ),
+          drawer: const Menu(),
           body: SafeArea(
             child: Column(
               children: [

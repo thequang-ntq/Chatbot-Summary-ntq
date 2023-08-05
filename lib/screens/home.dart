@@ -13,6 +13,10 @@ class GetV{
   static String userChatID = '';
   static String userSummaryID = '';
   static String summaryText = '';
+  static String messageChatID = '';
+  static String messageSummaryID = '';
+  static late int chatNum;
+  static late int summaryNum;
   static late String filepath;
 }
 
