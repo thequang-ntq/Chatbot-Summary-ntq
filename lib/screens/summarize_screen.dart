@@ -23,6 +23,7 @@ import 'package:chatgpt/widgets/chats/docs_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:chatgpt/widgets/chats/chat_widget.dart';
 import 'package:docx_to_text/docx_to_text.dart';
+import 'package:chatgpt/menubar/menuSum.dart';
 
 
 const template = '''
@@ -226,6 +227,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             ),
           ],
         ),
+        drawer: const MenuSum(),
         backgroundColor: const Color(0xFF343541),
         body: SafeArea(
           child: _hasFiled == false?

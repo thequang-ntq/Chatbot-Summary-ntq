@@ -138,6 +138,23 @@ class ChatProvider with ChangeNotifier {
         'index' : 1,
         'createdAt': Timestamp.now(),
       });
+      if(GetV.title == ''){
+        GetV.humanChat = msg;
+        GetV.aiChat = result['result'].toString();
+        final promptTemplate = PromptTemplate.fromTemplate(template);
+        final prompt = promptTemplate.format({'humanChat' : GetV.humanChat , 'aiChat' : GetV.aiChat});
+        final result2 = await llm.predict(prompt);
+        GetV.title = result2;
+        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+        .doc(GetV.messageSummaryID).update(
+          {
+            'text' : result2,
+            'Index' : GetV.summaryNum,
+            'messageID': GetV.messageSummaryID,
+            'createdAt': Timestamp.now(),
+          }
+        );
+      }
     notifyListeners();
   }
 

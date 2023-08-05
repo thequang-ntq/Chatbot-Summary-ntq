@@ -25,8 +25,8 @@ class MenuTitle with ChangeNotifier {
         final prompt = promptTemplate.format({'humanChat' : GetV.humanChat , 'aiChat' : GetV.aiChat});
         final result = await llm.predict(prompt);
         GetV.title = result;
-        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message')
-        .doc(GetV.messageChatID).update(
+        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+        .doc(GetV.messageSummaryID).update(
           {
             'text' : result,
             'Index' : GetV.summaryNum,

@@ -265,6 +265,74 @@ class _TabsState extends State<Tabs> {
         },
       );
     } else {
+      final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryNum.json');
+        final response2 = await http.get(url2);
+        if (response2.body.contains(_enteredUserName) == true){
+          final Map<String,dynamic> resData2 = json.decode(response2.body);
+          for(final item in resData2.entries){
+            if(_enteredUserName == item.value['user-name']){
+              
+              int temp = item.value['summary-num'] + 1;
+              await http.delete(url2, 
+                headers: {
+                  'Content-Type' : 'summaryNum/json',
+                },
+              );
+
+              await http.post(url2, 
+                headers: {
+                  'Content-Type' : 'summaryNum/json',
+                },
+                body: json.encode({
+                  'summary-num': temp,
+                  'user-name': _enteredUserName,
+                }),
+              );
+              GetV.summaryNum = temp;
+              
+              // break;
+            }
+          }
+        }
+        else if (response2.body.contains(_enteredUserName) == false){
+          await http.post(url2, 
+            headers: {
+              'Content-Type' : 'summaryNum/json',
+            },
+            body: json.encode({
+              'summary-num': 1,
+              'user-name': _enteredUserName,
+            }),
+          );
+          GetV.summaryNum = 1;
+        }
+
+        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
+            'text' : '',
+            'Index' : GetV.summaryNum,
+            'messageID': GetV.messageSummaryID,
+            'createdAt': Timestamp.now(),
+          }).then((DocumentReference doc){
+            GetV.messageSummaryID = doc.id;
+          }); 
+
+        final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryItemNumber.json');
+        final response = await http.get(url);
+        if(response.body.contains(GetV.summaryNum.toString()) == false){
+          await http.post(url, 
+            headers: {
+              'Content-Type' : 'summaryItemNumber/json',
+            },
+            body: json.encode({
+              'summary-ItemNumber': GetV.summaryNum,
+              'user-name': _enteredUserName,
+              'ID' : GetV.messageSummaryID,
+            }),
+          );
+        }
+        else if(response.body.contains(GetV.summaryNum.toString()) == true){
+          //
+        }
       setState(() {
         _activeScreen = 'summarize-screen';
       });
