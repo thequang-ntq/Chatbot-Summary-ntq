@@ -54,6 +54,7 @@ dependencies:
   docx_to_text: ^1.0.1
   collection: ^1.17.1
   sidebarx: ^0.16.1
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:

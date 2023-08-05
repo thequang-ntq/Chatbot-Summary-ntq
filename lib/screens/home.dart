@@ -18,6 +18,9 @@ class GetV{
   static late int chatNum;
   static late int summaryNum;
   static late String filepath;
+  static String title = '';
+  static String humanChat = '';
+  static String aiChat = '';
 }
 
 class HomeScreen extends StatefulWidget {

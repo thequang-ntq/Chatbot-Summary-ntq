@@ -8,8 +8,17 @@ import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
+import 'package:chatgpt/title/menu_title.dart';
 // import 'package:chatgpt/models/chats/chat_model.dart';
 // import '../../services/chats/api_service.dart';
+
+const template = '''
+---BEGIN Conversation---
+Human chat : {humanChat}
+AI chat : {aiChat}
+---END Conversation---
+Summarize the conversation above in 5 words or fewer.
+''';
 
 class ChatProvider with ChangeNotifier {
   List<String> chatList = [];
@@ -47,6 +56,27 @@ class ChatProvider with ChangeNotifier {
         'index' : 1,
         'createdAt': Timestamp.now(),
       });
+      if(GetV.title == ''){
+        GetV.humanChat = msg;
+        GetV.aiChat = result['response'];
+        final promptTemplate = PromptTemplate.fromTemplate(template);
+        final prompt = promptTemplate.format({'humanChat' : GetV.humanChat , 'aiChat' : GetV.aiChat});
+        final result2 = await llm.predict(prompt);
+        GetV.title = result2;
+        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message')
+        .doc(GetV.messageChatID).update(
+          {
+            'text' : result2,
+            'Index' : GetV.chatNum,
+            'messageID': GetV.messageChatID,
+            'createdAt': Timestamp.now(),
+          }
+        );
+      }
+      else{
+        GetV.humanChat = '';
+        GetV.aiChat = '';
+      }
     notifyListeners();
   }
 

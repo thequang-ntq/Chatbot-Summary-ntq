@@ -221,8 +221,9 @@ class _TabsState extends State<Tabs> {
         }
 
         await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message').add({
-            'text' : 'ChatItem${GetV.chatNum}',
-            'Index' : '${GetV.chatNum}',
+            'text' : '',
+            'Index' : GetV.chatNum,
+            'messageID': GetV.messageChatID,
             'createdAt': Timestamp.now(),
           }).then((DocumentReference doc){
             GetV.messageChatID = doc.id;
@@ -230,7 +231,7 @@ class _TabsState extends State<Tabs> {
 
         final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatItemNumber.json');
         final response = await http.get(url);
-        if(response.body.contains('${GetV.chatNum}') == false){
+        if(response.body.contains(GetV.chatNum.toString()) == false){
           await http.post(url, 
             headers: {
               'Content-Type' : 'chatItemNumber/json',
@@ -242,7 +243,7 @@ class _TabsState extends State<Tabs> {
             }),
           );
         }
-        else if(response.body.contains('${GetV.chatNum}') == true){
+        else if(response.body.contains(GetV.chatNum.toString()) == true){
           //
         }
       setState(() {
