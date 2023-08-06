@@ -84,7 +84,7 @@ class ChatProvider with ChangeNotifier {
       final llm = ChatOpenAI(apiKey: GetV.apiKey.text, temperature: 0);
       // ConversationBufferMemory memo = ConversationBufferMemory();
       // 'assets/files/state_of_the_union.txt';
-      TextLoader loader = TextLoader(GetV.filepath);
+      TextLoader loader = TextLoader('assets/files/text.txt');
       final documents = await loader.load();
       const textSplitter = CharacterTextSplitter(
         chunkSize: 1200,
@@ -127,12 +127,14 @@ class ChatProvider with ChangeNotifier {
         combineDocumentsChain: finalQAChain,
       );
       final result = await retrievalQA(msg);
-      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
+      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
+      .collection('Summarize').doc(GetV.messageSummaryID).collection('SummaryItem${GetV.summaryNum}').add({
         'text' : msg,
         'index' : 0,
         'createdAt': Timestamp.now(),
       });
-      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
+      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+      .doc(GetV.messageSummaryID).collection('SummaryItem${GetV.summaryNum}').add({
         'text' : result['result'].toString(),
         'index' : 1,
         'createdAt': Timestamp.now(),

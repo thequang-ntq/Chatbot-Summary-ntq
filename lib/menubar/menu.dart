@@ -42,6 +42,7 @@ class _MenuState extends State<Menu> {
             children: [
               IconButton(
                 onPressed: () {
+                  GetV.chatNum++;
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.add, color: Colors.black),
@@ -54,6 +55,7 @@ class _MenuState extends State<Menu> {
                   color: Colors.black,
                 )),
                 onPressed: () {
+                  GetV.chatNum++;
                   Navigator.pop(context);
                 },
               ),
@@ -123,6 +125,7 @@ class _MenuState extends State<Menu> {
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.black,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   maxLines: 3,
                                 ),
@@ -164,6 +167,7 @@ class _MenuState extends State<Menu> {
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
+                overflow: TextOverflow.ellipsis,
               ),
               maxLines: 2,
             ),

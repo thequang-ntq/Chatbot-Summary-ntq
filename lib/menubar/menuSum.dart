@@ -33,7 +33,7 @@ class _MenuSumState extends State<MenuSum> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       child: ListView(
         padding: EdgeInsets.all(14),
         children: [
@@ -42,6 +42,7 @@ class _MenuSumState extends State<MenuSum> {
             children: [
               IconButton(
                 onPressed: () {
+                  GetV.summaryNum++;
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.add, color: Colors.black),
@@ -54,6 +55,7 @@ class _MenuSumState extends State<MenuSum> {
                   color: Colors.black,
                 )),
                 onPressed: () {
+                  GetV.summaryNum++;
                   Navigator.pop(context);
                 },
               ),
@@ -122,6 +124,7 @@ class _MenuSumState extends State<MenuSum> {
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.black,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   maxLines: 3,
                                 ),
@@ -162,6 +165,7 @@ class _MenuSumState extends State<MenuSum> {
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
+                overflow: TextOverflow.ellipsis,
               ),
               maxLines: 2,
             ),

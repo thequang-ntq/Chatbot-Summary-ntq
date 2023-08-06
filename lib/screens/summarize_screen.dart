@@ -98,8 +98,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
 
   Future<List<int>> _getAudioContent(String name) async {
     
-   final directory = await getApplicationDocumentsDirectory();
-   final path = directory.path + '/$name';
+  //  final directory = await getApplicationDocumentsDirectory();
+   final path = 'assets/files/Recording.mp3';
    return File(path).readAsBytesSync().toList();
  }
 
@@ -151,7 +151,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       setState(() {
         _hasFiled = true;
       });
-      GetV.filepath = file.path!;
+      // GetV.filepath = file.path!;
       await saveDocsSummarize(msg: textLast, file: file);  
       return ;
     }
@@ -205,10 +205,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     return Scaffold(
         appBar: AppBar(
           elevation: 2,
-          leading: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset('assets/images/Docs.png'),
-          ),
+         
           backgroundColor: Colors.grey[50],
           title: const Text('Summarize', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
           centerTitle: false,
@@ -453,8 +450,10 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                     Flexible(
                       child: StreamBuilder(
                         stream: FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
-                          .collection('Summarize').orderBy('createdAt', descending:false).snapshots(),
-                        builder: (context, snapshot) {
+                          .collection('Summarize').doc(GetV.messageSummaryID)
+                          .collection('SummaryItem${GetV.summaryNum}')
+                          .orderBy('createdAt', descending:false).snapshots(),
+                        builder: (context, AsyncSnapshot snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting) {
                             return const Center(
                               child: CircularProgressIndicator(),
@@ -580,7 +579,13 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         template,
       );
       // final embeddings = OpenAIEmbeddings(apiKey: GetV.apiKey.text);
-      final embeddedText = msg.substring(0, 4000);
+      String embeddedText = '';
+      if(msg.length > 4000){
+        embeddedText = msg.substring(0, 4000);
+      }
+      else{
+        embeddedText = msg;
+      }
       final prompt = promptTemplate.format({'subject': embeddedText});
       final result = await llm.predict(prompt);
       final textSum = result.substring(0, result.indexOf(start1));
@@ -588,7 +593,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       q1 = result.substring(result.indexOf(start1) + start1.length, result.indexOf(start2));
       q2 = result.substring(result.indexOf(start2) + start2.length, result.indexOf(start3));
       q3 = result.substring(result.indexOf(start3) + start3.length, result.length);
-      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
+      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
+        .collection('Summarize').doc(GetV.messageSummaryID).collection('SummaryItem${GetV.summaryNum}').add({
         'text' : textSum,
         'index' : 3,
         'createdAt': Timestamp.now(),
