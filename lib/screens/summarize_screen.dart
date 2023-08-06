@@ -98,8 +98,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
 
   Future<List<int>> _getAudioContent(String name) async {
     
-  //  final directory = await getApplicationDocumentsDirectory();
-   final path = 'assets/files/Recording.mp3';
+   final directory = await getApplicationDocumentsDirectory();
+   final path = directory.path + '/$name';
    return File(path).readAsBytesSync().toList();
  }
 
@@ -151,7 +151,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       setState(() {
         _hasFiled = true;
       });
-      // GetV.filepath = file.path!;
+      GetV.filepath = file.path!;
       await saveDocsSummarize(msg: textLast, file: file);  
       return ;
     }

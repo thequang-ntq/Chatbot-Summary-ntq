@@ -41,8 +41,26 @@ class _MenuState extends State<Menu> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                onPressed: () {
+                onPressed: () async{
                   GetV.chatNum++;
+                  final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatNum.json');
+                  final response2 = await http.get(url2);
+                  final Map<String,dynamic> resData2 = json.decode(response2.body);
+                  for(final item in resData2.entries){
+                    if(GetV.userName.text == item.value['user-name']){
+                      item.value['chat-num'] = GetV.chatNum;
+                    }
+                  }
+                  
+                  final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatItemNumber.json');
+                  final response = await http.get(url);
+                  final Map<String,dynamic> resData = json.decode(response.body);
+                  for(final item in resData.entries){
+                    if(GetV.userName.text == item.value['user-name']){
+                      item.value['chat-ItemNumber'] = GetV.chatNum;
+                    }
+                  }
+              
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.add, color: Colors.black),

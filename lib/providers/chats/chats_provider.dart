@@ -84,7 +84,7 @@ class ChatProvider with ChangeNotifier {
       final llm = ChatOpenAI(apiKey: GetV.apiKey.text, temperature: 0);
       // ConversationBufferMemory memo = ConversationBufferMemory();
       // 'assets/files/state_of_the_union.txt';
-      TextLoader loader = TextLoader('assets/files/text.txt');
+      TextLoader loader = TextLoader(GetV.filepath);
       final documents = await loader.load();
       const textSplitter = CharacterTextSplitter(
         chunkSize: 1200,
