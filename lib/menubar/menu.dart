@@ -1,5 +1,6 @@
 import 'dart:js_interop';
 
+import 'package:chatgpt/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'package:chatgpt/screens/home.dart';
@@ -98,33 +99,41 @@ class _MenuState extends State<Menu> {
                           Row(
                             // mainAxisSize: MainAxisSize.min,
                             children: [
-                              IconButton(
-                                onPressed: () { 
-                    
-                                  setState(() {
-                                    GetV.chatNum =  chatMessage['Index'];
-                                    GetV.messageChatID = chatMessage['messageID'];
-                                  });
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(Icons.message_outlined, color: Colors.black),
+                              Visibility(
+                                visible: chatMessage['text'] != '',
+                                child: IconButton(
+                                  onPressed: () { 
+                                                  
+                                    setState(() {
+                                      GetV.chatNum =  chatMessage['Index'];
+                                      GetV.messageChatID = chatMessage['messageID'];
+                                      GetV.refreshIndicatorKey.currentState?.show();
+                                    });
+                                    Navigator.pop(context);
+                                    
+                                  },
+                                  icon: const Icon(Icons.message_outlined, color: Colors.black),
+                                ),
                               ),
                               const SizedBox(width: 5),
                               TextButton(
                                 child: AutoSizeText(
                                   chatMessage['text'], 
                                   style: const TextStyle(
-                                    fontSize: 10,
+                                    fontSize: 11,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.black,
                                   ),
-                                  maxLines: 2,
+                                  maxLines: 3,
                                 ),
                                 onPressed: () {
                                   setState(() {
                                     GetV.chatNum = chatMessage['Index'];
                                     GetV.messageChatID = chatMessage['messageID'];
+                                    GetV.refreshIndicatorKey.currentState?.show();
                                   });
+                                  Navigator.pop(context);
+                                  
                                 }
                               ),
                             ],

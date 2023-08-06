@@ -84,3 +84,4 @@ To use this app, you must enter a GPT Api-key created before or borrowed, submit
 | 03/08/2023     | Fixed UI of Summarize Screen      |     Continue fixed display of suggest question      |
 | 04/08/2023     | Fixed Summarize...      |   Fix QA & summarize  |
 | 05/08/2023     | Menu Bar      |   Fixing...  |
+| 06/08/2023     | Menu Bar      |   Fixing...  |

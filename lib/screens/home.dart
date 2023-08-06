@@ -21,6 +21,8 @@ class GetV{
   static String title = '';
   static String humanChat = '';
   static String aiChat = '';
+  static GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
+    GlobalKey<RefreshIndicatorState>();
 }
 
 class HomeScreen extends StatefulWidget {

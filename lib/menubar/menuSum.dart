@@ -3,6 +3,7 @@ import 'dart:js_interop';
 import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'package:chatgpt/screens/home.dart';
+import 'package:chatgpt/screens/summarize_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -98,33 +99,39 @@ class _MenuSumState extends State<MenuSum> {
                           Row(
                             // mainAxisSize: MainAxisSize.min,
                             children: [
-                              IconButton(
-                                onPressed: () { 
-                    
-                                  setState(() {
-                                    GetV.summaryNum =  chatMessage['Index'];
-                                    GetV.messageSummaryID = chatMessage['messageID'];
-                                  });
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(Icons.message_outlined, color: Colors.black),
+                              Visibility(
+                                visible: chatMessage['text'] != '',
+                                child: IconButton(
+                                  onPressed: () { 
+                                                  
+                                    setState(() {
+                                      GetV.summaryNum =  chatMessage['Index'];
+                                      GetV.messageSummaryID = chatMessage['messageID'];
+                                    });
+                                    
+                                    Navigator.pop(context);
+                                  },
+                                  icon: const Icon(Icons.message_outlined, color: Colors.black),
+                                ),
                               ),
                               const SizedBox(width: 5),
                               TextButton(
                                 child: AutoSizeText(
                                   chatMessage['text'], 
                                   style: const TextStyle(
-                                    fontSize: 10,
+                                    fontSize: 11,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.black,
                                   ),
-                                  maxLines: 2,
+                                  maxLines: 3,
                                 ),
                                 onPressed: () {
                                   setState(() {
                                     GetV.summaryNum = chatMessage['Index'];
                                     GetV.messageSummaryID = chatMessage['messageID'];
                                   });
+                                  
+                                  Navigator.pop(context);
                                 }
                               ),
                             ],

@@ -69,7 +69,6 @@ class ChatProvider with ChangeNotifier {
             'text' : result2,
             'Index' : GetV.chatNum,
             'messageID': GetV.messageChatID,
-            'createdAt': Timestamp.now(),
           }
         );
       }
@@ -151,7 +150,6 @@ class ChatProvider with ChangeNotifier {
             'text' : result2,
             'Index' : GetV.summaryNum,
             'messageID': GetV.messageSummaryID,
-            'createdAt': Timestamp.now(),
           }
         );
       }

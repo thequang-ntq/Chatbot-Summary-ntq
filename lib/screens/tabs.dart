@@ -227,11 +227,27 @@ class _TabsState extends State<Tabs> {
             'createdAt': Timestamp.now(),
           }).then((DocumentReference doc){
             GetV.messageChatID = doc.id;
+          });
+        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message').doc(GetV.messageChatID).update({
+            'text' : '',
+            'Index' : GetV.chatNum,
+            'messageID': GetV.messageChatID,
+            'createdAt': Timestamp.now(),
           }); 
 
         final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatItemNumber.json');
         final response = await http.get(url);
-        if(response.body.contains(GetV.chatNum.toString()) == false){
+        bool check = true;
+        if(response.body != 'null'){
+          final Map<String,dynamic> resData = json.decode(response.body);
+          for(final item in resData.entries){
+            if(GetV.chatNum == item.value['chat-ItemNumber']){
+              check = false;
+              break;
+            }
+          }
+        }
+        if(check == true){
           await http.post(url, 
             headers: {
               'Content-Type' : 'chatItemNumber/json',
@@ -242,9 +258,6 @@ class _TabsState extends State<Tabs> {
               'ID' : GetV.messageChatID,
             }),
           );
-        }
-        else if(response.body.contains(GetV.chatNum.toString()) == true){
-          //
         }
       setState(() {
         _activeScreen = 'chat-screen';
@@ -315,10 +328,26 @@ class _TabsState extends State<Tabs> {
           }).then((DocumentReference doc){
             GetV.messageSummaryID = doc.id;
           }); 
+        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').doc(GetV.messageSummaryID).update({
+            'text' : '',
+            'Index' : GetV.summaryNum,
+            'messageID': GetV.messageSummaryID,
+            'createdAt': Timestamp.now(),
+          }); 
 
         final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryItemNumber.json');
         final response = await http.get(url);
-        if(response.body.contains(GetV.summaryNum.toString()) == false){
+        bool check = true;
+        if(response.body != 'null'){
+          final Map<String,dynamic> resData = json.decode(response.body);
+          for(final item in resData.entries){
+            if(GetV.summaryNum == item.value['summary-ItemNumber']){
+              check = false;
+              break;
+            }
+          }
+        }
+        if(check == true){
           await http.post(url, 
             headers: {
               'Content-Type' : 'summaryItemNumber/json',
@@ -329,9 +358,6 @@ class _TabsState extends State<Tabs> {
               'ID' : GetV.messageSummaryID,
             }),
           );
-        }
-        else if(response.body.contains(GetV.summaryNum.toString()) == true){
-          //
         }
       setState(() {
         _activeScreen = 'summarize-screen';

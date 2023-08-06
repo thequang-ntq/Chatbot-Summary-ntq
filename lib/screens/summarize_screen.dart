@@ -60,9 +60,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   String fileType = '';
   String fileText = '';
   String textLast = '';
-  String q1 = 'What is the main topic of this document?';
-  String q2 = 'What areas can this document be applied to?';
-  String q3 = 'Can I use this document to practice\n creating my own PDFs?';
+  String q1 = 'Empty';
+  String q2 = 'Empty';
+  String q3 = 'Empty';
   String answerSummary = 'Not have text';
   late ScrollController _listScrollController;
   late FocusNode focusNode;
@@ -214,7 +214,16 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           centerTitle: false,
           actions: [
             IconButton(
-              onPressed: () {
+              onPressed: () async{
+                GetV.title = '';
+
+                final res = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+                    .doc(GetV.messageSummaryID).get();
+                if(res['text'] == ''){
+                  await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+                  .doc(GetV.messageSummaryID).delete();
+                  
+                }
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const Tabs()),
