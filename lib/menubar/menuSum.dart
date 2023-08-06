@@ -1,13 +1,8 @@
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
-import 'package:sidebarx/sidebarx.dart';
 import 'package:chatgpt/screens/home.dart';
-import 'package:chatgpt/screens/summarize_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:chatgpt/screens/home.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 class MenuSum extends StatefulWidget {
   const MenuSum({super.key});
