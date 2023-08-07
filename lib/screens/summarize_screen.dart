@@ -337,7 +337,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                             },
                             decoration: const InputDecoration.collapsed(
                                 hintText: "Ask something...",
-                                hintStyle: TextStyle(color: Colors.grey)),
+                                hintStyle: TextStyle(color: Colors.white)),
                           ),
                         ),
                         IconButton(
@@ -358,12 +358,12 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                             ),
                         ),
                         FloatingActionButton(
-                          backgroundColor: Colors.grey,
+                          backgroundColor: Colors.white,
                           onPressed: () => onListen(),
                           tooltip: 'Click and speak something...',
                           child: Icon(
                             _isListening ? Icons.mic_off : Icons.mic,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                       ],
@@ -553,12 +553,12 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                                 ),
                             ),
                             FloatingActionButton(
-                              backgroundColor: Colors.grey,
+                              backgroundColor: Colors.white,
                               onPressed: () => onListen(),
                               tooltip: 'Click and speak something...',
                               child: Icon(
                                 _isListening ? Icons.mic_off : Icons.mic,
-                                color: Colors.white,
+                                color: Colors.black,
                               ),
                             ),
                           ],
