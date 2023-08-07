@@ -55,6 +55,7 @@ dependencies:
   collection: ^1.17.1
   sidebarx: ^0.16.1
   auto_size_text: ^3.0.0
+  shared_preferences: ^2.2.0
 
 dev_dependencies:
   flutter_test:

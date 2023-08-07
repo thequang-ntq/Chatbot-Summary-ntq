@@ -47,7 +47,7 @@ class DocsWidget extends StatelessWidget {
 
       children: [
         Material(
-          color: chatIndex%2 == 0 ? const Color(0xFF343541) : const Color(0xFF444654),
+          color: chatIndex%2 == 0 ? Colors.white : Colors.grey[500],
           child: 
               Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -56,7 +56,7 @@ class DocsWidget extends StatelessWidget {
                  Column(
                   children: [
                     Text('-------  $dateTime  -----------', style: const TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     )),
@@ -70,7 +70,7 @@ class DocsWidget extends StatelessWidget {
                           child: Text(
                             msg,
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
                             ),

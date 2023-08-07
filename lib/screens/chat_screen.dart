@@ -59,7 +59,7 @@ class _ChatScreenState extends State<ChatScreen> {
         });
         _speech.listen(
             localeId: "vi_VN",
-            listenFor: const Duration(hours: 12),
+            listenFor: const Duration(hours: 24),
             onResult: (val) => setState(() {
                   textEditingController.text = val.recognizedWords;
                   if (_isTyping == true) {
@@ -120,9 +120,27 @@ class _ChatScreenState extends State<ChatScreen> {
     
           return Scaffold(
             appBar: AppBar(
+              backgroundColor: Colors.grey[50],
               elevation: 2,
-              
-              title: const Text("New Chat"),
+              leading: Builder(
+                builder: (BuildContext context) {
+                  return IconButton(
+                    icon: const Icon(
+                      Icons.menu,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                    tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+                  );
+                },
+              ),
+              title: const Text("New Chat", style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize:18,
+              )),
               actions: [
                 IconButton(
                   onPressed: () async{
@@ -141,7 +159,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       MaterialPageRoute(builder: (context) => const Tabs()),
                     );
                   },
-                  icon: const Icon(Icons.exit_to_app, color: Colors.white),
+                  icon: const Icon(Icons.exit_to_app, color: Colors.black),
                 ),
               ],
             ),
@@ -150,7 +168,23 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Column(
                 children: [
                   Flexible(
-                    child: ListView.builder(
+                    child: GetV.menuPressed? ListView.builder(
+                        controller: _listScrollController,
+                        itemCount: loadedMessages.length, 
+                        itemBuilder: (context, index) {
+                          final chatMessage = loadedMessages[index].data();
+                          DateTime time = chatMessage['createdAt'].toDate();
+                          String formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(time);
+                          return ChatWidget(
+                            msg: chatMessage['text'],
+                            dateTime: formattedDate,
+                            chatIndex: chatMessage['index'], 
+                            shouldAnimate:
+                                chatMessage['index'] == 1,
+                          );
+                        })
+                      :
+                        ListView.builder(
                         controller: _listScrollController,
                         itemCount: loadedMessages.length, 
                         itemBuilder: (context, index) {
@@ -176,7 +210,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     height: 15,
                   ),
                   Material(
-                    color: const Color(0xFF444654),
+                    color: Colors.grey[600],
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
@@ -193,7 +227,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               },
                               decoration: const InputDecoration.collapsed(
                                   hintText: "How can I help you? ...",
-                                  hintStyle: TextStyle(color: Colors.grey)),
+                                  hintStyle: TextStyle(color: Colors.white)),
                             ),
                           ),
                           IconButton(
@@ -209,12 +243,12 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                           ),
                           FloatingActionButton(
-                            backgroundColor: Colors.grey,
+                            backgroundColor: Colors.white,
                             onPressed: () => onListen(),
                             tooltip: 'Click and speak something...',
                             child: Icon(
                               _isListening ? Icons.mic_off : Icons.mic,
-                              color: Colors.white,
+                              color: Colors.black,
                             ),
                           ),
                         ],

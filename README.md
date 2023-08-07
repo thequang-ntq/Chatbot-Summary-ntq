@@ -85,3 +85,4 @@ To use this app, you must enter a GPT Api-key created before or borrowed, submit
 | 04/08/2023     | Fixed Summarize...      |   Fix QA & summarize  |
 | 05/08/2023     | Menu Bar      |   Fixing...  |
 | 06/08/2023     | Menu Bar      |   Fixing...  |
+| 07/08/2023     | UI     |  Save apiKey and username when start home screen   |   

@@ -1,15 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 
 // final _firebase = FirebaseAuth.instance;
 
 
 class GetV{
-  static late TextEditingController apiKey;
+  static TextEditingController apiKey = TextEditingController();
   static bool isAPI = false;
-  static late TextEditingController userName;
+  static TextEditingController userName = TextEditingController();
   static String userChatID = '';
   static String userSummaryID = '';
   static String summaryText = '';
@@ -21,6 +22,8 @@ class GetV{
   static String title = '';
   static String humanChat = '';
   static String aiChat = '';
+  static bool menuPressed = false;
+  static bool menuSumPressed = false;
   static GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
     GlobalKey<RefreshIndicatorState>();
 }
@@ -55,9 +58,43 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  
+
+  Future<void> _api() async{
+    final prefsName = await SharedPreferences.getInstance();
+    final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'api-keys.json');
+    final response = await http.get(url);
+    final Map<String, dynamic> resData = json.decode(response.body);
+    late var value;
+    for(final item in resData.entries){
+      value = (item.value['api-key']);
+    }
+    setState(() {
+      widget.apiKeyValue.text = value;
+    });
+  }
+
+  Future<void> _name() async{
+    final prefsName = await SharedPreferences.getInstance();
+    final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userNames.json');
+    final response = await http.get(url);
+    final Map<String, dynamic> resData = json.decode(response.body);
+    late var value;
+    for(final item in resData.entries){
+      value = (item.value['user-name']);
+    }
+    setState(() {
+      widget.name.text = value;
+    });
+  }
+
   @override
   void initState(){
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _name();
+      await _api();
+    });
   }
 
    Future<void> checkApiKey(String apiKey) async {
@@ -148,7 +185,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       autofocus: false,
                       autocorrect: false,
-                      controller: TextEditingController(text: GetV.userName.text),
+                      controller: TextEditingController(
+                        text: GetV.userName.text.isNotEmpty? 
+                        GetV.userName.text
+                        : widget.name.text,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     TextField(
@@ -177,7 +218,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       autofocus: false,
                       autocorrect: false,
-                      controller: TextEditingController(text: GetV.apiKey.text),
+                      controller: TextEditingController(
+                        text: GetV.apiKey.text.isNotEmpty?
+                        GetV.apiKey.text : widget.apiKeyValue.text
+                      ),
                     ),
                   ],
                 )
@@ -213,7 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 10),
                     TextField(
-                      obscureText: true,
+                      obscureText: _isObscured,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
@@ -265,19 +309,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                     style: ButtonStyle(
                       fixedSize: MaterialStateProperty.all(
-                        const Size(110, 40),
+                        const Size(111, 41),
                       ),
                       backgroundColor: 
                         MaterialStateProperty.resolveWith<Color>(
                           (Set<MaterialState> states) {
                             if (states.contains(MaterialState.pressed)) {
-                              return Colors.lightBlue; 
+                              return Colors.green; 
                             }
-                            return Colors.green; 
+                            return Colors.orange; 
                         },
                       ),
                     ),
-                    child: const Text('Submit', style: TextStyle(fontSize: 29, color: Colors.black)),
+                    child: const Text('Submit', style: TextStyle(fontSize: 25, color: Colors.black)),
                 ),                                
               ),
               const SizedBox(height: 19),

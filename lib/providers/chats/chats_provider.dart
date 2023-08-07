@@ -33,10 +33,10 @@ class ChatProvider with ChangeNotifier {
 
   Future<void> sendMessageAndGetAnswers(
       {required String msg}) async {
-      final llm = ChatOpenAI(apiKey: GetV.apiKey.text ,temperature: 0);
+      final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' ,temperature: 0);
       ConversationBufferMemory memo = ConversationBufferMemory();
       final chatData = await FirebaseFirestore.instance.collection(GetV.userName.text).doc
-        (GetV.userChatID).collection('Message').get();
+        (GetV.userChatID).collection('Message').doc(GetV.messageChatID).collection('ChatItem${GetV.chatNum}').get();
       for(final item in chatData.docs){
         await memo.saveContext(inputValues: {'humanChat' : item.data()['text'] }, outputValues: {'aiChat': item.data()['text']});
       }
@@ -78,10 +78,10 @@ class ChatProvider with ChangeNotifier {
 
   Future<void> sendMessageAndGetAnswersSummarize(
       {required String msg}) async {
-      final llm = ChatOpenAI(apiKey: GetV.apiKey.text, temperature: 0);
+      final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' , temperature: 0);
       // ConversationBufferMemory memo = ConversationBufferMemory();
       // 'assets/files/state_of_the_union.txt';
-      TextLoader loader = TextLoader(GetV.filepath);
+      TextLoader loader = TextLoader('assets/files/state_of_the_union.txt');
       final documents = await loader.load();
       const textSplitter = CharacterTextSplitter(
         chunkSize: 1200,

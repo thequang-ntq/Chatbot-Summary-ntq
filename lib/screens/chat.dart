@@ -25,9 +25,9 @@ class _ChatState extends State<Chat> {
         title: 'ChatBot',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            scaffoldBackgroundColor: const Color(0xFF343541),
-            appBarTheme: const AppBarTheme(
-              color:  Colors.black,
+            scaffoldBackgroundColor: Colors.grey[300],
+            appBarTheme: AppBarTheme(
+              color:  Colors.grey[50],
             )),
         home: const ChatScreen(),
       ),

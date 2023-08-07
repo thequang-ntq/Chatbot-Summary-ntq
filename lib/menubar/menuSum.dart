@@ -28,16 +28,19 @@ class _MenuSumState extends State<MenuSum> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       child: ListView(
-        padding: EdgeInsets.all(14),
+        padding: const EdgeInsets.all(17),
         children: [
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
                 onPressed: () async{
-                  GetV.summaryNum++;
+                  setState(() {
+                    GetV.summaryNum++;
+                    GetV.menuSumPressed = true;
+                  });
                   final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryNum.json');
                   final response2 = await http.get(url2);
                   final Map<String,dynamic> resData2 = json.decode(response2.body);
@@ -67,7 +70,10 @@ class _MenuSumState extends State<MenuSum> {
                   color: Colors.black,
                 )),
                 onPressed: () {
-                  GetV.summaryNum++;
+                  setState(() {
+                    GetV.summaryNum++;
+                    GetV.menuSumPressed = true;
+                  });
                   Navigator.pop(context);
                 },
               ),
@@ -121,6 +127,7 @@ class _MenuSumState extends State<MenuSum> {
                                     setState(() {
                                       GetV.summaryNum =  chatMessage['Index'];
                                       GetV.messageSummaryID = chatMessage['messageID'];
+                                      GetV.menuSumPressed =true;
                                     });
                                     
                                     Navigator.pop(context);
@@ -144,6 +151,7 @@ class _MenuSumState extends State<MenuSum> {
                                   setState(() {
                                     GetV.summaryNum = chatMessage['Index'];
                                     GetV.messageSummaryID = chatMessage['messageID'];
+                                    GetV.menuSumPressed = true;
                                   });
                                   
                                   Navigator.pop(context);

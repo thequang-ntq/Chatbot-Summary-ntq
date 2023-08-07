@@ -205,7 +205,20 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     return Scaffold(
         appBar: AppBar(
           elevation: 2,
-         
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(
+                  Icons.menu,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+              );
+            },
+          ),
           backgroundColor: Colors.grey[50],
           title: const Text('Summarize', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
           centerTitle: false,
@@ -226,15 +239,15 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                   MaterialPageRoute(builder: (_) => const Tabs()),
                 );
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.exit_to_app,
-                color: Theme.of(context).colorScheme.primary,
+                color: Colors.black,
               ),
             ),
           ],
         ),
         drawer: const MenuSum(),
-        backgroundColor: const Color(0xFF343541),
+        backgroundColor: Colors.grey[300],
         body: SafeArea(
           child: _hasFiled == false?
            
@@ -308,7 +321,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                   height: 15,
                 ),
                 Material(
-                  color: const Color(0xFF444654),
+                  color: Colors.grey[600],
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
@@ -487,14 +500,22 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                                     shouldAnimate:
                                         chatMessage['index']%2 == 1,
                                   )
-                                :
+                                : GetV.menuSumPressed?
                                   ChatWidget(
-                            msg: chatMessage['text'],
-                            dateTime: formattedDate,
-                            chatIndex: chatMessage['index'], 
-                            shouldAnimate:
-                                chatMessage['index'] == 1,
-                          );
+                                    msg: chatMessage['text'],
+                                    dateTime: formattedDate,
+                                    chatIndex: chatMessage['index'], 
+                                    shouldAnimate:
+                                        chatMessage['index'] == 1,
+                                  )
+                                  :
+                                  ChatWidget(
+                                    msg: chatMessage['text'],
+                                    dateTime: formattedDate,
+                                    chatIndex: chatMessage['index'], 
+                                    shouldAnimate:
+                                        chatMessage['index'] == 1,
+                                  );
                               }
                                 
                                 
@@ -574,7 +595,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
 
   Future<void> saveDocsSummarize(
       {required String msg, required PlatformFile file}) async {
-      final llm = ChatOpenAI(apiKey: GetV.apiKey.text,temperature: 0);
+      final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' ,temperature: 0);
       final promptTemplate = PromptTemplate.fromTemplate(
         template,
       );

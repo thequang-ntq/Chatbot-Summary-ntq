@@ -30,14 +30,17 @@ class _MenuState extends State<Menu> {
     return Drawer(
       backgroundColor: Colors.white,
       child: ListView(
-        padding: EdgeInsets.all(14),
+        padding: const EdgeInsets.all(17),
         children: [
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
                 onPressed: () async{
-                  GetV.chatNum++;
+                  setState(() {
+                    GetV.chatNum++;
+                    GetV.menuPressed = true;
+                  });
                   final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatNum.json');
                   final response2 = await http.get(url2);
                   final Map<String,dynamic> resData2 = json.decode(response2.body);
@@ -68,7 +71,10 @@ class _MenuState extends State<Menu> {
                   color: Colors.black,
                 )),
                 onPressed: () {
-                  GetV.chatNum++;
+                  setState(() {
+                    GetV.chatNum++;
+                    GetV.menuPressed = true;
+                  });
                   Navigator.pop(context);
                 },
               ),
@@ -123,6 +129,7 @@ class _MenuState extends State<Menu> {
                                       GetV.chatNum =  chatMessage['Index'];
                                       GetV.messageChatID = chatMessage['messageID'];
                                       GetV.refreshIndicatorKey.currentState?.show();
+                                      GetV.menuPressed =true;
                                     });
                                     Navigator.pop(context);
                                     
@@ -147,6 +154,7 @@ class _MenuState extends State<Menu> {
                                     GetV.chatNum = chatMessage['Index'];
                                     GetV.messageChatID = chatMessage['messageID'];
                                     GetV.refreshIndicatorKey.currentState?.show();
+                                    GetV.menuPressed = true;
                                   });
                                   Navigator.pop(context);
                                   
