@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 
 // final _firebase = FirebaseAuth.instance;
@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
   
 
   Future<void> _api() async{
-    final prefsName = await SharedPreferences.getInstance();
+    // final prefsName = await SharedPreferences.getInstance();
     final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'api-keys.json');
     final response = await http.get(url);
     final Map<String, dynamic> resData = json.decode(response.body);
@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _name() async{
-    final prefsName = await SharedPreferences.getInstance();
+    // final prefsName = await SharedPreferences.getInstance();
     final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userNames.json');
     final response = await http.get(url);
     final Map<String, dynamic> resData = json.decode(response.body);
@@ -335,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: widget.toChat,
                           style: ButtonStyle(
                             fixedSize: MaterialStateProperty.all(
-                              const Size(180, 50),
+                              const Size(160, 40),
                             ),
                             backgroundColor: 
                               MaterialStateProperty.resolveWith<Color>(
@@ -358,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(width: 18),
                               const Text(
                                 'Chatbot',
-                                style: TextStyle(fontSize: 18),
+                                style: TextStyle(fontSize: 17),
                               ),
                             ],
                           ),
@@ -368,7 +368,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: widget.toSummarize,
                           style: ButtonStyle(
                             fixedSize: MaterialStateProperty.all(
-                              const Size(180, 50),
+                              const Size(160, 40),
                             ),
                             backgroundColor: 
                               MaterialStateProperty.resolveWith<Color>(

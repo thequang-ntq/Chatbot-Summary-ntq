@@ -81,7 +81,7 @@ class ChatProvider with ChangeNotifier {
       final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' , temperature: 0);
       // ConversationBufferMemory memo = ConversationBufferMemory();
       // 'assets/files/state_of_the_union.txt';
-      TextLoader loader = TextLoader('assets/files/state_of_the_union.txt');
+      TextLoader loader = TextLoader(GetV.filepath);
       final documents = await loader.load();
       const textSplitter = CharacterTextSplitter(
         chunkSize: 1200,
@@ -136,22 +136,22 @@ class ChatProvider with ChangeNotifier {
         'index' : 1,
         'createdAt': Timestamp.now(),
       });
-      if(GetV.title == ''){
-        GetV.humanChat = msg;
-        GetV.aiChat = result['result'].toString();
-        final promptTemplate = PromptTemplate.fromTemplate(template);
-        final prompt = promptTemplate.format({'humanChat' : GetV.humanChat , 'aiChat' : GetV.aiChat});
-        final result2 = await llm.predict(prompt);
-        GetV.title = result2;
-        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
-        .doc(GetV.messageSummaryID).update(
-          {
-            'text' : result2,
-            'Index' : GetV.summaryNum,
-            'messageID': GetV.messageSummaryID,
-          }
-        );
-      }
+      // if(GetV.title == ''){
+      //   GetV.humanChat = msg;
+      //   GetV.aiChat = result['result'].toString();
+      //   final promptTemplate = PromptTemplate.fromTemplate(template);
+      //   final prompt = promptTemplate.format({'humanChat' : GetV.humanChat , 'aiChat' : GetV.aiChat});
+      //   final result2 = await llm.predict(prompt);
+      //   GetV.title = result2;
+      //   await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+      //   .doc(GetV.messageSummaryID).update(
+      //     {
+      //       'text' : result2,
+      //       'Index' : GetV.summaryNum,
+      //       'messageID': GetV.messageSummaryID,
+      //     }
+      //   );
+      // }
     notifyListeners();
   }
 

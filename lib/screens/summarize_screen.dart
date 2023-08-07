@@ -1,8 +1,8 @@
-// import 'dart:async';
+import 'dart:async';
 import 'dart:ui';
 import 'dart:io';
 import 'dart:developer';
-import 'dart:convert';
+// import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/material.dart';
@@ -10,19 +10,19 @@ import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 import 'package:chatgpt/screens/tabs.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:open_file/open_file.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chatgpt/providers/chats/chats_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:pdf_text/pdf_text.dart';
 import 'package:google_speech/google_speech.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider/path_provider.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:chatgpt/screens/home.dart';
 import 'package:chatgpt/widgets/chats/docs_widget.dart';
+import 'package:docx_to_text/docx_to_text.dart';
 import 'package:intl/intl.dart';
 import 'package:chatgpt/widgets/chats/chat_widget.dart';
-import 'package:docx_to_text/docx_to_text.dart';
+// import 'package:docx_to_text/docx_to_text.dart';
 import 'package:chatgpt/menubar/menuSum.dart';
 
 
@@ -41,6 +41,10 @@ Question2:
 Question3:
 </br>
 
+''';
+
+const template2 = '''
+Summarize the following text {text} in 4 words or fewer.
 ''';
 
 const start1 = "Question 1:";
@@ -91,19 +95,6 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     _askText.dispose();
     super.dispose();
   }
-
-  void openFile(PlatformFile file) {
-    OpenFile.open(file.path!);
-  }
-
-  Future<List<int>> _getAudioContent(String name) async {
-    
-   final directory = await getApplicationDocumentsDirectory();
-   final path = directory.path + '/$name';
-   return File(path).readAsBytesSync().toList();
- }
-
-
   void _uploadFile() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.any);
     if (result == null) {
@@ -113,7 +104,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       fileType = file.name.split('.').last;
       fileName = file.name;
       if(fileType == "txt"){
-        fileText = utf8.decode(file.bytes!);
+        final File txtFile = File(file.path!);
+        // fileText = utf8.decode(file.bytes);
+        fileText = await txtFile.readAsString();
         textLast = fileText;
       }
       else if (fileType == "pdf"){
@@ -129,10 +122,11 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           enableAutomaticPunctuation: true,
           sampleRateHertz: 16000,
           languageCode: 'en-US');
-          final serviceAccount = ServiceAccount.fromFile(File('assets/service_account/brycen-chat-app-ntq-e5fd13b4cad3.json'));
+          final serviceAccount = ServiceAccount.fromString(
+        '${(await rootBundle.loadString('assets/service_account/brycen-chat-app-ntq-e5fd13b4cad3.json'))}');
           final speechToText = SpeechToText.viaServiceAccount(serviceAccount);
 
-          final audio = await _getAudioContent(fileName);
+          final audio = File(file.path!).readAsBytesSync().toList();
           await speechToText.recognize(config, audio).then((value) {
             setState(() {
               fileText = value.results
@@ -500,15 +494,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                                     shouldAnimate:
                                         chatMessage['index']%2 == 1,
                                   )
-                                : GetV.menuSumPressed?
-                                  ChatWidget(
-                                    msg: chatMessage['text'],
-                                    dateTime: formattedDate,
-                                    chatIndex: chatMessage['index'], 
-                                    shouldAnimate:
-                                        chatMessage['index'] == 1,
-                                  )
-                                  :
+                                :
                                   ChatWidget(
                                     msg: chatMessage['text'],
                                     dateTime: formattedDate,
@@ -620,6 +606,20 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         'index' : 3,
         'createdAt': Timestamp.now(),
       });
+      if(GetV.title == ''){
+        final promptTemplate2 = PromptTemplate.fromTemplate(template2);
+        final prompt2 = promptTemplate2.format({'text' : textSum});
+        final result2 = await llm.predict(prompt2);
+        GetV.title = result2;
+        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+        .doc(GetV.messageSummaryID).update(
+          {
+            'text' : result2,
+            'Index' : GetV.summaryNum,
+            'messageID': GetV.messageSummaryID,
+          }
+        );
+      }
       GetV.summaryText = result;
       
     // notifyListeners();

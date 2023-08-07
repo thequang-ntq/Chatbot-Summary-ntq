@@ -28,6 +28,7 @@ class DocsWidget extends StatelessWidget {
   void _speak() async {
       _isSpeaking = !_isSpeaking;
       if (_isSpeaking) {
+        await flutterTts.setLanguage("en-US");
         await flutterTts.speak(msg);
       } else {
         flutterTts.stop();
@@ -178,7 +179,7 @@ class DocsWidget extends StatelessWidget {
                         animatedTexts: [
                           TyperAnimatedText(
                             textAlign: TextAlign.end,
-                            '---------------------------------------------',
+                            '--------------------------------------------',
                           ),
                         ],
                       ),
@@ -202,24 +203,26 @@ class DocsWidget extends StatelessWidget {
                           icon: const Icon(Icons.send, color: Colors.blue),
                         ),
                         const SizedBox(width: 5),
-                        DefaultTextStyle(
-                          textAlign: TextAlign.end,
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                              ),
-                          child: AnimatedTextKit(
-                            isRepeatingAnimation: false,
-                            repeatForever: false,
-                            displayFullTextOnTap: true,
-                            totalRepeatCount: 1,
-                            animatedTexts: [
-                              TyperAnimatedText(
-                                textAlign: TextAlign.end,
-                                q1.trim(),
-                              ),
-                            ],
+                        Expanded(
+                          child: DefaultTextStyle(
+                            textAlign: TextAlign.end,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                                ),
+                            child: AnimatedTextKit(
+                              isRepeatingAnimation: false,
+                              repeatForever: false,
+                              displayFullTextOnTap: true,
+                              totalRepeatCount: 1,
+                              animatedTexts: [
+                                TyperAnimatedText(
+                                  textAlign: TextAlign.end,
+                                  q1.trim(),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -242,24 +245,26 @@ class DocsWidget extends StatelessWidget {
                           icon: const Icon(Icons.send, color: Colors.blue),
                         ),
                         const SizedBox(width: 5),
-                        DefaultTextStyle(
-                          textAlign: TextAlign.end,
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                              ),
-                          child: AnimatedTextKit(
-                            isRepeatingAnimation: false,
-                            repeatForever: false,
-                            displayFullTextOnTap: true,
-                            totalRepeatCount: 1,
-                            animatedTexts: [
-                              TyperAnimatedText(
-                                textAlign: TextAlign.end,
-                                q2.trim(),
-                              ),
-                            ],
+                        Expanded(
+                          child: DefaultTextStyle(
+                            textAlign: TextAlign.end,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                                ),
+                            child: AnimatedTextKit(
+                              isRepeatingAnimation: false,
+                              repeatForever: false,
+                              displayFullTextOnTap: true,
+                              totalRepeatCount: 1,
+                              animatedTexts: [
+                                TyperAnimatedText(
+                                  textAlign: TextAlign.end,
+                                  q2.trim(),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -282,24 +287,26 @@ class DocsWidget extends StatelessWidget {
                           icon: const Icon(Icons.send, color: Colors.blue),
                         ),
                         const SizedBox(width: 5),
-                        DefaultTextStyle(
-                          textAlign: TextAlign.end,
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                              ),
-                          child: AnimatedTextKit(
-                            isRepeatingAnimation: false,
-                            repeatForever: false,
-                            displayFullTextOnTap: true,
-                            totalRepeatCount: 1,
-                            animatedTexts: [
-                              TyperAnimatedText(
-                                textAlign: TextAlign.end,
-                                q3.trim(),
-                              ),
-                            ],
+                        Expanded(
+                          child: DefaultTextStyle(
+                            textAlign: TextAlign.end,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                                ),
+                            child: AnimatedTextKit(
+                              isRepeatingAnimation: false,
+                              repeatForever: false,
+                              displayFullTextOnTap: true,
+                              totalRepeatCount: 1,
+                              animatedTexts: [
+                                TyperAnimatedText(
+                                  textAlign: TextAlign.end,
+                                  q3.trim(),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
