@@ -110,38 +110,38 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         textLast = fileText;
       }
       else if (fileType == "pdf"){
-        final File pdfFile = File(file.path!);
-        // PDFDoc doc = await PDFDoc.fromFile(pdfFile);
-        fileText = await pdfFile.readAsString();
+         final File pdfFile = File(file.path!);
+        PDFDoc doc = await PDFDoc.fromFile(pdfFile);
+        fileText = await doc.text;
         textLast = fileText;
       }
       else if (fileType == "mp3" || fileType == "wav"){
-        //  final config = RecognitionConfig(
-        //   encoding: AudioEncoding.LINEAR16,
-        //   model: RecognitionModel.basic,
-        //   enableAutomaticPunctuation: true,
-        //   sampleRateHertz: 16000,
-        //   languageCode: 'en-US');
-        //   final serviceAccount = ServiceAccount.fromString(
-        // '${(await rootBundle.loadString('assets/service_account/brycen-chat-app-ntq-e5fd13b4cad3.json'))}');
-        //   final speechToText = SpeechToText.viaServiceAccount(serviceAccount);
+         final config = RecognitionConfig(
+          encoding: AudioEncoding.LINEAR16,
+          model: RecognitionModel.basic,
+          enableAutomaticPunctuation: true,
+          sampleRateHertz: 16000,
+          languageCode: 'en-US');
+          final serviceAccount = ServiceAccount.fromString(
+        '${(await rootBundle.loadString('assets/service_account/brycen-chat-app-ntq-e5fd13b4cad3.json'))}');
+          final speechToText = SpeechToText.viaServiceAccount(serviceAccount);
 
-        //   final audio = File(file.path!).readAsBytesSync().toList();
-        //   await speechToText.recognize(config, audio).then((value) {
-        //     setState(() {
-        //       fileText = value.results
-        //           .map((e) => e.alternatives.first.transcript)
-        //           .join('\n');
-        //     });
-        //   });
-        final mp3s = File(file.path!);
-        fileText = await mp3s.readAsString();
+          final audio = File(file.path!).readAsBytesSync().toList();
+          await speechToText.recognize(config, audio).then((value) {
+            setState(() {
+              fileText = value.results
+                  .map((e) => e.alternatives.first.transcript)
+                  .join('\n');
+            });
+          });
+        // final mp3s = File(file.path!);
+        // fileText = await mp3s.readAsString();
         textLast = fileText;
       }
       else if (fileType == "docx"){
-        final File doc = File(file.path!);
-        // final bytes = await _doc.readAsBytes();
-        fileText = await doc.readAsString();
+        final fileDoc = File(file.path!);
+        final Uint8List bytes = await fileDoc.readAsBytes();
+        fileText = docxToText(bytes);
         textLast = fileText;
       }
       setState(() {
