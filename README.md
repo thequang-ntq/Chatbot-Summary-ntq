@@ -64,6 +64,44 @@ flutter run
 ## Usage
 To use this app, you must enter a GPT Api-key created before or borrowed, submit it by button 'submit' for first time. After that, you can press the key button on the begin of textfield to take that key again. After submit, press 'Chat' to have chat with ChatBot, or press 'Summarize' to summary a text or audio file, and ask question about it.
 
+## Setup flutterfire
+
+flow the link https://firebase.google.com/docs/flutter/setup?platform=ios
+
+```
+npm i -g firebase-tools
+```
+```
+firebase login
+```
+```
+dart pub global activate flutterfire_cli
+```
+You might encounter the error ```command not found: flutterfire``` . In this case, you need to add the path that has been indicated when running the ```flutterfire_cli``` mismatch activation to your computer's environment.
+
+After this command a file call ```firebase_option.dart``` will be create in your folder
+```
+flutterfire configure
+```
+```
+flutter pub add firebase_core
+```
+Run this again to make sure everything installed in your computer
+```
+flutterfire configure
+```
+
+
+## Acknowledgements
+
+This app was built using the following open-source libraries and tools:
+
+* [Flutter](https://flutter.dev/)
+* [Dart](https://dart.dev/)
+* [OpenAI GPT](https://beta.openai.com/)
+* [Firebase](https://firebase.google.com/docs/flutter/setup)
+
+
 ## Time Tracking
 
 | Date         | Task                | Notes                                               |
@@ -86,3 +124,5 @@ To use this app, you must enter a GPT Api-key created before or borrowed, submit
 | 05/08/2023     | Menu Bar      |   Fixing...  |
 | 06/08/2023     | Menu Bar      |   Fixing...  |
 | 07/08/2023     | UI     |  Save apiKey and username when start home screen   |   
+| 08/08/2023     | UI     |  Fixing   |
+| 09/08/2023     | UI     |  Add Expanded to Text   |  

@@ -136,26 +136,28 @@ class _MenuSumState extends State<MenuSum> {
                                 ),
                               ),
                               const SizedBox(width: 5),
-                              TextButton(
-                                child: AutoSizeText(
-                                  chatMessage['text'], 
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
-                                    overflow: TextOverflow.ellipsis,
+                              Expanded(
+                                child: TextButton(
+                                  child: AutoSizeText(
+                                    chatMessage['text'], 
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    maxLines: 3,
                                   ),
-                                  maxLines: 3,
+                                  onPressed: () {
+                                    setState(() {
+                                      GetV.summaryNum = chatMessage['Index'];
+                                      GetV.messageSummaryID = chatMessage['messageID'];
+                                      GetV.menuSumPressed = true;
+                                    });
+                                    
+                                    Navigator.pop(context);
+                                  }
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    GetV.summaryNum = chatMessage['Index'];
-                                    GetV.messageSummaryID = chatMessage['messageID'];
-                                    GetV.menuSumPressed = true;
-                                  });
-                                  
-                                  Navigator.pop(context);
-                                }
                               ),
                             ],
                           ),

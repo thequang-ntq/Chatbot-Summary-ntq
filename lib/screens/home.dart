@@ -335,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: widget.toChat,
                           style: ButtonStyle(
                             fixedSize: MaterialStateProperty.all(
-                              const Size(160, 40),
+                              const Size(164, 43),
                             ),
                             backgroundColor: 
                               MaterialStateProperty.resolveWith<Color>(
@@ -368,7 +368,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: widget.toSummarize,
                           style: ButtonStyle(
                             fixedSize: MaterialStateProperty.all(
-                              const Size(160, 40),
+                              const Size(164, 43),
                             ),
                             backgroundColor: 
                               MaterialStateProperty.resolveWith<Color>(
@@ -390,7 +390,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const SizedBox(width: 18),
                               const Text(
-                                'Summarize',
+                                'Summary',
                                 style: TextStyle(fontSize: 18),
                               ),
                             ],
