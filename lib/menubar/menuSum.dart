@@ -5,7 +5,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
 class MenuSum extends StatefulWidget {
-  const MenuSum({super.key});
+  const MenuSum({super.key, required this.toRefresh});
+  final void Function() toRefresh;
   @override
   _MenuSumState createState() => _MenuSumState();
 }
@@ -37,10 +38,44 @@ class _MenuSumState extends State<MenuSum> {
             children: [
               IconButton(
                 onPressed: () async{
+                  final upURL = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryNum.json');
+                  final res = await http.get(upURL);
+                  final Map<String,dynamic> dat = json.decode(res.body);
+                  int maxNum = 1;
+                  for(final item in dat.entries){
+                    if(maxNum < item.value['summary-num']){
+                      maxNum = item.value['summary-num'];
+                    }
+                  }
+
+                  final resd = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+                    .doc(GetV.messageSummaryID).get();
+                  if(resd['text'] == ''){
+                    await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+                    .doc(GetV.messageSummaryID).delete();
+                    
+                  }
                   setState(() {
-                    GetV.summaryNum++;
+                    GetV.title = '';
+                    GetV.summaryNum = maxNum + 1;
                     GetV.menuSumPressed = true;
                   });
+
+                  await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
+                    'text' : '',
+                    'Index' : GetV.summaryNum,
+                    'messageID': GetV.messageSummaryID,
+                    'createdAt': Timestamp.now(),
+                  }).then((DocumentReference doc){
+                    GetV.messageSummaryID = doc.id;
+                  });
+                  await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').doc(GetV.messageSummaryID).update({
+                    'text' : '',
+                    'Index' : GetV.summaryNum,
+                    'messageID': GetV.messageSummaryID,
+                    'createdAt': Timestamp.now(),
+                  }); 
+
                   final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryNum.json');
                   final response2 = await http.get(url2);
                   final Map<String,dynamic> resData2 = json.decode(response2.body);
@@ -58,7 +93,8 @@ class _MenuSumState extends State<MenuSum> {
                       item.value['summary-ItemNumber'] = GetV.summaryNum;
                     }
                   }
-                  Navigator.pop(context);
+                  widget.toRefresh();
+                  // Navigator.pop(context);
                 },
                 icon: const Icon(Icons.add, color: Colors.black),
               ),
@@ -69,12 +105,64 @@ class _MenuSumState extends State<MenuSum> {
                   fontSize: 18,
                   color: Colors.black,
                 )),
-                onPressed: () {
+                onPressed: () async{
+                  final upURL = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryNum.json');
+                  final res = await http.get(upURL);
+                  final Map<String,dynamic> dat = json.decode(res.body);
+                  int maxNum = 1;
+                  for(final item in dat.entries){
+                    if(maxNum < item.value['summary-num']){
+                      maxNum = item.value['summary-num'];
+                    }
+                  }
+
+                  final resd = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+                    .doc(GetV.messageSummaryID).get();
+                  if(resd['text'] == ''){
+                    await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+                    .doc(GetV.messageSummaryID).delete();
+                    
+                  }
                   setState(() {
-                    GetV.summaryNum++;
+                    GetV.title = '';
+                    GetV.summaryNum = maxNum + 1;
                     GetV.menuSumPressed = true;
                   });
-                  Navigator.pop(context);
+
+                  await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
+                    'text' : '',
+                    'Index' : GetV.summaryNum,
+                    'messageID': GetV.messageSummaryID,
+                    'createdAt': Timestamp.now(),
+                  }).then((DocumentReference doc){
+                    GetV.messageSummaryID = doc.id;
+                  });
+                  await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').doc(GetV.messageSummaryID).update({
+                    'text' : '',
+                    'Index' : GetV.summaryNum,
+                    'messageID': GetV.messageSummaryID,
+                    'createdAt': Timestamp.now(),
+                  }); 
+
+                  final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryNum.json');
+                  final response2 = await http.get(url2);
+                  final Map<String,dynamic> resData2 = json.decode(response2.body);
+                  for(final item in resData2.entries){
+                    if(GetV.userName.text == item.value['user-name']){
+                      item.value['summary-num'] = GetV.summaryNum;
+                    }
+                  }
+                  
+                  final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryItemNumber.json');
+                  final response = await http.get(url);
+                  final Map<String,dynamic> resData = json.decode(response.body);
+                  for(final item in resData.entries){
+                    if(GetV.userName.text == item.value['user-name']){
+                      item.value['summary-ItemNumber'] = GetV.summaryNum;
+                    }
+                  }
+                  widget.toRefresh();
+                  // Navigator.pop(context);
                 },
               ),
             ],
@@ -122,15 +210,21 @@ class _MenuSumState extends State<MenuSum> {
                               Visibility(
                                 visible: chatMessage['text'] != '',
                                 child: IconButton(
-                                  onPressed: () { 
-                                                  
+                                  onPressed: () async{ 
+                                    final resd = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+                                      .doc(GetV.messageSummaryID).get();
+                                    if(resd['text'] == ''){
+                                      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+                                      .doc(GetV.messageSummaryID).delete();
+                                      
+                                    }              
                                     setState(() {
                                       GetV.summaryNum =  chatMessage['Index'];
                                       GetV.messageSummaryID = chatMessage['messageID'];
                                       GetV.menuSumPressed =true;
                                     });
-                                    
-                                    Navigator.pop(context);
+                                    widget.toRefresh();
+                                    // Navigator.pop(context);
                                   },
                                   icon: const Icon(Icons.message_outlined, color: Colors.black),
                                 ),
@@ -148,14 +242,21 @@ class _MenuSumState extends State<MenuSum> {
                                     ),
                                     maxLines: 3,
                                   ),
-                                  onPressed: () {
+                                  onPressed: () async{
+                                    final resd = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+                                      .doc(GetV.messageSummaryID).get();
+                                    if(resd['text'] == ''){
+                                      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+                                      .doc(GetV.messageSummaryID).delete();
+                                      
+                                    }   
                                     setState(() {
                                       GetV.summaryNum = chatMessage['Index'];
                                       GetV.messageSummaryID = chatMessage['messageID'];
                                       GetV.menuSumPressed = true;
                                     });
-                                    
-                                    Navigator.pop(context);
+                                    widget.toRefresh();
+                                    // Navigator.pop(context);
                                   }
                                 ),
                               ),

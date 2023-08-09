@@ -321,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
                     ),
-                    child: const Text('Submit', style: TextStyle(fontSize: 25, color: Colors.black)),
+                    child: const Text('Submit', style: TextStyle(fontSize: 25, color: Colors.white)),
                 ),                                
               ),
               const SizedBox(height: 19),

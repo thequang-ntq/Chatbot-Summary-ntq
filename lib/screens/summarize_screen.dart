@@ -95,6 +95,16 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     _askText.dispose();
     super.dispose();
   }
+
+  void toRefresh(){
+    Navigator.pop(context);
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SummarizeScreen()),
+    );
+  }
+
   void _uploadFile() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.any);
     if (result == null) {
@@ -242,7 +252,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             ),
           ],
         ),
-        drawer: const MenuSum(),
+        drawer: MenuSum(toRefresh: toRefresh),
         backgroundColor: Colors.grey[300],
         body: SafeArea(
           child: _hasFiled == false?

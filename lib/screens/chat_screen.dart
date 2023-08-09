@@ -89,6 +89,15 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+  void toRefresh(){
+    Navigator.pop(context);
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ChatScreen()),
+    );
+  }
+
   // List<ChatModel> chatList = [];
   @override
   Widget build(BuildContext context) {
@@ -102,7 +111,8 @@ class _ChatScreenState extends State<ChatScreen> {
       child: StreamBuilder(
         stream: FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID)
           .collection('Message').doc(GetV.messageChatID)
-          .collection('ChatItem${GetV.chatNum}').orderBy('createdAt', descending: false).snapshots(),
+          .collection('ChatItem${GetV.chatNum}').orderBy('createdAt', descending: false).snapshots()
+          ,
         builder: (BuildContext ctx, AsyncSnapshot snapshot) {
            if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -163,7 +173,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ],
             ),
-            drawer: const Menu(),
+            drawer: Menu(toRefresh: toRefresh),
             body: SafeArea(
               child: Column(
                 children: [
