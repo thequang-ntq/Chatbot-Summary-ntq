@@ -21,6 +21,7 @@ class ChatWidget extends StatelessWidget {
   void _speak() async {
       _isSpeaking = !_isSpeaking;
       if (_isSpeaking) {
+        await flutterTts.setLanguage("en-US");
         await flutterTts.speak(msg);
       } else {
         flutterTts.stop();

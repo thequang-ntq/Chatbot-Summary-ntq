@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:ui';
 import 'dart:io';
 import 'dart:developer';
-// import 'dart:convert';
+import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/material.dart';
 import 'package:langchain/langchain.dart';
@@ -105,6 +106,21 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     );
   }
 
+   Future<String> convertSpeechToText(String filePath) async {
+    String apiKey = GetV.apiKey.text;
+    var url = Uri.https("api.openai.com", "v1/audio/transcriptions");
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll(({"Authorization": "Bearer $apiKey"}));
+    request.fields["model"] = 'whisper-1';
+    request.fields["language"] = "en";
+    request.files.add(await http.MultipartFile.fromPath('file', filePath));
+    var response = await request.send();
+    var newresponse = await http.Response.fromStream(response);
+    final responseData = json.decode(newresponse.body);
+
+    return responseData['text'];
+  }
+
   void _uploadFile() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.any);
     if (result == null) {
@@ -120,33 +136,37 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         textLast = fileText;
       }
       else if (fileType == "pdf"){
-         final File pdfFile = File(file.path!);
+        final File pdfFile = File(file.path!);
         PDFDoc doc = await PDFDoc.fromFile(pdfFile);
         fileText = await doc.text;
         textLast = fileText;
       }
       else if (fileType == "mp3" || fileType == "wav"){
-         final config = RecognitionConfig(
-          encoding: AudioEncoding.LINEAR16,
-          model: RecognitionModel.basic,
-          enableAutomaticPunctuation: true,
-          sampleRateHertz: 16000,
-          languageCode: 'en-US');
-          final serviceAccount = ServiceAccount.fromString(
-        '${(await rootBundle.loadString('assets/service_account/brycen-chat-app-ntq-e5fd13b4cad3.json'))}');
-          final speechToText = SpeechToText.viaServiceAccount(serviceAccount);
+        //  final config = RecognitionConfig(
+        //   encoding: AudioEncoding.LINEAR16,
+        //   model: RecognitionModel.basic,
+        //   enableAutomaticPunctuation: true,
+        //   sampleRateHertz: 16000,
+        //   languageCode: 'en-US');
+        //   final serviceAccount = ServiceAccount.fromString(
+        // '${(await rootBundle.loadString('assets/service_account/brycen-chat-app-ntq-e5fd13b4cad3.json'))}');
+        //   final speechToText = SpeechToText.viaServiceAccount(serviceAccount);
 
-          final audio = File(file.path!).readAsBytesSync().toList();
-          await speechToText.recognize(config, audio).then((value) {
-            setState(() {
-              fileText = value.results
-                  .map((e) => e.alternatives.first.transcript)
-                  .join('\n');
-            });
+        //   final audio = File(file.path!).readAsBytesSync().toList();
+        //   await speechToText.recognize(config, audio).then((value) {
+        //     setState(() {
+        //       fileText = value.results
+        //           .map((e) => e.alternatives.first.transcript)
+        //           .join('\n');
+        //     });
+        //   });
+        convertSpeechToText(file.path!).then((value) {
+          setState(() {
+            fileText = value;
+            textLast = fileText;
           });
-        // final mp3s = File(file.path!);
-        // fileText = await mp3s.readAsString();
-        textLast = fileText;
+        });
+        textLast = fileText; 
       }
       else if (fileType == "docx"){
         final fileDoc = File(file.path!);
