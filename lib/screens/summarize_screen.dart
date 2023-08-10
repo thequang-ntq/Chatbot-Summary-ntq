@@ -141,7 +141,14 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         fileText = await doc.text;
         textLast = fileText;
       }
-      else if (fileType == "mp3" || fileType == "wav"){
+      
+      else if (fileType == "docx"){
+        final fileDoc = File(file.path!);
+        final Uint8List bytes = await fileDoc.readAsBytes();
+        fileText = docxToText(bytes);
+        textLast = fileText;
+      }
+      else{ //audio file
         //  final config = RecognitionConfig(
         //   encoding: AudioEncoding.LINEAR16,
         //   model: RecognitionModel.basic,
@@ -167,12 +174,6 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           });
         });
         textLast = fileText; 
-      }
-      else if (fileType == "docx"){
-        final fileDoc = File(file.path!);
-        final Uint8List bytes = await fileDoc.readAsBytes();
-        fileText = docxToText(bytes);
-        textLast = fileText;
       }
       setState(() {
         _hasFiled = true;
