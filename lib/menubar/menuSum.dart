@@ -260,6 +260,78 @@ class _MenuSumState extends State<MenuSum> {
                                   }
                                 ),
                               ),
+                              Visibility(
+                                visible: chatMessage['text'] != '',
+                                child: IconButton(
+                                  onPressed: () async{
+                                    final res = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+                                      .doc(chatMessage['messageID']).get();
+                                    if(GetV.messageChatID != res['messageID']){
+                                      String text = res['messageID'];
+                                      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+                                        .doc(text).delete();
+                                      
+                                    }
+                                    else{
+                                      final upURL = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryNum.json');
+                                      final res = await http.get(upURL);
+                                      final Map<String,dynamic> dat = json.decode(res.body);
+                                      int maxNum = 1;
+                                      for(final item in dat.entries){
+                                        if(maxNum < item.value['summary-num']){
+                                          maxNum = item.value['summary-num'];
+                                        }
+                                      }
+                              
+                                      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+                                        .doc(GetV.messageSummaryID).delete();
+                                      
+                                      setState(() {
+                                        GetV.title = '';
+                                        GetV.summaryNum = maxNum + 1;
+                                        GetV.menuSumPressed = true;
+                                      });
+                              
+                                      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
+                                        'text' : '',
+                                        'Index' : GetV.summaryNum,
+                                        'messageID': GetV.messageSummaryID,
+                                        'createdAt': Timestamp.now(),
+                                      }).then((DocumentReference doc){
+                                        GetV.messageSummaryID = doc.id;
+                                      });
+                                      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').doc(GetV.messageSummaryID).update({
+                                        'text' : '',
+                                        'Index' : GetV.summaryNum,
+                                        'messageID': GetV.messageSummaryID,
+                                        'createdAt': Timestamp.now(),
+                                      }); 
+                              
+                                      final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryNum.json');
+                                      final response2 = await http.get(url2);
+                                      final Map<String,dynamic> resData2 = json.decode(response2.body);
+                                      for(final item in resData2.entries){
+                                        if(GetV.userName.text == item.value['user-name']){
+                                          item.value['summary-num'] = GetV.summaryNum;
+                                        }
+                                      }
+                                      
+                                      final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryItemNumber.json');
+                                      final response = await http.get(url);
+                                      final Map<String,dynamic> resData = json.decode(response.body);
+                                      for(final item in resData.entries){
+                                        if(GetV.userName.text == item.value['user-name']){
+                                          item.value['summary-ItemNumber'] = GetV.summaryNum;
+                                        }
+                                      }
+                                      widget.toRefresh();
+                                      // Navigator.pop(context);
+                                    
+                                    }
+                                  },
+                                  icon: const Icon(Icons.delete, color: Colors.black),
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 4),

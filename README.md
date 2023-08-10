@@ -27,7 +27,7 @@
 | ![Home UI](screenshots/screenshot1.png) | ![Chat UI](screenshots/screenshot2.png) | ![Customize API](screenshots/screenshot3.png) |
 
 
-## HOW TO USE 
+# HOW TO USE 
 
 1. Install NODEJS
 
@@ -51,14 +51,14 @@ https://nodejs.org/en/download
 - After that, open setup file and install it.
 
 3. Install VS CODE
-- Follow this video:
+- Follow the video in this link:
 ```bash
  https://code.visualstudio.com/learn/get-started/basics
 
 ```
 
 
-3. Clone this github repository app
+4. Clone this github repository app
 - Open a folder in your computer you want to add this app.
 - Open git (in step 2), then type:
 
@@ -67,12 +67,12 @@ git clone https://github.com/22T1020362/Chatbot-Summary-ntq
 
 ```
 
-- After that, the code for this app will show in that folder.
+- After that, the app's file and folder for this app will show in that folder.
 
-4. Setup flutterfire
+5. Setup flutterfire
 
 - Follow this link: https://firebase.google.com/docs/flutter/setup?platform=ios
-- Open your terminal (cmd) and code this :
+- Open your terminal (cmd) and type this :
 ```
 npm i -g firebase-tools
 ```
@@ -86,7 +86,7 @@ You might encounter the error ```command not found: flutterfire``` . In this cas
 
 After this command a file call ```firebase_option.dart``` will be create in your folder. If not, you should repeat this step 4 again.
 
-- Close terminal, open terminal in your project app (step 3). Type this:
+- Close terminal, open terminal in VS CODE in your project app (step 3). Type this:
 ```
 flutterfire configure
 ```
@@ -98,33 +98,31 @@ Run this again to make sure everything installed in your computer
 flutterfire configure
 ```
 
-You can download the APK file from the releases section of this repository or build the app from source using the
-instructions below:
-
-1. Clone the repository
-
-```bash
-git clone https://github.com/22T1020362/Chatbot-Summary-ntq
-
-```
-2. Install dependencies
+6. Install dependencies
+- Type this in the terminal in your app on VS CODE:
 
 ```bash
 flutter pub get
 
 ```
-3. Run the app
 
+7. Follow these steps: 
+
+- Get a ChatGPT API-KEY . You can log in to 'https://platform.openai.com/account/api-keys' to get one or simply just borrow ones.
+- Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
+
+8.Fill in the code
+- In the lib folder contains the code of this app, must update (change) my comment, for example: 
 ```bash
-flutter run
+(--YOUR API KEY--)
+
 ```
+or 
+```bash
+(--YOUR HTTPS LINK TO THE REALTIME DATABASE--)
 
-
-## After that, follow these steps: 
-
-1. Get a ChatGPT API-KEY . You can log in to 'https://platform.openai.com/account/api-keys' to get one or simply just borrow ones.
-2. Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
-3. Use this app.
+```
+etc,... with your Api Key or https link.
 
 ## Usage
 To use this app, you must enter a GPT Api-key created before or borrowed, submit it by button 'submit' for first time. After that, you can press the key button on the begin of textfield to take that key again. After submit, press 'Chat' to have chat with ChatBot, or press 'Summarize' to summary a text or audio file, and ask question about it.
@@ -164,3 +162,4 @@ This app was built using the following open-source libraries and tools:
 | 07/08/2023     | UI     |  Save apiKey and username when start home screen   |   
 | 08/08/2023     | UI     |  Fixing   |
 | 09/08/2023     | UI     |  Add Expanded to Text   |  
+| 10/08/2023     | MenuBar     |  Add Delete Button to Menu   | 

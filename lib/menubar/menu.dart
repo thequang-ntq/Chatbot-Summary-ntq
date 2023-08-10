@@ -256,6 +256,7 @@ class _MenuState extends State<Menu> {
                                       
                                     }
                                     setState(() {
+                                      // print(chatMessage['messageID']);
                                       GetV.chatNum = chatMessage['Index'];
                                       GetV.messageChatID = chatMessage['messageID'];
                                       GetV.refreshIndicatorKey.currentState?.show();
@@ -265,6 +266,79 @@ class _MenuState extends State<Menu> {
                                     // Navigator.pop(context);
                                     
                                   }
+                                ),
+                              ),
+                              Visibility(
+                                visible: chatMessage['text'] != '',
+                                child: IconButton(
+                                  onPressed: () async{
+                                    // print(chatMessage['messageID']);
+                                    final res = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message')
+                                      .doc(chatMessage['messageID']).get();
+                                    if(GetV.messageChatID != res['messageID']){
+                                      String text = res['messageID'];
+                                      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message')
+                                        .doc(text).delete();
+                                      
+                                      
+                                    }
+                                    else{
+                                      final upURL = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatNum.json');
+                                      final res = await http.get(upURL);
+                                      final Map<String,dynamic> dat = json.decode(res.body);
+                                      int maxNum = 1;
+                                      for(final item in dat.entries){
+                                        if(GetV.userName.text == item.value['user-name']){
+                                          if(maxNum < item.value['chat-num']){
+                                            maxNum = item.value['chat-num'];
+                                          }
+                                        }
+                                        
+                                      }
+                                      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message')
+                                        .doc(GetV.messageChatID).delete();
+                                      
+                                      
+                                      setState(() {
+                                        GetV.title = '';
+                                        GetV.chatNum = maxNum+1;
+                                        GetV.menuPressed = true;
+                                      });
+                                      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message').add({
+                                        'text' : '',
+                                        'Index' : GetV.chatNum,
+                                        'messageID': GetV.messageChatID,
+                                        'createdAt': Timestamp.now(),
+                                      }).then((DocumentReference doc){
+                                        GetV.messageChatID = doc.id;
+                                      });
+                                      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message').doc(GetV.messageChatID).update({
+                                        'text' : '',
+                                        'Index' : GetV.chatNum,
+                                        'messageID': GetV.messageChatID,
+                                        'createdAt': Timestamp.now(),
+                                      }); 
+                                      final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatNum.json');
+                                      final response2 = await http.get(url2);
+                                      final Map<String,dynamic> resData2 = json.decode(response2.body);
+                                      for(final item in resData2.entries){
+                                        if(GetV.userName.text == item.value['user-name']){
+                                          item.value['chat-num'] = GetV.chatNum;
+                                        }
+                                      }
+                                      
+                                      final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatItemNumber.json');
+                                      final response = await http.get(url);
+                                      final Map<String,dynamic> resData = json.decode(response.body);
+                                      for(final item in resData.entries){
+                                        if(GetV.userName.text == item.value['user-name']){
+                                          item.value['chat-ItemNumber'] = GetV.chatNum;
+                                        }
+                                      }
+                                      widget.toRefresh();
+                                    }
+                                  },
+                                  icon: const Icon(Icons.delete, color: Colors.black),
                                 ),
                               ),
                             ],
