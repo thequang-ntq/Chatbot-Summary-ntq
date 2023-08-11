@@ -129,6 +129,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       PlatformFile file = result.files.first;
       fileType = file.name.split('.').last;
       fileName = file.name;
+      GetV.filetype = fileType;
       if(fileType == "txt"){
         final File txtFile = File(file.path!);
         // fileText = utf8.decode(file.bytes);
@@ -177,6 +178,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       }
       setState(() {
         _hasFiled = true;
+        GetV.text = fileText;
+        GetV.filetype = fileType;
+        GetV.filepath = file.path!;
       });
       GetV.filepath = file.path!;
       await saveDocsSummarize(msg: textLast, file: file);  
