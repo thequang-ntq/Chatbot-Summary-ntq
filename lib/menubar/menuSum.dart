@@ -266,10 +266,11 @@ class _MenuSumState extends State<MenuSum> {
                                   onPressed: () async{
                                     final res = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
                                       .doc(chatMessage['messageID']).get();
-                                    if(GetV.messageChatID != res['messageID']){
+                                    if(GetV.messageSummaryID != res['messageID']){
                                       String text = res['messageID'];
                                       await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
                                         .doc(text).delete();
+                                      widget.toRefresh();
                                       
                                     }
                                     else{

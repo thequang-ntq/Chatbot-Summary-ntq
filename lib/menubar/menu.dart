@@ -279,7 +279,7 @@ class _MenuState extends State<Menu> {
                                       String text = res['messageID'];
                                       await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message')
                                         .doc(text).delete();
-                                      
+                                      widget.toRefresh();
                                       
                                     }
                                     else{

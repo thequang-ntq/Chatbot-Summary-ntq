@@ -163,3 +163,4 @@ This app was built using the following open-source libraries and tools:
 | 08/08/2023     | UI     |  Fixing   |
 | 09/08/2023     | UI     |  Add Expanded to Text   |  
 | 10/08/2023     | MenuBar     |  Add Delete Button to Menu   | 
+| 10/08/2023     | Firebase     |  Fixed firebase   |
