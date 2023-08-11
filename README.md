@@ -50,13 +50,17 @@ https://nodejs.org/en/download
 
 - After that, open setup file and install it.
 
-3. Install VS CODE
+3. Install VS CODE and Add Extensions to VS Code
 - Follow the video in this link:
 ```bash
  https://code.visualstudio.com/learn/get-started/basics
 
 ```
+- After you had install VS Code, open extension (Ctrl + Shift + X) setting, search for Code runner, Flutter, Dart in these images:
 
+| Code Runner                                | Flutter                                | Dart                                 |
+|----------------------------------------------|----------------------------------------------|----------------------------------------------|
+| ![Home UI](screenshots/coderunner.png) | ![Chat UI](screenshots/flutter.png) | ![Customize API](screenshots/dart.png) |
 
 4. Clone this github repository app
 - Open a folder in your computer you want to add this app.
@@ -111,7 +115,7 @@ flutter pub get
 - Get a ChatGPT API-KEY . You can log in to 'https://platform.openai.com/account/api-keys' to get one or simply just borrow ones.
 - Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
 
-8.Fill in the code
+8. Fill in the code
 - In the lib folder contains the code of this app, must update (change) my comment, for example: 
 ```bash
 (--YOUR API KEY--)
