@@ -28,9 +28,9 @@
 
 
 # HOW TO USE 
-```bash
-1. Install NODEJS
-```
+
+### 1. Install NODEJS
+
 - First, you need to download 'NODEJS' follow this link: 
 ```bash
 https://nodejs.org/en/download
@@ -40,9 +40,9 @@ https://nodejs.org/en/download
 - After that, open setup file and install it. Just wait until the NODEJS terminal open and then close it.
 - Open terminal, check NODEJS version type: node -v . It should show a version, if not you should install it again.
 
-```bash
-2. Install git
-```
+
+### 2. Install git
+
 - First, you need to download 'GIT' follow this link:
 ```bash
  https://git-scm.com/downloads
@@ -52,9 +52,9 @@ https://nodejs.org/en/download
 
 - After that, open setup file and install it.
 
-```bash
-3. Install VS CODE and Add Extensions to VS Code
-```
+
+### 3. Install VS CODE and Add Extensions to VS Code
+
 - Follow the video in this link:
 
 ```bash
@@ -67,9 +67,9 @@ https://nodejs.org/en/download
 |----------------------------------------------|----------------------------------------------|----------------------------------------------|
 | ![Home UI](screenshots/coderunner.png) | ![Chat UI](screenshots/flutter.png) | ![Customize API](screenshots/dart.png) |
 
-```bash
-4. Clone this github repository app
-```
+
+### 4. Clone this github repository app
+
 - Open a folder in your computer you want to add this app.
 - Open git (in step 2), then type:
 
@@ -80,9 +80,9 @@ git clone https://github.com/22T1020362/Chatbot-Summary-ntq
 
 - After that, the app's file and folder for this app will show in that folder.
 
-```bash
-5. Setup flutterfire
-```
+
+### 5. Setup flutterfire
+
 - Follow this link: https://firebase.google.com/docs/flutter/setup?platform=ios
 - Open your terminal (cmd) and type this :
 ```
@@ -110,9 +110,8 @@ Run this again to make sure everything installed in your computer
 flutterfire configure
 ```
 
-```bash
-6. Install dependencies
-```
+### 6. Install dependencies
+
 - Type this in the terminal in your app on VS CODE:
 
 ```bash
@@ -120,15 +119,14 @@ flutter pub get
 
 ```
 
-```bash
-7. Follow these steps: 
-```
+
+### 7. Follow these steps: 
+
 - Get a ChatGPT API-KEY . You can log in to 'https://platform.openai.com/account/api-keys' to get one or simply just borrow ones.
 - Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
 
-```bash
-```
-8. Fill in the code
+
+### 8. Fill in the code
 - In the lib folder contains the code of this app, must update (change) my comment, for example: 
 ```bash
 (--YOUR API KEY--)
