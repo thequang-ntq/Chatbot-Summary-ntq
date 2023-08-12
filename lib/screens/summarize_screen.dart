@@ -15,15 +15,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chatgpt/providers/chats/chats_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:pdf_text/pdf_text.dart';
-import 'package:google_speech/google_speech.dart';
-// import 'package:path_provider/path_provider.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:chatgpt/screens/home.dart';
 import 'package:chatgpt/widgets/chats/docs_widget.dart';
 import 'package:docx_to_text/docx_to_text.dart';
 import 'package:intl/intl.dart';
 import 'package:chatgpt/widgets/chats/chat_widget.dart';
-// import 'package:docx_to_text/docx_to_text.dart';
 import 'package:chatgpt/menubar/menuSum.dart';
 
 
@@ -132,7 +129,6 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       GetV.filetype = fileType;
       if(fileType == "txt"){
         final File txtFile = File(file.path!);
-        // fileText = utf8.decode(file.bytes);
         fileText = await txtFile.readAsString();
         textLast = fileText;
       }
@@ -150,24 +146,6 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         textLast = fileText;
       }
       else{ //audio file
-        //  final config = RecognitionConfig(
-        //   encoding: AudioEncoding.LINEAR16,
-        //   model: RecognitionModel.basic,
-        //   enableAutomaticPunctuation: true,
-        //   sampleRateHertz: 16000,
-        //   languageCode: 'en-US');
-        //   final serviceAccount = ServiceAccount.fromString(
-        // '${(await rootBundle.loadString('assets/service_account/brycen-chat-app-ntq-e5fd13b4cad3.json'))}');
-        //   final speechToText = SpeechToText.viaServiceAccount(serviceAccount);
-
-        //   final audio = File(file.path!).readAsBytesSync().toList();
-        //   await speechToText.recognize(config, audio).then((value) {
-        //     setState(() {
-        //       fileText = value.results
-        //           .map((e) => e.alternatives.first.transcript)
-        //           .join('\n');
-        //     });
-        //   });
         convertSpeechToText(file.path!).then((value) {
           setState(() {
             fileText = value;
@@ -193,7 +171,6 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     if (!_isListening) {
       bool available = await _speech.initialize(
           onStatus: (val) {
-            // print("OnStatus: $val");
             if (val == "done") {
               setState(() {
                 _isListening = false;
@@ -622,7 +599,6 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       final promptTemplate = PromptTemplate.fromTemplate(
         template,
       );
-      // final embeddings = OpenAIEmbeddings(apiKey: GetV.apiKey.text);
       String embeddedText = '';
       if(msg.length > 4000){
         embeddedText = msg.substring(0, 4000);
@@ -705,7 +681,6 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         setState(() {
           _isTyping = true;
           _first = false;
-          // chatList.add(ChatModel(msg: textEditingController.text, chatIndex: 0));
           chatProvider.addUserMessage(msg: msg);
           _askText.clear();
           focusNode.unfocus();

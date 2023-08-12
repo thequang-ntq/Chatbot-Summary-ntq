@@ -1,11 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-
-// final _firebase = FirebaseAuth.instance;
-
 
 class GetV{
   static TextEditingController apiKey = TextEditingController();
@@ -54,17 +49,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    // Clean up the controller when the widget is disposed.
-    // widget.apiKeyValue.dispose();
-    // widget.name.dispose();
     super.dispose();
   }
 
   
 
   Future<void> _api() async{
-    // final prefsName = await SharedPreferences.getInstance();
-    final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'api-keys.json');
+    final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'api-keys.json');
     final response = await http.get(url);
     final Map<String, dynamic> resData = json.decode(response.body);
     late var value;
@@ -77,8 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _name() async{
-    // final prefsName = await SharedPreferences.getInstance();
-    final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userNames.json');
+    final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userNames.json');
     final response = await http.get(url);
     final Map<String, dynamic> resData = json.decode(response.body);
     late var value;
@@ -100,6 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
    Future<void> checkApiKey(String apiKey) async {
+    //Remember you must log into 'http://api.openai.com/v1/models' with your api key to get response in this
     final response = await http.get(
       Uri.parse("https://api.openai.com/v1/models"),
       headers: {"Authorization": "Bearer $apiKey"},
@@ -169,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         fillColor: Colors.white,
                         prefixIcon: IconButton(
                           onPressed: () async {
-                            final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userNames.json');
+                            final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userNames.json');
                             final response = await http.get(url2);
                             final Map<String,dynamic> resData = json.decode(response.body);
                             for(final item in resData.entries){
@@ -182,8 +173,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           icon: const Icon(Icons.person),
                         ),
-                        suffixIcon: Icon(Icons.check, color: Colors.green,),
-                        enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 8, color: Colors.green)),   
+                        suffixIcon: const Icon(Icons.check, color: Colors.green,),
+                        enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 8, color: Colors.green)),   
                       ),
                       autofocus: false,
                       autocorrect: false,
@@ -203,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           
                           icon: const Icon(Icons.key),
                           onPressed: () async {
-                            final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'api-keys.json');
+                            final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'api-keys.json');
                             final response = await http.get(url);
                             final Map<String,dynamic> resData = json.decode(response.body);
                             for(final item in resData.entries){
@@ -237,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         fillColor: Colors.white,
                         prefixIcon: IconButton(
                           onPressed: () async {
-                            final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userNames.json');
+                            final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userNames.json');
                             final response = await http.get(url2);
                             final Map<String,dynamic> resData = json.decode(response.body);
                             for(final item in resData.entries){
@@ -249,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           icon: const Icon(Icons.person),
                         ),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(25))),
+                        border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(25))),
                         hintText: 'Enter your UserName',   
                       ),
                       autofocus: false,
@@ -266,7 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         prefixIcon: IconButton(
                           icon: const Icon(Icons.key),
                           onPressed: () async {
-                            final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'api-keys.json');
+                            final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'api-keys.json');
                             final response = await http.get(url);
                             final Map<String, dynamic> resData = json.decode(response.body);
                             for(final item in resData.entries){

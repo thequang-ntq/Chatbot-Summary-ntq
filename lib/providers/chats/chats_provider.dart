@@ -1,14 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chatgpt/screens/home.dart';
-// import 'package:dart_openai/dart_openai.dart';
 import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
-// import 'package:chatgpt/models/chats/chat_model.dart';
-// import '../../services/chats/api_service.dart';
-
 const template = '''
 ---BEGIN Conversation---
 Human chat : {humanChat}
@@ -84,8 +80,6 @@ class ChatProvider with ChangeNotifier {
   Future<void> sendMessageAndGetAnswersSummarize(
       {required String msg}) async {
       final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' , temperature: 0);
-      // ConversationBufferMemory memo = ConversationBufferMemory();
-      // 'assets/files/state_of_the_union.txt';
       if(GetV.filepath == "txt" || GetV.filepath == "wav" || GetV.filepath == "docx"){
         TextLoader loader = TextLoader(GetV.filepath);
         final documents = await loader.load();
@@ -109,14 +103,6 @@ class ChatProvider with ChangeNotifier {
           documents: textsWithSources,
           embeddings: embeddings,
         );
-        // final summaryData = await FirebaseFirestore.instance.collection(GetV.userName.text).doc
-        //   (GetV.userSummaryID).collection('Summarize').get();
-        // for(final item in summaryData.docs){
-        //   await memo.saveContext(inputValues: {'humanChat' : item.data()['text'] }, outputValues: {'aiChat': item.data()['text']});
-        // }
-        // var conversation = ConversationChain(llm: llm, memory: memo);
-        // final result = await conversation.call(msg, returnOnlyOutputs: true);
-        // chatList.add(result['response']);
         final qaChain = OpenAIQAWithSourcesChain(llm: llm);
         final docPrompt = PromptTemplate.fromTemplate(
           'Please use the content from the txt file below to answer my question.\ncontent: {page_content}\nSource: {source}',
@@ -170,24 +156,6 @@ class ChatProvider with ChangeNotifier {
           'createdAt': Timestamp.now(),
         });
       }
-      // if(GetV.title == ''){
-      //   GetV.humanChat = msg;
-      //   GetV.aiChat = result['result'].toString();
-      //   final promptTemplate = PromptTemplate.fromTemplate(template);
-      //   final prompt = promptTemplate.format({'humanChat' : GetV.humanChat , 'aiChat' : GetV.aiChat});
-      //   final result2 = await llm.predict(prompt);
-      //   GetV.title = result2;
-      //   await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
-      //   .doc(GetV.messageSummaryID).update(
-      //     {
-      //       'text' : result2,
-      //       'Index' : GetV.summaryNum,
-      //       'messageID': GetV.messageSummaryID,
-      //     }
-      //   );
-      // }
     notifyListeners();
   }
-
-  
 }

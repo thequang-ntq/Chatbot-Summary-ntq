@@ -38,7 +38,7 @@ class _MenuState extends State<Menu> {
             children: [
               IconButton(
                 onPressed: () async{
-                  final upURL = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatNum.json');
+                  final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatNum.json');
                   final res = await http.get(upURL);
                   final Map<String,dynamic> dat = json.decode(res.body);
                   int maxNum = 1;
@@ -77,7 +77,7 @@ class _MenuState extends State<Menu> {
                     'messageID': GetV.messageChatID,
                     'createdAt': Timestamp.now(),
                   }); 
-                  final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatNum.json');
+                  final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatNum.json');
                   final response2 = await http.get(url2);
                   final Map<String,dynamic> resData2 = json.decode(response2.body);
                   for(final item in resData2.entries){
@@ -86,7 +86,7 @@ class _MenuState extends State<Menu> {
                     }
                   }
                   
-                  final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatItemNumber.json');
+                  final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatItemNumber.json');
                   final response = await http.get(url);
                   final Map<String,dynamic> resData = json.decode(response.body);
                   for(final item in resData.entries){
@@ -108,7 +108,7 @@ class _MenuState extends State<Menu> {
                   color: Colors.black,
                 )),
                 onPressed: () async{
-                  final upURL = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatNum.json');
+                  final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatNum.json');
                   final res = await http.get(upURL);
                   final Map<String,dynamic> dat = json.decode(res.body);
                   int maxNum = 1;
@@ -146,7 +146,7 @@ class _MenuState extends State<Menu> {
                     'messageID': GetV.messageChatID,
                     'createdAt': Timestamp.now(),
                   }); 
-                  final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatNum.json');
+                  final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatNum.json');
                   final response2 = await http.get(url2);
                   final Map<String,dynamic> resData2 = json.decode(response2.body);
                   for(final item in resData2.entries){
@@ -155,7 +155,7 @@ class _MenuState extends State<Menu> {
                     }
                   }
                   
-                  final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatItemNumber.json');
+                  final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatItemNumber.json');
                   final response = await http.get(url);
                   final Map<String,dynamic> resData = json.decode(response.body);
                   for(final item in resData.entries){
@@ -283,7 +283,7 @@ class _MenuState extends State<Menu> {
                                       
                                     }
                                     else{
-                                      final upURL = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatNum.json');
+                                      final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatNum.json');
                                       final res = await http.get(upURL);
                                       final Map<String,dynamic> dat = json.decode(res.body);
                                       int maxNum = 1;
@@ -318,7 +318,7 @@ class _MenuState extends State<Menu> {
                                         'messageID': GetV.messageChatID,
                                         'createdAt': Timestamp.now(),
                                       }); 
-                                      final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatNum.json');
+                                      final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatNum.json');
                                       final response2 = await http.get(url2);
                                       final Map<String,dynamic> resData2 = json.decode(response2.body);
                                       for(final item in resData2.entries){
@@ -327,7 +327,7 @@ class _MenuState extends State<Menu> {
                                         }
                                       }
                                       
-                                      final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatItemNumber.json');
+                                      final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatItemNumber.json');
                                       final response = await http.get(url);
                                       final Map<String,dynamic> resData = json.decode(response.body);
                                       for(final item in resData.entries){

@@ -39,8 +39,6 @@ class _TabsState extends State<Tabs> {
                     const CircularProgressIndicator();
           });
           return const AlertDialog(
-            // Retrieve the text the that user has entered by using the
-            // TextEditingController.
             content: Text('Please enter a valid Api Key'),
           );
         },
@@ -55,8 +53,6 @@ class _TabsState extends State<Tabs> {
                     const CircularProgressIndicator();
           });
           return const AlertDialog(
-            // Retrieve the text the that user has entered by using the
-            // TextEditingController.
             content: Text('Please enter a UserName'),
           );
         },
@@ -72,14 +68,12 @@ class _TabsState extends State<Tabs> {
                     const CircularProgressIndicator();
           });
           return const AlertDialog(
-            // Retrieve the text the that user has entered by using the
-            // TextEditingController.
             content: Text('API Key and UserName corrected! Thanks for using our app!'),
           );
         },
       );
       // GetV.userName.text = _enteredUserName;
-      final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'api-keys.json');
+      final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'api-keys.json');
       final response = await http.get(url);
       if(response.body.contains(apiKeyValue.text)==false){
         await http.post(url, 
@@ -92,7 +86,7 @@ class _TabsState extends State<Tabs> {
       );
       }
       
-      final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userNames.json');
+      final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userNames.json');
       final response2 = await http.get(url2);
       if(response2.body.contains(userName.text)==false){
         await http.post(url2, 
@@ -108,7 +102,7 @@ class _TabsState extends State<Tabs> {
         ).then((DocumentReference doc){
           GetV.userChatID = doc.id;
         });
-        final url3 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userChatID.json');
+        final url3 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userChatID.json');
         await http.post(url3, 
           headers: {
             'Content-Type' : 'userchatid/json',
@@ -123,7 +117,7 @@ class _TabsState extends State<Tabs> {
         ).then((DocumentReference doc){
           GetV.userSummaryID = doc.id;
         });
-        final url4 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userSummaryID.json');
+        final url4 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userSummaryID.json');
         await http.post(url4, 
           headers: {
             'Content-Type' : 'usersummaryid/json',
@@ -136,7 +130,7 @@ class _TabsState extends State<Tabs> {
         GetV.userName.text = _enteredUserName;
       }
       else if(response2.body.contains(userName.text)==true){
-        final url5 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userChatID.json');
+        final url5 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userChatID.json');
         final response5 = await http.get(url5);
         final resData5 = await json.decode(response5.body);
         for(final item in resData5.entries){
@@ -148,7 +142,7 @@ class _TabsState extends State<Tabs> {
           }
         }
 
-        final url6 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'userSummaryID.json');
+        final url6 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userSummaryID.json');
         final response6 = await http.get(url6);
 
         final resData6 = await json.decode(response6.body);
@@ -178,7 +172,7 @@ class _TabsState extends State<Tabs> {
       );
     } else {
         
-        final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatNum.json');
+        final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatNum.json');
         final response2 = await http.get(url2);
         if (response2.body.contains(_enteredUserName) == true){
           final Map<String,dynamic> resData2 = json.decode(response2.body);
@@ -235,7 +229,7 @@ class _TabsState extends State<Tabs> {
             'createdAt': Timestamp.now(),
           }); 
 
-        final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'chatItemNumber.json');
+        final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatItemNumber.json');
         final response = await http.get(url);
         bool check = true;
         if(response.body != 'null'){
@@ -278,7 +272,7 @@ class _TabsState extends State<Tabs> {
         },
       );
     } else {
-      final url2 = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryNum.json');
+      final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'summaryNum.json');
         final response2 = await http.get(url2);
         if (response2.body.contains(_enteredUserName) == true){
           final Map<String,dynamic> resData2 = json.decode(response2.body);
@@ -335,7 +329,7 @@ class _TabsState extends State<Tabs> {
             'createdAt': Timestamp.now(),
           }); 
 
-        final url = Uri.https('brycen-chat-app-default-rtdb.firebaseio.com', 'summaryItemNumber.json');
+        final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'summaryItemNumber.json');
         final response = await http.get(url);
         bool check = true;
         if(response.body != 'null'){

@@ -4,6 +4,22 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
+
+///
+///
+///
+
+// 
+// *** Delete my firebase_options.dart file here because you are gonna have your own firebase_option.dart ***
+// *** file when you done setup flutterfire ***
+
+
+
+///
+///
+///
+
+
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
 /// Example:

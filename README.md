@@ -79,7 +79,10 @@ git clone https://github.com/22T1020362/Chatbot-Summary-ntq
 ```
 
 - After that, the app's file and folder for this app will show in that folder.
+- IF LIB FOLDER HAVE A FILE NAMED FIREBASE_OPTIONS.DART BEFORE YOU SETUP FLUTTERFIRE, CHECK IF THIS FILE HAS A MESSAGE LIKE THIS IMAGE:
+| ![Home UI](screenshots/delete.png) |
 
+- IF IT HAS, just delete that firebase_options.dart, BECAUSE YOU ARE GONNA HAVE A YOUR OWN FIREBASE_OPTIONS.DART WHEN YOU DONE SETUP FLUTTERFIRE IN STEP 5 RIGHT BELOW THIS.
 
 ### 5. Setup flutterfire
 
@@ -109,6 +112,10 @@ Run this again to make sure everything installed in your computer
 ```
 flutterfire configure
 ```
+- AFTER ALL OF THIS, YOU WILL RECEIVE A FIREBASE_OPTIONS.DART FILE IN YOUR LIB FOLDER OF YOUR APP.
+- Check in the 'pubspec.yaml' file, if the file has these depedencies:
+| ![Home UI](screenshots/depen.png) |
+- If not, you should add those two dependencies to your file.
 
 ### 6. Install dependencies
 
@@ -129,12 +136,7 @@ flutter pub get
 ### 8. Fill in the code
 - In the lib folder contains the code of this app, must update (change) my comment, for example: 
 ```bash
-(--YOUR API KEY--)
-
-```
-or 
-```bash
-(--YOUR HTTPS LINK TO THE REALTIME DATABASE--)
+('--YOUR HTTPS LINK TO THE REALTIME DATABASE--')
 
 ```
 etc,... with your Api Key or https link.
