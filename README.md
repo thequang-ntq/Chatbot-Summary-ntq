@@ -139,7 +139,7 @@ flutter pub get
 ('--YOUR HTTPS LINK TO THE REALTIME DATABASE--')
 
 ```
-etc,... with your Api Key or https link.
+with your https link.
 
 ## Usage
 To use this app, you must enter a GPT Api-key created before or borrowed, submit it by button 'submit' for first time. After that, you can press the key button on the begin of textfield to take that key again. After submit, press 'Chat' to have chat with ChatBot, or press 'Summarize' to summary a text or audio file, and ask question about it.
