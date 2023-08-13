@@ -53,9 +53,11 @@ https://nodejs.org/en/download
 - After that, open setup file and install it.
 
 
-### 3. Install VS CODE <Optional>
+### 3. Install VS CODE (Optional)
 
 - If you already have an editor like that just skip this step.
+
+
 - Follow the video in this link:
 
 ```bash
