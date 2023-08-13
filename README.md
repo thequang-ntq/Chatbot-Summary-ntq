@@ -29,8 +29,8 @@
 
 ## I. Prerequisites
 
-**SYSTEM:** 4GB RAM, At Least 10GB of Free Space in C Drive, And 2GB of Free Space in your App Folder.
-**INSALLED:** [npm](https://nodejs.org/en) (v18.17.0), [Flutter](https://docs.flutter.dev/get-started/install)(version in "pubspec.lock"), [Git](https://git-scm.com/downloads)(v2.41.0)
+- **SYSTEM:** 4GB RAM, At Least 10GB of Free Space in C Drive, And 2GB of Free Space in your App Folder.
+- **INSALLED:** [npm](https://nodejs.org/en) (v18.17.0), [Flutter](https://docs.flutter.dev/get-started/install)(version in "pubspec.lock"), [Git](https://git-scm.com/downloads)(v2.41.0)
 [VSCode](https://code.visualstudio.com/)(v1.81.1)
 
 ## II. Setup
@@ -41,23 +41,22 @@
 
 ```bash
 git clone https://github.com/22T1020362/Chatbot-Summary-ntq
-
 ```
-
-- After that, the app's file and folder for this app will show in that folder.
-- IF LIB FOLDER HAVE A FILE NAMED FIREBASE_OPTIONS.DART BEFORE YOU SETUP FLUTTERFIRE, CHECK IF THIS FILE HAS A MESSAGE LIKE THIS IMAGE:
-| ![Home UI](screenshots/delete.png) |
-
-- IF IT HAS, just delete that firebase_options.dart, BECAUSE YOU ARE GONNA HAVE YOUR OWN FIREBASE_OPTIONS.DART WHEN YOU DONE SETUP FLUTTERFIRE IN STEP 6 RIGHT BELOW THIS.
-
+- Open your project terminal, then type:
+```bash
+flutter pub get
+```
 ### 2. Setup flutterfire
-
-Or you can read this:
+- You can follow this link: 
+```bash
+https://firebase.google.com/docs/flutter/setup?hl=vi&platform=web
+```
 - First, create your firebase project :
 ![CreateProject](assets/files/createProject.gif)
 
-- Second, setup FlutterFire:
-![SetupFlutterFire](assets/files/setupFlutterFire.webm)
+- Second, setup FlutterFire CLI:
+![Cli](assets/files/cli.gif)
+
 
 After this a file call ```firebase_option.dart``` will be create in your folder. If not, you should repeat this step 4 again.
 
@@ -66,6 +65,7 @@ After this a file call ```firebase_option.dart``` will be create in your folder.
 flutterfire configure 
 ```
 (choose a project on your firebase to link to this app)
+(choose yes to all)
 ```
 flutter pub add firebase_core
 ```
@@ -73,25 +73,14 @@ Run this again to make sure everything installed in your computer
 ```
 flutterfire configure
 ```
-- Check in the 'pubspec.yaml' file, if the file already has these 2 dependencies:
-| ![Home UI](screenshots/depen.png) |
-- If not, you should add those 2 dependencies to your file.
+(choose yes to all to replace my firebase_options.dart file with yours)
 
-### 3. Install dependencies
-
-- Type this in the terminal in your app on VS CODE:
-
-```bash
-flutter pub get
-
-```
-
-### 4. Follow these steps: 
+### 3. Follow these steps: 
 
 - Get a ChatGPT API-KEY . You can log in to 'https://platform.openai.com/account/api-keys' to get one or simply just borrow ones.
 - Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
 
-### 5. Fill in the code
+### 4. Fill in the code
 - In the lib folder contains the code of this app, must update (change) my comment, for example: 
 ```bash
 '--YOUR HTTPS LINK TO THE REALTIME DATABASE--'
