@@ -27,7 +27,7 @@
 | ![Home UI](screenshots/screenshot1.png) | ![Chat UI](screenshots/screenshot2.png) | ![Customize API](screenshots/screenshot3.png) |
 
 
-# HOW TO USE 
+# HOW TO RUN THIS APP 
 
 ### 1. Install NODEJS
 
@@ -53,24 +53,31 @@ https://nodejs.org/en/download
 - After that, open setup file and install it.
 
 
-### 3. Install VS CODE and Add Extensions to VS Code
+### 3. Install VS CODE <Optional>
 
+- If you already have an editor like that just skip this step.
 - Follow the video in this link:
 
 ```bash
  https://code.visualstudio.com/learn/get-started/basics
 
 ```
-- After you had install VS Code, open extension (Ctrl + Shift + X) setting, search for Code runner, Flutter, Dart in these images:
+
+- If you want to edit my code, you can open extension (Ctrl + Shift + X) setting, search for Code runner, Flutter, Dart in these images: (setting extensions)
 
 | Code Runner                                | Flutter                                | Dart                                 |
 |----------------------------------------------|----------------------------------------------|----------------------------------------------|
 | ![Home UI](screenshots/coderunner.png) | ![Chat UI](screenshots/flutter.png) | ![Customize API](screenshots/dart.png) |
 
 
-### 4. Clone this github repository app
+### 4. Install Flutter
+- Follow this link: 
+```bash
+https://docs.flutter.dev/get-started/install
+```
+### 5. Clone this github repository app
 
-- Open a folder in your computer you want to add this app.
+- Open a folder in your computer that you want to add this app.
 - Open git (in step 2), then type:
 
 ```bash
@@ -82,15 +89,22 @@ git clone https://github.com/22T1020362/Chatbot-Summary-ntq
 - IF LIB FOLDER HAVE A FILE NAMED FIREBASE_OPTIONS.DART BEFORE YOU SETUP FLUTTERFIRE, CHECK IF THIS FILE HAS A MESSAGE LIKE THIS IMAGE:
 | ![Home UI](screenshots/delete.png) |
 
-- IF IT HAS, just delete that firebase_options.dart, BECAUSE YOU ARE GONNA HAVE A YOUR OWN FIREBASE_OPTIONS.DART WHEN YOU DONE SETUP FLUTTERFIRE IN STEP 5 RIGHT BELOW THIS.
+- IF IT HAS, just delete that firebase_options.dart, BECAUSE YOU ARE GONNA HAVE YOUR OWN FIREBASE_OPTIONS.DART WHEN YOU DONE SETUP FLUTTERFIRE IN STEP 6 RIGHT BELOW THIS.
 
-### 5. Setup flutterfire
+### 6. Setup flutterfire
 
-- Follow this link: https://firebase.google.com/docs/flutter/setup?platform=ios
+Follow this link: 
+```bash
+https://firebase.google.com/docs/flutter/setup?platform=ios
+```
+Or you can read this:
 - Open your terminal (cmd) and type this :
+
+(must have nodejs to use 'npm')
 ```
 npm i -g firebase-tools
 ```
+(login to your email account)
 ```
 firebase login 
 ```
@@ -103,7 +117,7 @@ After this command a file call ```firebase_option.dart``` will be create in your
 
 - Close terminal, open terminal in VS CODE in your project app (step 3). Type this:
 ```
-flutterfire configure
+flutterfire configure (choose a project on your firebase to link to this app)
 ```
 ```
 flutter pub add firebase_core
@@ -112,12 +126,11 @@ Run this again to make sure everything installed in your computer
 ```
 flutterfire configure
 ```
-- AFTER ALL OF THIS, YOU WILL RECEIVE A FIREBASE_OPTIONS.DART FILE IN YOUR LIB FOLDER OF YOUR APP.
-- Check in the 'pubspec.yaml' file, if the file has these depedencies:
+- Check in the 'pubspec.yaml' file, if the file has these 2 depedencies:
 | ![Home UI](screenshots/depen.png) |
-- If not, you should add those two dependencies to your file.
+- If not, you should add those 2 dependencies to your file.
 
-### 6. Install dependencies
+### 7. Install dependencies
 
 - Type this in the terminal in your app on VS CODE:
 
@@ -126,17 +139,16 @@ flutter pub get
 
 ```
 
-
-### 7. Follow these steps: 
+### 8. Follow these steps: 
 
 - Get a ChatGPT API-KEY . You can log in to 'https://platform.openai.com/account/api-keys' to get one or simply just borrow ones.
 - Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
 
 
-### 8. Fill in the code
+### 9. Fill in the code
 - In the lib folder contains the code of this app, must update (change) my comment, for example: 
 ```bash
-('--YOUR HTTPS LINK TO THE REALTIME DATABASE--')
+'--YOUR HTTPS LINK TO THE REALTIME DATABASE--'
 
 ```
 with your https link.
@@ -180,4 +192,7 @@ This app was built using the following open-source libraries and tools:
 | 08/08/2023     | UI     |  Fixing   |
 | 09/08/2023     | UI     |  Add Expanded to Text   |  
 | 10/08/2023     | MenuBar     |  Add Delete Button to Menu   | 
-| 10/08/2023     | Firebase     |  Fixed firebase   |
+| 11/08/2023     | Firebase     |  Fixed firebase   |
+| 12/08/2023     | README.md    |  Update README.md   |
+| 13/08/2023     | README.md    |  Update README.md   |
+| 14/08/2023     | README.md    |  Update README.md   |
