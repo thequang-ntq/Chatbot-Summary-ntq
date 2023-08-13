@@ -29,8 +29,8 @@
 
 ## I. Prerequisites
 
-- **SYSTEM:** 4GB RAM, At Least 10GB of Free Space in C Drive, And 2GB of Free Space in your App Folder.
-- **INSALLED:** [npm](https://nodejs.org/en) (v18.17.0), [Flutter](https://docs.flutter.dev/get-started/install)(version in "pubspec.lock"), [Git](https://git-scm.com/downloads)(v2.41.0)
+- **SYSTEM:** 4GB RAM, At Least 12GB of Free Space in C Drive, And 3.5GB of Free Space in your App Folder.
+- **INSTALLED:** [npm](https://nodejs.org/en) (v18.17.0), [Flutter](https://docs.flutter.dev/get-started/install)(version in "pubspec.lock"), [Git](https://git-scm.com/downloads)(v2.41.0)
 [VSCode](https://code.visualstudio.com/)(v1.81.1)
 
 ## II. Setup
@@ -51,29 +51,51 @@ flutter pub get
 ```bash
 https://firebase.google.com/docs/flutter/setup?hl=vi&platform=web
 ```
-- First, create your firebase project :
+- 1, create your firebase project :
 ![CreateProject](assets/files/createProject.gif)
 
-- Second, setup FlutterFire CLI:
+- 2, setup FlutterFire CLI:
 ![Cli](assets/files/cli.gif)
 
+- 3, check if FlutterFire was installed:
+![check](assets/files/check.gif)
 
-After this a file call ```firebase_option.dart``` will be create in your folder. If not, you should repeat this step 4 again.
+- 4, Activate flutterfire cli:
+![activate](assets/files/activate.gif)
+- Remember if you meet an error like this:
+![error](screenshots/error.png)
+- You can follow this:
+```bash
+https://itslinuxfoss.com/export-path-something-path-mean-linux/#:~:text=The%20%E2%80%9Cexport%20PATH%3Dsomething%3A%24PATH%E2%80%9D%20command%20changes%20the,add%20multiple%20directories%20to%20PATH.
+```
+- or:
+![error2](screenshots/error2.png)
+- You can follow this link to fix:
+```bash
+https://stackoverflow.com/questions/70320263/error-the-term-flutterfire-is-not-recognized-as-the-name-of-a-cmdlet-functio
+```
 
-- Close terminal, open terminal in VS CODE in your project app (step 3). Type this:
+- After this a file call ```firebase_option.dart``` will be create in your folder. If not, you should repeat this step 4 again.
+
+- 5, Create Realtime Database and Firestore Database
+![database](assets/files/database.gif)
+- 6, Close CMD terminal, open your project terminnal. Type this:
 ```
 flutterfire configure 
 ```
-(choose a project on your firebase to link to this app)
-(choose yes to all)
+- (CHOOSE THE FIREBASE PROJECT YOU JUST CREATE ABOVE TO LINK TO THIS APP)
+- (CHOOSE YES TO ALL)
 ```
 flutter pub add firebase_core
 ```
-Run this again to make sure everything installed in your computer 
+```
+flutter pub add cloud_firestore
+```
+- RUN THIS AGAIN TO MAKE SURE EVERYTHING INSTALLED IN YOUR COMPUTER
 ```
 flutterfire configure
 ```
-(choose yes to all to replace my firebase_options.dart file with yours)
+- (CHOOSE YES TO ALL TO REPLACE MY FIREBASE_OPTIONS.DART FILE WITH YOURS)
 
 ### 3. Follow these steps: 
 
@@ -81,12 +103,15 @@ flutterfire configure
 - Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
 
 ### 4. Fill in the code
-- In the lib folder contains the code of this app, must update (change) my comment, for example: 
+- In the lib folder contains the code of this app, you must update (change) my comment, for example: 
 ```bash
 '--YOUR HTTPS LINK TO THE REALTIME DATABASE--'
-
 ```
-with your https link.
+![update](screenshots/update.png)
+
+- with your https link:
+- 
+![name](screenshots/name.png)
 
 ## Time Tracking
 
