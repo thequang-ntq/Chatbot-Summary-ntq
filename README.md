@@ -117,8 +117,9 @@ After this command a file call ```firebase_option.dart``` will be create in your
 
 - Close terminal, open terminal in VS CODE in your project app (step 3). Type this:
 ```
-flutterfire configure (choose a project on your firebase to link to this app)
+flutterfire configure 
 ```
+(choose a project on your firebase to link to this app)
 ```
 flutter pub add firebase_core
 ```
