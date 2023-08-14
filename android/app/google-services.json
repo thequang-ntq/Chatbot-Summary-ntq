@@ -1,42 +1,35 @@
 {
   "project_info": {
-    "project_number": "145097866406",
-    "firebase_url": "https://brycen-chat-app-default-rtdb.firebaseio.com",
-    "project_id": "brycen-chat-app",
-    "storage_bucket": "brycen-chat-app.appspot.com"
+    "project_number": "89860089693",
+    "firebase_url": "https://your-project-name-b1e6c-default-rtdb.firebaseio.com",
+    "project_id": "your-project-name-b1e6c",
+    "storage_bucket": "your-project-name-b1e6c.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:145097866406:android:3b12ca832e30c2568a8867",
+        "mobilesdk_app_id": "1:89860089693:android:d46d8634ecad7f92dd2ab4",
         "android_client_info": {
           "package_name": "com.example.chatgpt"
         }
       },
       "oauth_client": [
         {
-          "client_id": "145097866406-m20u9p6iaq5h5t27ioss6gpucf41kjd8.apps.googleusercontent.com",
+          "client_id": "89860089693-3u73aicn9uugrth2779svomaau56cc3s.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB67wWct_m4pyVWRpntRKnForjg7AoafDA"
+          "current_key": "AIzaSyCCDE9ZYJNYunC0GOg8CwVYAoYviFZPKzg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "145097866406-m20u9p6iaq5h5t27ioss6gpucf41kjd8.apps.googleusercontent.com",
+              "client_id": "89860089693-3u73aicn9uugrth2779svomaau56cc3s.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "145097866406-rqva7iail5dgd33fmrque0rlfi3m1v0m.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.chatgpt"
-              }
             }
           ]
         }

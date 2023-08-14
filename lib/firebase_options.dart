@@ -4,22 +4,6 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
-
-///
-///
-///
-
-// 
-// *** Delete my firebase_options.dart file here because you are gonna have your own firebase_option.dart ***
-// *** file when you done setup flutterfire ***
-
-
-
-///
-///
-///
-
-
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
 /// Example:
@@ -60,43 +44,43 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyD0bSSvpOFAL1YuUwTsK3vDYjV27C7LR_0',
-    appId: '1:145097866406:web:3175d933a421c9c08a8867',
-    messagingSenderId: '145097866406',
-    projectId: 'brycen-chat-app',
-    authDomain: 'brycen-chat-app.firebaseapp.com',
-    databaseURL: 'https://brycen-chat-app-default-rtdb.firebaseio.com',
-    storageBucket: 'brycen-chat-app.appspot.com',
+    apiKey: 'AIzaSyAnMbPoPV_VmBQ4n7DajxBxorNgcnOPtz0',
+    appId: '1:89860089693:web:ce7110036e78a7dbdd2ab4',
+    messagingSenderId: '89860089693',
+    projectId: 'your-project-name-b1e6c',
+    authDomain: 'your-project-name-b1e6c.firebaseapp.com',
+    databaseURL: 'https://your-project-name-b1e6c-default-rtdb.firebaseio.com',
+    storageBucket: 'your-project-name-b1e6c.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB67wWct_m4pyVWRpntRKnForjg7AoafDA',
-    appId: '1:145097866406:android:3b12ca832e30c2568a8867',
-    messagingSenderId: '145097866406',
-    projectId: 'brycen-chat-app',
-    databaseURL: 'https://brycen-chat-app-default-rtdb.firebaseio.com',
-    storageBucket: 'brycen-chat-app.appspot.com',
+    apiKey: 'AIzaSyCCDE9ZYJNYunC0GOg8CwVYAoYviFZPKzg',
+    appId: '1:89860089693:android:d46d8634ecad7f92dd2ab4',
+    messagingSenderId: '89860089693',
+    projectId: 'your-project-name-b1e6c',
+    databaseURL: 'https://your-project-name-b1e6c-default-rtdb.firebaseio.com',
+    storageBucket: 'your-project-name-b1e6c.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCWsPcC_V4wsl0T-hTA4M9xuiV0EBo6mig',
-    appId: '1:145097866406:ios:8171dc96945181618a8867',
-    messagingSenderId: '145097866406',
-    projectId: 'brycen-chat-app',
-    databaseURL: 'https://brycen-chat-app-default-rtdb.firebaseio.com',
-    storageBucket: 'brycen-chat-app.appspot.com',
-    iosClientId: '145097866406-rqva7iail5dgd33fmrque0rlfi3m1v0m.apps.googleusercontent.com',
+    apiKey: 'AIzaSyCP5n7xBCS4HAV_gM3pgxDlsqV2jIxgllw',
+    appId: '1:89860089693:ios:3e93770763cdc4d1dd2ab4',
+    messagingSenderId: '89860089693',
+    projectId: 'your-project-name-b1e6c',
+    databaseURL: 'https://your-project-name-b1e6c-default-rtdb.firebaseio.com',
+    storageBucket: 'your-project-name-b1e6c.appspot.com',
+    iosClientId: '89860089693-89gb7q1dbb7ek8kq4kuv9081jje4jsgu.apps.googleusercontent.com',
     iosBundleId: 'com.example.chatgpt',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCWsPcC_V4wsl0T-hTA4M9xuiV0EBo6mig',
-    appId: '1:145097866406:ios:bc01fd59b7525ef38a8867',
-    messagingSenderId: '145097866406',
-    projectId: 'brycen-chat-app',
-    databaseURL: 'https://brycen-chat-app-default-rtdb.firebaseio.com',
-    storageBucket: 'brycen-chat-app.appspot.com',
-    iosClientId: '145097866406-tk28hldndd3m1b7gdli5okb67cgsvqfk.apps.googleusercontent.com',
+    apiKey: 'AIzaSyCP5n7xBCS4HAV_gM3pgxDlsqV2jIxgllw',
+    appId: '1:89860089693:ios:e1e50610be494146dd2ab4',
+    messagingSenderId: '89860089693',
+    projectId: 'your-project-name-b1e6c',
+    databaseURL: 'https://your-project-name-b1e6c-default-rtdb.firebaseio.com',
+    storageBucket: 'your-project-name-b1e6c.appspot.com',
+    iosClientId: '89860089693-35peo2bi7v4ikth48cc8vtg84p3i13ii.apps.googleusercontent.com',
     iosBundleId: 'com.example.chatgpt.RunnerTests',
   );
 }

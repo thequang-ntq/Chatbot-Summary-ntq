@@ -1,7 +1,7 @@
 {
   "file_generated_by": "FlutterFire CLI",
   "purpose": "FirebaseAppID & ProjectID for this Firebase app in this directory",
-  "GOOGLE_APP_ID": "1:145097866406:ios:8171dc96945181618a8867",
-  "FIREBASE_PROJECT_ID": "brycen-chat-app",
-  "GCM_SENDER_ID": "145097866406"
+  "GOOGLE_APP_ID": "1:89860089693:ios:3e93770763cdc4d1dd2ab4",
+  "FIREBASE_PROJECT_ID": "your-project-name-b1e6c",
+  "GCM_SENDER_ID": "89860089693"
 }

@@ -79,31 +79,28 @@ https://stackoverflow.com/questions/70320263/error-the-term-flutterfire-is-not-r
 
 - 5, Create Realtime Database and Firestore Database
 ![database](assets/files/database.gif)
-- 6, Close CMD terminal, open your project terminal in VS CODE (or your editor code).
-![screenshots/ter.png]
+- 6, Configure your flutterfire.
+
+- You can follow this video:
+![configure](assets/files/configure.gif)
  
-- Type this:
-```
-flutterfire configure 
-```
-- (CHOOSE THE FIREBASE PROJECT YOU JUST CREATE ABOVE TO LINK TO THIS APP)
-- (CHOOSE YES TO ALL)
-```
-flutter pub add firebase_core
-```
-```
-flutter pub add cloud_firestore
-```
-- RUN THIS AGAIN TO MAKE SURE EVERYTHING INSTALLED IN YOUR COMPUTER
-```
-flutterfire configure
-```
-- (CHOOSE YES TO ALL TO REPLACE MY FIREBASE_OPTIONS.DART FILE WITH YOURS)
+
+- Or you can read this:
+    + Type this:
+    ```
+    flutterfire configure 
+    ```
+    + (CHOOSE THE FIREBASE PROJECT YOU JUST CREATE ABOVE TO LINK TO THIS APP)
+    + (CHOOSE YES TO ALL TO REPLACE MY FIREBASE_OPTIONS.DART FILE WITH YOURS)
+
 
 ### 3. Follow these steps: 
+- Follow this video:
+![key](assets/files/key.gif)
 
-- Get a ChatGPT API-KEY . You can log in to 'https://platform.openai.com/account/api-keys' to get one or simply just borrow ones.
-- Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
+- Or read this:
+    + Get a ChatGPT API-KEY . You can log in to 'https://platform.openai.com/account/api-keys' to get one or simply just borrow ones.
+    + Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
 
 ### 4. Fill in the code
 - In the lib folder contains the code of this app, you must update (change) my comments, for example: 
@@ -114,7 +111,6 @@ flutterfire configure
 - (and more places that the same with this image)
 
 - with your https link:
-- 
 ![name](screenshots/name.png)
 
 ## Time Tracking
