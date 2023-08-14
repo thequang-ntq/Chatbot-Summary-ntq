@@ -22,7 +22,7 @@
 
 | Home                                 | Chat                                 | Summarize                                 |
 |----------------------------------------------|----------------------------------------------|----------------------------------------------|
-| ![Home UI](screenshots/screenshot1.png) | ![Chat UI](screenshots/screenshot2.png) | ![Summarize UI](screenshots/screenshot3.png) |
+| ![Home UI](screenshots/home.gif) | ![Chat UI](screenshots/chat.gif) | ![Summarize UI](screenshots/summary.gif) |
 
 
 # HOW TO RUN THIS APP 
