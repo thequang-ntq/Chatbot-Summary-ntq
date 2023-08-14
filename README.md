@@ -125,7 +125,7 @@ flutter run lib/main.dart
 - After that, locale the 'app-release.apk' file in the video (or you can see in the image below):
 ![images](screenshots/apk.png)
 - You can download that to your mobile phone (android) or run on an android emulator (like android studio, or online web:
-https://appetize.io/)
+https://appetize.io )
 
 ## Time Tracking
 
