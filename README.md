@@ -47,20 +47,20 @@ git clone https://github.com/22T1020362/Chatbot-Summary-ntq
 flutter pub get
 ```
 ### 2. Setup flutterfire
-- You can follow this link: 
+- You can follow my **6 STEP** right below and also this link: 
 ```bash
 https://firebase.google.com/docs/flutter/setup?hl=vi&platform=web
 ```
-- 1, create your firebase project :
+- **1, create your firebase project :**
 ![CreateProject](assets/files/createProject.gif)
 
-- 2, setup FlutterFire CLI:
+- **2, setup FlutterFire CLI:**
 ![Cli](assets/files/cli.gif)
 
-- 3, check if FlutterFire was installed:
+- **3, check if FlutterFire was installed:**
 ![check](assets/files/check.gif)
 
-- 4, Activate flutterfire cli:
+- **4, Activate flutterfire cli:**
 ![activate](assets/files/activate.gif)
 - Remember if you meet an error like this:
 ![error](screenshots/error.png)
@@ -77,9 +77,9 @@ https://stackoverflow.com/questions/70320263/error-the-term-flutterfire-is-not-r
 
 - After this a file call ```firebase_option.dart``` will be create in your folder. If not, you should repeat this step 4 again.
 
-- 5, Create Realtime Database and Firestore Database
+- **5, Create Realtime Database and Firestore Database**
 ![database](assets/files/database.gif)
-- 6, Configure your flutterfire.
+- **6, Configure your flutterfire.**
 
 - You can follow this video:
 ![configure](assets/files/configure.gif)
@@ -112,6 +112,20 @@ https://stackoverflow.com/questions/70320263/error-the-term-flutterfire-is-not-r
 
 - with your https link:
 ![name](screenshots/name.png)
+
+## III. Run App
+
+- This app can run on Web(recommended Chrome latest version) and Android( with version 12 or later).
+- **To run this app on Web, just open your project terminal in your code editor (mine is VS Code) and type:**
+```bash
+flutter run lib/main.dart
+```
+- **To run this app on Android, you must have an .apk file of this app. To have that, follow this video:**
+![apk](assets/files/apk.gif)
+- After that, locale the 'app-release.apk' file in the video (or you can see in the image below):
+![images](screenshots/apk.png)
+- You can download that to your mobile phone (android) or run on an android emulator (like android studio, or online web:
+https://appetize.io/)
 
 ## Time Tracking
 
