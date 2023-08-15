@@ -19,8 +19,8 @@
 * Summarize: Extract key information from a .txt, .docx, or audio (.mp3, .wav, .mp4, .m4a) file, and ask anything about that. 
 
 ## USER INTERFACE
+[![Watch the video](https://img.youtube.com/vi/sltd5RQohxk/maxresdefault.jpg)](https://www.youtube.com/watch?v=R5Kr0DM3dJc)
 
-![video](https://github.com/22T1020362/Chatbot-Summary-ntq/tree/master/assets/files/interface.mp4)
 
 ## Screenshots
 
