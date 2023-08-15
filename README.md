@@ -20,7 +20,7 @@
 
 ## USER INTERFACE
 
-https://github.com/22T1020362/Chatbot-Summary-ntq/tree/master/assets/files/interface.mp4
+![video](https://github.com/22T1020362/Chatbot-Summary-ntq/tree/master/assets/files/interface.mp4)
 
 ## Screenshots
 
