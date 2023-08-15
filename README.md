@@ -21,7 +21,7 @@
 ## USER INTERFACE
 
 <!-- [![Watch the video](https://img.youtube.com/vi/R5Kr0DM3dJc/hqdefault.jpg)](https://www.youtube.com/watch?v=R5Kr0DM3dJc) -->
-<video src="NguyenTheQuang_app.mp4" controls title="Title"></video>
+https://github.com/22T1020362/Chatbot-Summary-ntq/assets/115056697/b001d515-10b4-49be-9e75-07a8eb91c316
 
 ## Screenshots
 
