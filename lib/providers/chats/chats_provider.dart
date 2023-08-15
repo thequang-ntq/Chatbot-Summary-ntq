@@ -1,3 +1,6 @@
+//This is the provider of AI ChatBot for chat and summarize, so its very important.
+//This file contains the code for the response of the chatbot for both chat and summarize.
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chatgpt/screens/home.dart';
@@ -32,6 +35,7 @@ class ChatProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  //Chat response function
   Future<void> sendMessageAndGetAnswers(
       {required String msg}) async {
       final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' ,temperature: 0);
@@ -77,6 +81,7 @@ class ChatProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  //Summarize response function
   Future<void> sendMessageAndGetAnswersSummarize(
       {required String msg}) async {
       final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' , temperature: 0);

@@ -1,3 +1,7 @@
+//This is an important code file that controls navigation between 
+//home, chat and summarize screen.
+//This is like the main UI for all the app.
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:chatgpt/screens/chat.dart';
@@ -26,6 +30,7 @@ class _TabsState extends State<Tabs> {
     super.initState();
   }
 
+  //Submit function
   void toSubmit(TextEditingController apiKeyValue, TextEditingController userName) async{
     _apiKeyValue = apiKeyValue;
     _userName = userName;
@@ -158,6 +163,7 @@ class _TabsState extends State<Tabs> {
     }
   }
 
+  //Change to chat screen
   void toChat() async{
     if (_enteredApiKey == '' || _enteredApiKey.isEmpty || _enteredUserName.isEmpty) {
       showDialog(
@@ -259,14 +265,13 @@ class _TabsState extends State<Tabs> {
     }
   }
 
+  //Change to summarize screen
   void toSummarize() async{
     if (_enteredApiKey == '' || _enteredApiKey.isEmpty || _enteredUserName.isEmpty) {
       showDialog(
         context: context,
         builder: (context) {
           return const AlertDialog(
-            // Retrieve the text the that user has entered by using the
-            // TextEditingController.
             content: Text('You are not entered the Api Key. Please enter one!'),
           );
         },

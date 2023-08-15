@@ -1,4 +1,8 @@
-// import 'dart:async';
+//This is the widget that contains the first response for summarize text.
+//It is the display of summarize text going with 3 suggest question
+//for the first response when you upload a file to summarize 
+//in summarize screen
+
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';

@@ -1,3 +1,6 @@
+//This is the summarize screen, the User Interface when you enter the Summary file part.
+//Its important too.
+
 import 'dart:async';
 import 'dart:ui';
 import 'dart:io';
@@ -21,7 +24,7 @@ import 'package:chatgpt/widgets/chats/docs_widget.dart';
 import 'package:docx_to_text/docx_to_text.dart';
 import 'package:intl/intl.dart';
 import 'package:chatgpt/widgets/chats/chat_widget.dart';
-import 'package:chatgpt/menubar/menuSum.dart';
+import 'package:chatgpt/menubar/menu_sum.dart';
 
 
 const template = '''
@@ -94,6 +97,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     super.dispose();
   }
 
+  //toRefresh function that defined in menu_sum.dart
   void toRefresh(){
     Navigator.pop(context);
     Navigator.pop(context);
@@ -103,6 +107,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     );
   }
 
+  //convert audio to text when upload audio file
    Future<String> convertSpeechToText(String filePath) async {
     String apiKey = GetV.apiKey.text;
     var url = Uri.https("api.openai.com", "v1/audio/transcriptions");
@@ -118,6 +123,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     return responseData['text'];
   }
 
+  //function when you upload a file
   void _uploadFile() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.any);
     if (result == null) {
@@ -166,7 +172,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
-
+  //micro function (you talk then its appear in ask textfield)
   void onListen() async {
     if (!_isListening) {
       bool available = await _speech.initialize(
@@ -201,6 +207,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
+  //Get the text of the suggest question to your ask textfield when you press the send icon in
+  //the begin of those 3 questions
   void onPress(String question){
     setState(() {
       _askText.text = question;
@@ -263,6 +271,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children:[
                   const SizedBox(height: 50),
+                  //Upload file button
                   Flexible(
                     child: ElevatedButton(
                       onPressed: () {
@@ -393,6 +402,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    //Button that contains the main text content of the file
                     TextButton(
                       onPressed: () {
                         final snackBar = SnackBar(
@@ -540,6 +550,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                         child: Row(
                           children: [
                             Expanded(
+                              //Ask textfield
                               child: TextField(
                                 focusNode: focusNode,
                                 style: const TextStyle(color: Colors.white),
@@ -555,6 +566,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                               ),
                             ),
                             IconButton(
+                              //Send message button
                                 onPressed: () async {
                                   await sendMessageFCT(
                                       
@@ -586,6 +598,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     );
   }
 
+  //scroll the ListView of the summarize chat
   void scrollListToEND() {
       _listScrollController.animateTo(
           _listScrollController.position.maxScrollExtent,
@@ -593,6 +606,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           curve: Curves.easeOut);
   }
 
+  // This function will get the summarize content of the file you uploaded
   Future<void> saveDocsSummarize(
       {required String msg, required PlatformFile file}) async {
       final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' ,temperature: 0);
@@ -638,7 +652,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     // notifyListeners();
   }
 
-
+  //Get your question content and send response
   Future<void> sendMessageFCT(
         {
         required ChatProvider chatProvider}) async {

@@ -1,3 +1,6 @@
+//This file contains the code for the User Interface for home screen - the screen
+//You see when opening the app.
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -53,7 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   
-
+  //This function recall the latest Api Key that you entered to the api textfield.(Remember function)
+  //So every time you came back to home screen, you will have the api field texted already.
   Future<void> _api() async{
     final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'api-keys.json');
     final response = await http.get(url);
@@ -67,6 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  //This function recall the latest user name that you entered to the user name textfield. (Remember function)
+  //So every time you came back to home screen, you will have the name field texted already.
   Future<void> _name() async{
     final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userNames.json');
     final response = await http.get(url);
@@ -89,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  //Check if the apiKey you entered is valid?
    Future<void> checkApiKey(String apiKey) async {
     //Remember you must log into 'http://api.openai.com/v1/models' with your api key to get response in this
     final response = await http.get(
@@ -108,6 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  //Show/Hide Api Key
   void _togglePasswordVisibility() {
     setState(() {
       _isObscured = !_isObscured;
@@ -153,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GetV.isAPI ?
                 Column(
                   children: [
+                    //User Name textfield when you pass the check for user name and api key
                     TextField(
                       obscureText: false,
                       decoration: InputDecoration(
@@ -185,6 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                    //Api Key textfield when you pass the check for user name and api key
                     TextField(
                       obscureText: true,
                       decoration: InputDecoration(
@@ -221,6 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 :
                 Column(
                   children: [
+                    //User Name textfield when not submitted
                     TextField(
                       obscureText: false,
                       decoration: InputDecoration(
@@ -249,6 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     ),
                     const SizedBox(height: 10),
+                    //Api Key textfield when not submitted
                     TextField(
                       obscureText: _isObscured,
                       decoration: InputDecoration(
@@ -288,6 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 12,
               ),
               Center(
+                //Submit button
                 child: TextButton(
                   onPressed: ()  async{
                     await checkApiKey(widget.apiKeyValue.text); 
@@ -324,6 +337,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
+                        //Chat Button to change to Chat Screen
                         ElevatedButton(
                           onPressed: widget.toChat,
                           style: ButtonStyle(
@@ -357,6 +371,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
 
+                        //Summary Button to change to Summarize Screen
                         ElevatedButton(
                           onPressed: widget.toSummarize,
                           style: ButtonStyle(

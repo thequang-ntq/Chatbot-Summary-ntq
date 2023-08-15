@@ -1,3 +1,6 @@
+//This file contains the code that represent the User Interface for Chat.
+//Everything that you see when chat is because of this file
+
 import 'dart:developer';
 import 'package:chatgpt/providers/chats/chats_provider.dart';
 import 'package:chatgpt/widgets/chats/chat_widget.dart';
@@ -40,6 +43,8 @@ class _ChatScreenState extends State<ChatScreen> {
   //////////////////////////
   //////////////////////////
 
+  //You talk then its appear to send message textfield
+  //micro function
   void onListen() async {
     if (!_isListening) {
       bool available = await _speech.initialize(
@@ -89,6 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+  //toRefresh function defined in menu.dart
   void toRefresh(){
     Navigator.pop(context);
     Navigator.pop(context);
@@ -275,6 +281,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  //scroll for ListView for Chat List
   void scrollListToEND() {
     _listScrollController.animateTo(
         _listScrollController.position.maxScrollExtent,
@@ -282,7 +289,8 @@ class _ChatScreenState extends State<ChatScreen> {
         curve: Curves.easeOut);
   }
 
-
+  //Function that define the progress when we send a true message(single per send and not empty)
+  //This message will be added to the function in provider file to get response from ChatBot
   Future<void> sendMessageFCT(
       {
       required ChatProvider chatProvider}) async {

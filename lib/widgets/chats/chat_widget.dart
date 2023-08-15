@@ -1,4 +1,7 @@
-// import 'dart:async';
+//This is chat_widget which is the chat and summarize text appeared for both user and chatbot. Imagine
+//When you send message and the response was completely returned,
+//then the text display of those two will be controlled by this code file.
+
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';

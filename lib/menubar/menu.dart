@@ -1,3 +1,7 @@
+//This is the code file for the menu drawer that contains history in Chat Screen
+//The function this.toRefresh define the progress when you press a new chat, history or
+//delete a history then the menu drawer will pop out, and chat screen will be refreshed
+
 import 'package:flutter/material.dart';
 import 'package:chatgpt/screens/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -37,6 +41,7 @@ class _MenuState extends State<Menu> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
+                //new chat icon button
                 onPressed: () async{
                   final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatNum.json');
                   final res = await http.get(upURL);
@@ -102,6 +107,7 @@ class _MenuState extends State<Menu> {
               ),
               const SizedBox(width: 5),
               TextButton(
+                //Text New Chat which do the same thing like add button above when you press
                 child: const Text('New Chat', style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 18,
@@ -213,6 +219,7 @@ class _MenuState extends State<Menu> {
                               Visibility(
                                 visible: chatMessage['text'] != '',
                                 child: IconButton(
+                                  //Message history icon button that reload history chat
                                   onPressed: () async{ 
                                     final resd = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message')
                                       .doc(GetV.messageChatID).get();
@@ -237,6 +244,7 @@ class _MenuState extends State<Menu> {
                               const SizedBox(width: 5),
                               Expanded(
                                 child: TextButton(
+                                  //The title of the chat
                                   child: AutoSizeText(
                                     chatMessage['text'], 
                                     style: const TextStyle(
@@ -271,8 +279,8 @@ class _MenuState extends State<Menu> {
                               Visibility(
                                 visible: chatMessage['text'] != '',
                                 child: IconButton(
+                                  //Delete icon button that delete history chat
                                   onPressed: () async{
-                                    // print(chatMessage['messageID']);
                                     final res = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message')
                                       .doc(chatMessage['messageID']).get();
                                     if(GetV.messageChatID != res['messageID']){
