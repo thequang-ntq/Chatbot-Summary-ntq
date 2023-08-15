@@ -152,3 +152,4 @@ https://appetize.io )
 | 10/08/2023     | MenuBar     |  Add Delete Button to Menu   | 
 | 11/08/2023     | Firebase     |  Fixed firebase   |
 | 12-14/08/2023     | Write readme file     |  |
+| 15-16/08/2023     | Add comment     |  |
