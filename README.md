@@ -20,7 +20,7 @@
 
 ## USER INTERFACE
 
-[![Watch the video](https://img.youtube.com/vi/R5Kr0DM3dJc/maxresdefault.jpg)](https://www.youtube.com/watch?v=R5Kr0DM3dJc)
+[![Watch the video](https://img.youtube.com/vi/R5Kr0DM3dJc/hqdefault.jpg)](https://www.youtube.com/watch?v=R5Kr0DM3dJc)
 
 
 ## Screenshots
