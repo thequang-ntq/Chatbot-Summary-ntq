@@ -141,6 +141,7 @@ https://stackoverflow.com/questions/70320263/error-the-term-flutterfire-is-not-r
 flutter run lib/main.dart
 ```
 - **To run this app on Android, you must have an .apk file of this app. To have that, follow this video:**
+- **BECAUSE AFTER YOU FILL IN THE CODE WITH YOUR HTTPS LINKS, THE CODE CHANGED, SO YOU MUST BUILD YOUR APK FILE YOURSELF. I AM SO SORRY FOR THIS INCONVENIENCE STEPS.** :disappointed_relieved:
 ![apk](assets/files/apk.gif)
 - After that, locale the 'app-release.apk' file in the video (or you can see in the image below):
 ![images](screenshots/apk.png)
