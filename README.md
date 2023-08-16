@@ -146,10 +146,21 @@ flutter run lib/main.dart
 ![images](screenshots/apk.png)
 
 - **Or if you want to use the .apk file version using my Firebase, just click the link below:**
-[Download .Apk File](https://github.com/22T1020362/Chatbot-Summary-ntq/tree/master/outputs/apk/release/app-release.apk)
 
-- You can download that to your mobile phone (android) or run on an android emulator (like android studio, or online web:
-https://appetize.io )
+- [Download .APK File](https://github.com/22T1020362/Chatbot-Summary-ntq/raw/master/outputs/apk/release/app-release.apk)
+
+<details>
+<summary>Download APK file on a connected Android device</summary>
+<br>
+Connect your Android device to your computer with a USB cable, then run the command line
+
+```bash
+  flutter install
+```
+
+**Or if you have an Android mobile phone, just download the APK file above.**
+
+</details>
 
 
 ## Error
