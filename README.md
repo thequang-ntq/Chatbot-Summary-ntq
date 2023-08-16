@@ -13,14 +13,29 @@
   </div>
 </div>
 
+
+## Table of Contents
+
+- [Features](#features)
+- [User Interface](#user-interface)
+- [Screenshots](#screenshots)
+- [Prerequisites](#i-prerequisites)
+- [Setup](#ii-setup)
+- [Run App](#iii-run-app)
+- [Error](#error)
+- [Time-tracking](#time-tracking)
+- [Future Work](#future-work)
+- [License](#license)
+
+## Features
+
 * Advanced AI-chatbot and summarize text / audio file
 * My first projects -_-
 * Chat with AI: Enjoy dynamic conversations with AI Chatbot, enable voice and message chat.
-* Summarize: Extract key information from a .txt, .docx, or audio (.mp3, .wav, .mp4, .m4a) file, and ask anything about that. 
+* Summarize: Extract key information from a **.txt, .docx, or audio (.mp3, .wav, .mp4, .m4a)** file, and ask anything about that. 
 
 ## USER INTERFACE
 
-<!-- [![Watch the video](https://img.youtube.com/vi/R5Kr0DM3dJc/hqdefault.jpg)](https://www.youtube.com/watch?v=R5Kr0DM3dJc) -->
 https://github.com/22T1020362/Chatbot-Summary-ntq/assets/115056697/b001d515-10b4-49be-9e75-07a8eb91c316
 
 ## Screenshots
@@ -129,8 +144,36 @@ flutter run lib/main.dart
 ![apk](assets/files/apk.gif)
 - After that, locale the 'app-release.apk' file in the video (or you can see in the image below):
 ![images](screenshots/apk.png)
+
+- **Or if you want to use the .apk file version using my Firebase, just click the link below:**
+[Download .Apk File](https://github.com/22T1020362/Chatbot-Summary-ntq/tree/master/outputs/apk/release/app-release.apk)
+
 - You can download that to your mobile phone (android) or run on an android emulator (like android studio, or online web:
 https://appetize.io )
+
+
+## Error
+<details>
+   
+<summary>Command not found: flutterfire</summary>
+
+https://bobbyhadz.com/blog/flutterfire-is-not-recognized-as-internal-or-external-command
+
+   - In your terminal and run this code to open <b>Advanced system settings</b>
+   
+   ```
+      SystemPropertiesAdvanced
+   ```
+   - Click Environment Variables. In the section System Variables find the PATH environment variable and select it. Click Edit. If the PATH environment variable does not exist, click New.
+   
+   - In the Edit System Variable (or New System Variable) window, specify the value of the PATH environment variable
+   ```
+   C:\Users\YourUsername\AppData\Local\Pub\Cache\bin
+   ```
+   - Click OK. Close all remaining windows by clicking OK.
+   - You might have to restart your computer to active path
+</details>
+
 
 ## Time Tracking
 
@@ -153,3 +196,15 @@ https://appetize.io )
 | 11/08/2023     | Firebase     |  Fixed firebase   |
 | 12-14/08/2023     | Write readme file     |  |
 | 15-16/08/2023     | Add comment     |  |
+
+##### Future Work
+- [ ] Update app structure, optimize and clean code.
+- [ ] User Config model: Let user decide the model they want
+- [ ] Migrate database: from FireStore(firebase) to [SQLite](https://pub.dev/packages/sqflite)
+- [ ] UI : Design the UI better, cleaner
+- [ ] Adjust Speech recognition: Show [glowing animation](https://pub.dev/packages/avatar_glow) of the sentence listening
+
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
