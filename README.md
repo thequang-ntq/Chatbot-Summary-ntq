@@ -123,7 +123,7 @@ https://stackoverflow.com/questions/70320263/error-the-term-flutterfire-is-not-r
     + Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
 
 ### 4. Fill in the code
-- In the lib folder contains the code of this app, you must update (change) my comments, for example: 
+- In the lib folder contains the code of this app, you must update (change) my comments that has in **every file with a ".dart" extensions in that lib folder**, for example: 
 ```bash
 '--YOUR HTTPS LINK TO THE REALTIME DATABASE--'
 ```
