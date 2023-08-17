@@ -2,6 +2,9 @@
 //Everything that you see when chat is because of this file
 
 import 'dart:developer';
+import 'dart:io';
+import 'package:connection_notifier/connection_notifier.dart';
+import 'package:chatgpt/screens/internet.dart';
 import 'package:chatgpt/providers/chats/chats_provider.dart';
 import 'package:chatgpt/widgets/chats/chat_widget.dart';
 import 'package:flutter/material.dart';
@@ -180,99 +183,105 @@ class _ChatScreenState extends State<ChatScreen> {
               ],
             ),
             drawer: Menu(toRefresh: toRefresh),
-            body: SafeArea(
-              child: Column(
-                children: [
-                  Flexible(
-                    child: GetV.menuPressed? ListView.builder(
-                        controller: _listScrollController,
-                        itemCount: loadedMessages.length, 
-                        itemBuilder: (context, index) {
-                          final chatMessage = loadedMessages[index].data();
-                          DateTime time = chatMessage['createdAt'].toDate();
-                          String formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(time);
-                          return ChatWidget(
-                            msg: chatMessage['text'],
-                            dateTime: formattedDate,
-                            chatIndex: chatMessage['index'], 
-                            shouldAnimate:
-                                chatMessage['index'] == 1,
-                          );
-                        })
-                      :
-                        ListView.builder(
-                        controller: _listScrollController,
-                        itemCount: loadedMessages.length, 
-                        itemBuilder: (context, index) {
-                          final chatMessage = loadedMessages[index].data();
-                          DateTime time = chatMessage['createdAt'].toDate();
-                          String formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(time);
-                          return ChatWidget(
-                            msg: chatMessage['text'],
-                            dateTime: formattedDate,
-                            chatIndex: chatMessage['index'], 
-                            shouldAnimate:
-                                chatMessage['index'] == 1,
-                          );
-                        }),
-                  ),
-                  if (_isTyping) ...[
-                    const SpinKitThreeBounce(
-                      color: Colors.white,
-                      size: 18,
+            body: ConnectionNotifierToggler(
+              onConnectionStatusChanged: (connected) {
+                if (connected == null) return;
+              },
+              disconnected: const InternetErr(),
+              connected: SafeArea(
+                child: Column(
+                  children: [
+                    Flexible(
+                      child: GetV.menuPressed? ListView.builder(
+                          controller: _listScrollController,
+                          itemCount: loadedMessages.length, 
+                          itemBuilder: (context, index) {
+                            final chatMessage = loadedMessages[index].data();
+                            DateTime time = chatMessage['createdAt'].toDate();
+                            String formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(time);
+                            return ChatWidget(
+                              msg: chatMessage['text'],
+                              dateTime: formattedDate,
+                              chatIndex: chatMessage['index'], 
+                              shouldAnimate:
+                                false,
+                            );
+                          })
+                        :
+                          ListView.builder(
+                          controller: _listScrollController,
+                          itemCount: loadedMessages.length, 
+                          itemBuilder: (context, index) {
+                            final chatMessage = loadedMessages[index].data();
+                            DateTime time = chatMessage['createdAt'].toDate();
+                            String formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(time);
+                            return ChatWidget(
+                              msg: chatMessage['text'],
+                              dateTime: formattedDate,
+                              chatIndex: chatMessage['index'], 
+                              shouldAnimate:
+                                false,
+                            );
+                          }),
                     ),
-                  ],
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Material(
-                    color: Colors.grey[600],
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              focusNode: focusNode,
-                              style: const TextStyle(color: Colors.white),
-                              controller: textEditingController,
-                              onSubmitted: (value) async {
-                                await sendMessageFCT(
-                                    
-                                    chatProvider: chatProvider);
-                              },
-                              decoration: const InputDecoration.collapsed(
-                                  hintText: "How can I help you? ...",
-                                  hintStyle: TextStyle(color: Colors.white)),
-                            ),
-                          ),
-                          IconButton(
-                              onPressed: () async {
-                                await sendMessageFCT(
-                                    
-                                    chatProvider: chatProvider);
-                              },
-                              tooltip: 'Send message...',
-                              icon: const Icon(
-                                Icons.send,
-                                color: Colors.white,
+                    if (_isTyping) ...[
+                      const SpinKitThreeBounce(
+                        color: Colors.black,
+                        size: 20,
+                      ),
+                    ],
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Material(
+                      color: Colors.grey[600],
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                focusNode: focusNode,
+                                style: const TextStyle(color: Colors.white),
+                                controller: textEditingController,
+                                onSubmitted: (value) async {
+                                  await sendMessageFCT(
+                                      
+                                      chatProvider: chatProvider);
+                                },
+                                decoration: const InputDecoration.collapsed(
+                                    hintText: "How can I help you? ...",
+                                    hintStyle: TextStyle(color: Colors.white)),
                               ),
-                          ),
-                          FloatingActionButton(
-                            backgroundColor: Colors.white,
-                            onPressed: () => onListen(),
-                            tooltip: 'Click and speak something...',
-                            child: Icon(
-                              _isListening ? Icons.mic_off : Icons.mic,
-                              color: Colors.black,
                             ),
-                          ),
-                        ],
-                        
+                            IconButton(
+                                onPressed: () async {
+                                  await sendMessageFCT(
+                                      
+                                      chatProvider: chatProvider);
+                                },
+                                tooltip: 'Send message...',
+                                icon: const Icon(
+                                  Icons.send,
+                                  color: Colors.white,
+                                ),
+                            ),
+                            FloatingActionButton(
+                              backgroundColor: Colors.white,
+                              onPressed: () => onListen(),
+                              tooltip: 'Click and speak something...',
+                              child: Icon(
+                                _isListening ? Icons.mic_off : Icons.mic,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                          
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );

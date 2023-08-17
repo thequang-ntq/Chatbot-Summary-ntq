@@ -25,18 +25,16 @@
 - [Error](#error)
 - [Time-tracking](#time-tracking)
 - [Future Work](#future-work)
-- [License](#license)
 
 ## Features
 
 * Advanced AI-chatbot and summarize text / audio file
-* My first projects -_-
 * Chat with AI: Enjoy dynamic conversations with AI Chatbot, enable voice and message chat.
 * Summarize: Extract key information from a **.txt, .docx, or audio (.mp3, .wav, .mp4, .m4a)** file, and ask anything about that. 
 
 ## USER INTERFACE
 
-https://github.com/22T1020362/Chatbot-Summary-ntq/assets/115056697/b001d515-10b4-49be-9e75-07a8eb91c316
+https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/205a0fdb-408a-4b43-a8e5-dba606d5901d
 
 ## Screenshots
 
@@ -52,6 +50,7 @@ https://github.com/22T1020362/Chatbot-Summary-ntq/assets/115056697/b001d515-10b4
 - **SYSTEM:** 4GB RAM, At Least 12GB of Free Space in C Drive, And 3.5GB of Free Space in your App Folder.
 - **INSTALLED:** [npm](https://nodejs.org/en) (v18.17.0), [Flutter](https://docs.flutter.dev/get-started/install)(version in "pubspec.lock"), [Git](https://git-scm.com/downloads)(v2.41.0)
 [VSCode](https://code.visualstudio.com/)(v1.81.1)
+- **You must have Wifi / Internet Access to run this app**
 
 ## II. Setup
 ### 1. Clone this github repository app
@@ -60,7 +59,7 @@ https://github.com/22T1020362/Chatbot-Summary-ntq/assets/115056697/b001d515-10b4
 - Open git (in step 2), then type:
 
 ```bash
-git clone https://github.com/22T1020362/Chatbot-Summary-ntq
+git clone https://github.com/thequang-ntq/Chatbot-Summary-ntq.git
 ```
 - Open your project terminal, then type:
 ```bash
@@ -125,12 +124,12 @@ https://stackoverflow.com/questions/70320263/error-the-term-flutterfire-is-not-r
 ### 4. Fill in the code
 - In the lib folder contains the code of this app, you must update (change) my comments that has in **every file with a ".dart" extensions in that lib folder**, for example: 
 ```bash
-'--YOUR HTTPS LINK TO THE REALTIME DATABASE--'
+'--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--'
 ```
 ![update](screenshots/update.png)
 - (and more places that the same with this image)
 
-- with your https link:
+- with your https link **WITHOUT "https://" IN THE BEGINNING OF THE LINK**:
 ![name](screenshots/name.png)
 
 ## III. Run App
@@ -207,7 +206,7 @@ https://bobbyhadz.com/blog/flutterfire-is-not-recognized-as-internal-or-external
 | 10/08/2023     | MenuBar     |  Add Delete Button to Menu   | 
 | 11/08/2023     | Firebase     |  Fixed firebase   |
 | 12-14/08/2023     | Write readme file     |  |
-| 15-16/08/2023     | Add comment     |  |
+| 15-19/08/2023     | Add comment, Fixed UI, write readme file     | Fixed submit, widget UI  |
 
 ##### Future Work
 - [ ] Update app structure, optimize and clean code.
@@ -215,8 +214,3 @@ https://bobbyhadz.com/blog/flutterfire-is-not-recognized-as-internal-or-external
 - [ ] Migrate database: from FireStore(firebase) to [SQLite](https://pub.dev/packages/sqflite)
 - [ ] UI : Design the UI better, cleaner
 - [ ] Adjust Speech recognition: Show [glowing animation](https://pub.dev/packages/avatar_glow) of the sentence listening
-
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).

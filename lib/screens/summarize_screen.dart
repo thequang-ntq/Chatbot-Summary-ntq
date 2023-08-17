@@ -6,6 +6,8 @@ import 'dart:ui';
 import 'dart:io';
 import 'dart:developer';
 import 'dart:convert';
+import 'package:connection_notifier/connection_notifier.dart';
+import 'package:chatgpt/screens/internet.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -97,6 +99,21 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     super.dispose();
   }
 
+  // Snackbar Notify message
+  void notify(String message) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.black,
+        content: Text('$message...', style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w400,
+        )),
+      ),
+    );
+  }
+
+
   //toRefresh function that defined in menu_sum.dart
   void toRefresh(){
     Navigator.pop(context);
@@ -124,7 +141,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   }
 
   //function when you upload a file
-  void _uploadFile() async {
+  Future<void> _uploadFile() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.any);
     if (result == null) {
       return ;
@@ -133,6 +150,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       fileType = file.name.split('.').last;
       fileName = file.name;
       GetV.filetype = fileType;
+      notify('Uploading file...');
       if(fileType == "txt"){
         final File txtFile = File(file.path!);
         fileText = await txtFile.readAsString();
@@ -165,8 +183,10 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         GetV.text = fileText;
         GetV.filetype = fileType;
         GetV.filepath = file.path!;
+        
       });
       GetV.filepath = file.path!;
+      notify('Summarizing document...');
       await saveDocsSummarize(msg: textLast, file: file);  
       return ;
     }
@@ -264,336 +284,342 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         ),
         drawer: MenuSum(toRefresh: toRefresh),
         backgroundColor: Colors.grey[300],
-        body: SafeArea(
-          child: _hasFiled == false?
-           
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children:[
-                  const SizedBox(height: 50),
-                  //Upload file button
-                  Flexible(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _uploadFile();                                              
-                      },
-                      style: ButtonStyle(
-                        fixedSize: MaterialStateProperty.all(
-                          const Size(150, 170),
-                        ),
-                        backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                          (Set<MaterialState> states) {
-                            if (states.contains(MaterialState.pressed)) {
-                              return Colors.green;
-                            }
-                            return Colors.orange;
-                          },
-                        ),
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
+        body:  ConnectionNotifierToggler(
+          onConnectionStatusChanged: (connected) {
+            if (connected == null) return;
+          },
+          disconnected: const InternetErr(),
+          connected: SafeArea(
+            child: _hasFiled == false?
+             
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children:[
+                    const SizedBox(height: 50),
+                    //Upload file button
+                    Flexible(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _uploadFile();                                              
+                        },
+                        style: ButtonStyle(
+                          fixedSize: MaterialStateProperty.all(
+                            const Size(150, 170),
+                          ),
+                          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                            (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.pressed)) {
+                                return Colors.green;
+                              }
+                              return Colors.orange;
+                            },
+                          ),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
                           ),
                         ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(15.0), 
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(
-                                  sigmaX: 5.0, sigmaY: 5.0), 
-                              child: Container(
-                                height: 110,
-                                width: 155,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  color: Colors.black.withOpacity(0.2), 
-                                ),
-                                child: Image.asset(
-                                  'assets/images/upload_pic.png',
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(15.0), 
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                    sigmaX: 5.0, sigmaY: 5.0), 
+                                child: Container(
                                   height: 110,
                                   width: 155,
-                                  fit: BoxFit.cover,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    color: Colors.black.withOpacity(0.2), 
+                                  ),
+                                  child: Image.asset(
+                                    'assets/images/upload_pic.png',
+                                    height: 110,
+                                    width: 155,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 19),
-                          const Text(
-                              'Upload a file',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (_isTyping) ...[
-                  const SpinKitThreeBounce(
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                ],
-                const SizedBox(
-                  height: 15,
-                ),
-                Material(
-                  color: Colors.grey[600],
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            focusNode: focusNode,
-                            style: const TextStyle(color: Colors.white),
-                            controller: _askText,
-                            onSubmitted: (value){
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return const AlertDialog(
-                                    content: Text('You are not choose file yet ! Please choose a file'),
-                                  );
-                                },
-                              );
-                            },
-                            decoration: const InputDecoration.collapsed(
-                                hintText: "Ask something...",
-                                hintStyle: TextStyle(color: Colors.white)),
-                          ),
+                            const SizedBox(height: 19),
+                            const Text(
+                                'Upload a file',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                          ],
                         ),
-                        IconButton(
-                            onPressed: (){
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return const AlertDialog(
-                                    content: Text('You are not choose file yet ! Please choose a file'),
-                                  );
-                                },
-                              );
-                            },
-                            tooltip: 'Send message...',
-                            icon: const Icon(
-                              Icons.send,
-                              color: Colors.white,
-                            ),
-                        ),
-                        FloatingActionButton(
-                          backgroundColor: Colors.white,
-                          onPressed: () => onListen(),
-                          tooltip: 'Click and speak something...',
-                          child: Icon(
-                            _isListening ? Icons.mic_off : Icons.mic,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                      
-                    ),
-                  ),
-                ),
-                ],
-              )
-            
-          : 
-              
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    //Button that contains the main text content of the file
-                    TextButton(
-                      onPressed: () {
-                        final snackBar = SnackBar(
-                          backgroundColor: Colors.white,
-                          content: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const SizedBox(height: 2),
-                                Text('FileName: $fileName', style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                )),
-                                const SizedBox(width: 40,),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children:[
-                                    
-                                    const Text('Topic', style:TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                    )),
-                                    IconButton(
-                                      onPressed: () {
-                                        Clipboard.setData(ClipboardData(text: fileText));
-                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                          content: const Text('Text Copied to Clipboard!'),
-                                          duration: const Duration(milliseconds: 1000),
-                                          action: SnackBarAction(
-                                            label: 'ok',
-                                            onPressed: () {},
-                                          ),
-                                        ));
-                                      },
-                                      icon: const Icon(Icons.text_snippet_sharp),
-                                      color: Colors.black,
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 3,),
-                                Flexible(
-                                  child: Text(fileText, style: const TextStyle(
-                                    backgroundColor: Color.fromARGB(255, 173, 172, 172),
-                                    color: Colors.black,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  )),
-                                ),
-                              ]
-                            ),
-                          ),
-                          action: SnackBarAction(
-                            label: 'Ok',
-                            textColor: Colors.blue,
-                            onPressed: () {
-                            },
-                          ),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      },
-                      style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.grey[100])),
-                      child: Text(
-                        fileName, style: const TextStyle(
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black,
-                          fontSize: 19,
-                          
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Flexible(
-                      child: StreamBuilder(
-                        stream: FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
-                          .collection('Summarize').doc(GetV.messageSummaryID)
-                          .collection('SummaryItem${GetV.summaryNum}')
-                          .orderBy('createdAt', descending:false).snapshots(),
-                        builder: (context, AsyncSnapshot snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          
-                          if (snapshot.hasError) {
-                            return const Center(
-                              child: Text('Something went wrong...'),
-                            );
-                          }
-                          
-                          final loadedMessages = snapshot.data!.docs;
-                          return 
-                            ListView.builder(
-                              controller: _listScrollController,
-                              itemCount: loadedMessages.length, 
-                              itemBuilder: (context, index) {
-                                final chatMessage = loadedMessages[index].data();
-                                DateTime time = chatMessage['createdAt'].toDate();
-                                String formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(time);
-                                return _first?
-                                  DocsWidget(
-                                    msg: chatMessage['text'],
-                                    q1: q1,
-                                    q2: q2,
-                                    q3: q3,
-                                    chatIndex: chatMessage['index'],
-                                    dateTime: formattedDate,
-                                    onPress: onPress,
-                                    shouldAnimate:
-                                        chatMessage['index']%2 == 1,
-                                  )
-                                :
-                                  ChatWidget(
-                                    msg: chatMessage['text'],
-                                    dateTime: formattedDate,
-                                    chatIndex: chatMessage['index'], 
-                                    shouldAnimate:
-                                        chatMessage['index'] == 1,
-                                  );
-                              }
-                                
-                                
-                            );
-                              
-                        }
                       ),
                     ),
                     if (_isTyping) ...[
-                      const SpinKitThreeBounce(
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ],
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Material(
-                      color: const Color(0xFF444654),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              //Ask textfield
-                              child: TextField(
-                                focusNode: focusNode,
-                                style: const TextStyle(color: Colors.white),
-                                controller: _askText,
-                                onSubmitted: (value) async {
-                                  await sendMessageFCT(
-                                      
-                                      chatProvider: chatProvider);
-                                },
-                                decoration: const InputDecoration.collapsed(
-                                    hintText: "Ask something ...",
-                                    hintStyle: TextStyle(color: Colors.grey)),
-                              ),
-                            ),
-                            IconButton(
-                              //Send message button
-                                onPressed: () async {
-                                  await sendMessageFCT(
-                                      
-                                      chatProvider: chatProvider);
-                                },
-                                tooltip: 'Send message...',
-                                icon: const Icon(
-                                  Icons.send,
-                                  color: Colors.white,
-                                ),
-                            ),
-                            FloatingActionButton(
-                              backgroundColor: Colors.white,
-                              onPressed: () => onListen(),
-                              tooltip: 'Click and speak something...',
-                              child: Icon(
-                                _isListening ? Icons.mic_off : Icons.mic,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                          
-                        ),
-                      ),
+                    const SpinKitThreeBounce(
+                      color: Colors.black,
+                      size: 20,
                     ),
                   ],
-              ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Material(
+                    color: Colors.grey[600],
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              focusNode: focusNode,
+                              style: const TextStyle(color: Colors.white),
+                              controller: _askText,
+                              onSubmitted: (value){
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return const AlertDialog(
+                                      content: Text('You are not choose file yet ! Please choose a file'),
+                                    );
+                                  },
+                                );
+                              },
+                              decoration: const InputDecoration.collapsed(
+                                  hintText: "Ask something...",
+                                  hintStyle: TextStyle(color: Colors.white)),
+                            ),
+                          ),
+                          IconButton(
+                              onPressed: (){
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return const AlertDialog(
+                                      content: Text('You are not choose file yet ! Please choose a file'),
+                                    );
+                                  },
+                                );
+                              },
+                              tooltip: 'Send message...',
+                              icon: const Icon(
+                                Icons.send,
+                                color: Colors.white,
+                              ),
+                          ),
+                          FloatingActionButton(
+                            backgroundColor: Colors.white,
+                            onPressed: () => onListen(),
+                            tooltip: 'Click and speak something...',
+                            child: Icon(
+                              _isListening ? Icons.mic_off : Icons.mic,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                        
+                      ),
+                    ),
+                  ),
+                  ],
+                )
+              
+            : 
+                
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      //Button that contains the main text content of the file
+                      TextButton(
+                        onPressed: () {
+                          final snackBar = SnackBar(
+                            backgroundColor: Colors.white,
+                            content: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const SizedBox(height: 2),
+                                  Text('FileName: $fileName', style: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                  )),
+                                  const SizedBox(width: 40,),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children:[
+                                      
+                                      const Text('Topic', style:TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                      )),
+                                      IconButton(
+                                        onPressed: () {
+                                          Clipboard.setData(ClipboardData(text: fileText));
+                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                            content: const Text('Text Copied to Clipboard!'),
+                                            duration: const Duration(milliseconds: 1000),
+                                            action: SnackBarAction(
+                                              label: 'ok',
+                                              onPressed: () {},
+                                            ),
+                                          ));
+                                        },
+                                        icon: const Icon(Icons.text_snippet_sharp),
+                                        color: Colors.black,
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 3,),
+                                  Flexible(
+                                    child: Text(fileText, style: const TextStyle(
+                                      backgroundColor: Color.fromARGB(255, 173, 172, 172),
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    )),
+                                  ),
+                                ]
+                              ),
+                            ),
+                            action: SnackBarAction(
+                              label: 'Ok',
+                              textColor: Colors.blue,
+                              onPressed: () {
+                              },
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        },
+                        style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.grey[100])),
+                        child: Text(
+                          fileName, style: const TextStyle(
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                            fontSize: 19,
+                            
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Flexible(
+                        child: StreamBuilder(
+                          stream: FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
+                            .collection('Summarize').doc(GetV.messageSummaryID)
+                            .collection('SummaryItem${GetV.summaryNum}')
+                            .orderBy('createdAt', descending:false).snapshots(),
+                          builder: (context, AsyncSnapshot snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            
+                            if (snapshot.hasError) {
+                              return const Center(
+                                child: Text('Something went wrong...'),
+                              );
+                            }
+                            
+                            final loadedMessages = snapshot.data!.docs;
+                            return 
+                              ListView.builder(
+                                controller: _listScrollController,
+                                itemCount: loadedMessages.length, 
+                                itemBuilder: (context, index) {
+                                  final chatMessage = loadedMessages[index].data();
+                                  DateTime time = chatMessage['createdAt'].toDate();
+                                  String formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(time);
+                                  return _first?
+                                    DocsWidget(
+                                      msg: chatMessage['text'],
+                                      q1: q1,
+                                      q2: q2,
+                                      q3: q3,
+                                      chatIndex: chatMessage['index'],
+                                      dateTime: formattedDate,
+                                      onPress: onPress,
+                                      shouldAnimate:
+                                          false,
+                                    )
+                                  :
+                                    ChatWidget(
+                                      msg: chatMessage['text'],
+                                      dateTime: formattedDate,
+                                      chatIndex: chatMessage['index'], 
+                                      shouldAnimate:
+                                        false,
+                                    );
+                                }
+                                  
+                                  
+                              );
+                                
+                          }
+                        ),
+                      ),
+                      if (_isTyping) ...[
+                        const SpinKitThreeBounce(
+                          color: Colors.black,
+                          size: 20,
+                        ),
+                      ],
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Material(
+                        color: const Color(0xFF444654),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                //Ask textfield
+                                child: TextField(
+                                  focusNode: focusNode,
+                                  style: const TextStyle(color: Colors.white),
+                                  controller: _askText,
+                                  onSubmitted: (value) async {
+                                    await sendMessageFCT(
+                                        
+                                        chatProvider: chatProvider);
+                                  },
+                                  decoration: const InputDecoration.collapsed(
+                                      hintText: "Ask something ...",
+                                      hintStyle: TextStyle(color: Colors.grey)),
+                                ),
+                              ),
+                              IconButton(
+                                //Send message button
+                                  onPressed: () async {
+                                    await sendMessageFCT(
+                                        
+                                        chatProvider: chatProvider);
+                                  },
+                                  tooltip: 'Send message...',
+                                  icon: const Icon(
+                                    Icons.send,
+                                    color: Colors.white,
+                                  ),
+                              ),
+                              FloatingActionButton(
+                                backgroundColor: Colors.white,
+                                onPressed: () => onListen(),
+                                tooltip: 'Click and speak something...',
+                                child: Icon(
+                                  _isListening ? Icons.mic_off : Icons.mic,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                            
+                          ),
+                        ),
+                      ),
+                    ],
+                ),
+          ),
         ),
     );
   }
@@ -620,8 +646,10 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       else{
         embeddedText = msg;
       }
+      notify('Get response...');
       final prompt = promptTemplate.format({'subject': embeddedText});
       final result = await llm.predict(prompt);
+      
       final textSum = result.substring(0, result.indexOf(start1));
       // print(result.indexOf(start1));
       q1 = result.substring(result.indexOf(start1) + start1.length, result.indexOf(start2));

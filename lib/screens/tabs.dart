@@ -3,11 +3,14 @@
 //This is like the main UI for all the app.
 
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:chatgpt/screens/internet.dart';
 import 'package:chatgpt/screens/chat.dart';
 import 'package:chatgpt/screens/home.dart';
 import 'package:chatgpt/screens/summarize.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connection_notifier/connection_notifier.dart';
 import 'dart:convert';
 
 class Tabs extends StatefulWidget {
@@ -23,10 +26,15 @@ class _TabsState extends State<Tabs> {
   var _apiKeyValue = TextEditingController();
   var _userName = TextEditingController();
   var _enteredUserName = '';
- 
 
   @override
   void initState() {
+    setState(() {
+      if(GetV.apiKey.text.isNotEmpty && GetV.userName.text.isNotEmpty){
+        _enteredApiKey = GetV.apiKey.text;
+        _enteredUserName = GetV.userName.text;
+      }
+    },);
     super.initState();
   }
 
@@ -66,6 +74,8 @@ class _TabsState extends State<Tabs> {
     else {
       _enteredApiKey = apiKeyValue.text;
       _enteredUserName = userName.text;
+      GetV.apiKey.text = _enteredApiKey;
+      GetV.userName.text = _enteredUserName;
       showDialog(
         context: context,
         builder: (context) {
@@ -77,8 +87,7 @@ class _TabsState extends State<Tabs> {
           );
         },
       );
-      // GetV.userName.text = _enteredUserName;
-      final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'api-keys.json');
+      final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'api-keys.json');
       final response = await http.get(url);
       if(response.body.contains(apiKeyValue.text)==false){
         await http.post(url, 
@@ -91,7 +100,7 @@ class _TabsState extends State<Tabs> {
       );
       }
       
-      final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userNames.json');
+      final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'userNames.json');
       final response2 = await http.get(url2);
       if(response2.body.contains(userName.text)==false){
         await http.post(url2, 
@@ -107,7 +116,7 @@ class _TabsState extends State<Tabs> {
         ).then((DocumentReference doc){
           GetV.userChatID = doc.id;
         });
-        final url3 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userChatID.json');
+        final url3 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'userChatID.json');
         await http.post(url3, 
           headers: {
             'Content-Type' : 'userchatid/json',
@@ -122,7 +131,7 @@ class _TabsState extends State<Tabs> {
         ).then((DocumentReference doc){
           GetV.userSummaryID = doc.id;
         });
-        final url4 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userSummaryID.json');
+        final url4 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'userSummaryID.json');
         await http.post(url4, 
           headers: {
             'Content-Type' : 'usersummaryid/json',
@@ -135,19 +144,17 @@ class _TabsState extends State<Tabs> {
         GetV.userName.text = _enteredUserName;
       }
       else if(response2.body.contains(userName.text)==true){
-        final url5 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userChatID.json');
+        final url5 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'userChatID.json');
         final response5 = await http.get(url5);
         final resData5 = await json.decode(response5.body);
         for(final item in resData5.entries){
           if(_enteredUserName == item.value['user-name']){
             GetV.userChatID = item.value['user-chatID'];
             GetV.userName.text = _enteredUserName;
-            // print(GetV.userName.text);
-            // break;
           }
         }
 
-        final url6 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'userSummaryID.json');
+        final url6 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'userSummaryID.json');
         final response6 = await http.get(url6);
 
         final resData6 = await json.decode(response6.body);
@@ -165,6 +172,16 @@ class _TabsState extends State<Tabs> {
 
   //Change to chat screen
   void toChat() async{
+    if(GetV.apiKey.text.isNotEmpty){
+      setState(() {
+        _enteredApiKey = GetV.apiKey.text;
+      });
+    }
+    if(GetV.userName.text.isNotEmpty){
+      setState(() {
+        _enteredUserName = GetV.userName.text;
+      });
+    }
     if (_enteredApiKey == '' || _enteredApiKey.isEmpty || _enteredUserName.isEmpty) {
       showDialog(
         context: context,
@@ -177,8 +194,16 @@ class _TabsState extends State<Tabs> {
         },
       );
     } else {
-        
-        final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatNum.json');
+        final urlChatID = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'userChatID.json');
+        final responseChatID = await http.get(urlChatID);
+        final resDataChatID = await json.decode(responseChatID.body);
+        for(final item in resDataChatID.entries){
+          if(_enteredUserName == item.value['user-name']){
+            GetV.userChatID = item.value['user-chatID'];
+            GetV.userName.text = _enteredUserName;
+          }
+        }
+        final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'chatNum.json');
         final response2 = await http.get(url2);
         if (response2.body.contains(_enteredUserName) == true){
           final Map<String,dynamic> resData2 = json.decode(response2.body);
@@ -235,7 +260,7 @@ class _TabsState extends State<Tabs> {
             'createdAt': Timestamp.now(),
           }); 
 
-        final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'chatItemNumber.json');
+        final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'chatItemNumber.json');
         final response = await http.get(url);
         bool check = true;
         if(response.body != 'null'){
@@ -267,6 +292,16 @@ class _TabsState extends State<Tabs> {
 
   //Change to summarize screen
   void toSummarize() async{
+    if(GetV.apiKey.text.isNotEmpty){
+      setState(() {
+        _enteredApiKey = GetV.apiKey.text;
+      });
+    }
+    if(GetV.userName.text.isNotEmpty){
+      setState(() {
+        _enteredUserName = GetV.userName.text;
+      });
+    }
     if (_enteredApiKey == '' || _enteredApiKey.isEmpty || _enteredUserName.isEmpty) {
       showDialog(
         context: context,
@@ -277,7 +312,18 @@ class _TabsState extends State<Tabs> {
         },
       );
     } else {
-      final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'summaryNum.json');
+      final urlSummaryID = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'userSummaryID.json');
+      final responseSummaryID = await http.get(urlSummaryID);
+
+      final resDataSummaryID = await json.decode(responseSummaryID.body);
+      for(final item in resDataSummaryID.entries){
+        if(_enteredUserName == item.value['user-name']){
+          GetV.userSummaryID = item.value['user-summaryID'];
+          GetV.userName.text = _enteredUserName;
+        }
+      }
+
+      final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryNum.json');
         final response2 = await http.get(url2);
         if (response2.body.contains(_enteredUserName) == true){
           final Map<String,dynamic> resData2 = json.decode(response2.body);
@@ -334,7 +380,7 @@ class _TabsState extends State<Tabs> {
             'createdAt': Timestamp.now(),
           }); 
 
-        final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'summaryItemNumber.json');
+        final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryItemNumber.json');
         final response = await http.get(url);
         bool check = true;
         if(response.body != 'null'){
@@ -385,18 +431,24 @@ class _TabsState extends State<Tabs> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.white,
-                Colors.grey,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+        body: ConnectionNotifierToggler(
+        onConnectionStatusChanged: (connected) {
+          if (connected == null) return;
+        },
+        disconnected: const InternetErr(),
+        connected: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white,
+                  Colors.grey,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
+            child: screenWidget,
           ),
-          child: screenWidget,
         ),
       ),
     );

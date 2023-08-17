@@ -171,25 +171,14 @@ class DocsWidget extends StatelessWidget {
                   
                   Visibility(
                     visible: chatIndex==3,
-                    child: DefaultTextStyle(
+                    child: const DefaultTextStyle(
                       textAlign: TextAlign.end,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
                           fontSize: 16,
                           ),
-                      child: AnimatedTextKit(
-                        isRepeatingAnimation: false,
-                        repeatForever: false,
-                        displayFullTextOnTap: true,
-                        totalRepeatCount: 1,
-                        animatedTexts: [
-                          TyperAnimatedText(
-                            textAlign: TextAlign.end,
-                            '--------------------------------------------',
-                          ),
-                        ],
-                      ),
+                      child: Text('------------------------------------'),
                     ),
                   ),
                   
@@ -218,18 +207,7 @@ class DocsWidget extends StatelessWidget {
                                 fontWeight: FontWeight.w700,
                                 fontSize: 16,
                                 ),
-                            child: AnimatedTextKit(
-                              isRepeatingAnimation: false,
-                              repeatForever: false,
-                              displayFullTextOnTap: true,
-                              totalRepeatCount: 1,
-                              animatedTexts: [
-                                TyperAnimatedText(
-                                  textAlign: TextAlign.end,
-                                  q1.trim(),
-                                ),
-                              ],
-                            ),
+                            child: Text(q1.trim()),
                           ),
                         ),
                       ],
@@ -260,18 +238,7 @@ class DocsWidget extends StatelessWidget {
                                 fontWeight: FontWeight.w700,
                                 fontSize: 16,
                                 ),
-                            child: AnimatedTextKit(
-                              isRepeatingAnimation: false,
-                              repeatForever: false,
-                              displayFullTextOnTap: true,
-                              totalRepeatCount: 1,
-                              animatedTexts: [
-                                TyperAnimatedText(
-                                  textAlign: TextAlign.end,
-                                  q2.trim(),
-                                ),
-                              ],
-                            ),
+                            child: Text(q2.trim()),
                           ),
                         ),
                       ],
@@ -302,18 +269,7 @@ class DocsWidget extends StatelessWidget {
                                 fontWeight: FontWeight.w700,
                                 fontSize: 16,
                                 ),
-                            child: AnimatedTextKit(
-                              isRepeatingAnimation: false,
-                              repeatForever: false,
-                              displayFullTextOnTap: true,
-                              totalRepeatCount: 1,
-                              animatedTexts: [
-                                TyperAnimatedText(
-                                  textAlign: TextAlign.end,
-                                  q3.trim(),
-                                ),
-                              ],
-                            ),
+                            child: Text(q3.trim()),
                           ),
                         ),
                       ],

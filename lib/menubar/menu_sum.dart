@@ -43,7 +43,7 @@ class _MenuSumState extends State<MenuSum> {
               IconButton(
                 //Add icon button to create new summarize
                 onPressed: () async{
-                  final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'summaryNum.json');
+                  final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryNum.json');
                   final res = await http.get(upURL);
                   final Map<String,dynamic> dat = json.decode(res.body);
                   int maxNum = 1;
@@ -81,7 +81,7 @@ class _MenuSumState extends State<MenuSum> {
                     'createdAt': Timestamp.now(),
                   }); 
 
-                  final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'summaryNum.json');
+                  final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryNum.json');
                   final response2 = await http.get(url2);
                   final Map<String,dynamic> resData2 = json.decode(response2.body);
                   for(final item in resData2.entries){
@@ -90,7 +90,7 @@ class _MenuSumState extends State<MenuSum> {
                     }
                   }
                   
-                  final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'summaryItemNumber.json');
+                  final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryItemNumber.json');
                   final response = await http.get(url);
                   final Map<String,dynamic> resData = json.decode(response.body);
                   for(final item in resData.entries){
@@ -112,7 +112,7 @@ class _MenuSumState extends State<MenuSum> {
                   color: Colors.black,
                 )),
                 onPressed: () async{
-                  final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'summaryNum.json');
+                  final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryNum.json');
                   final res = await http.get(upURL);
                   final Map<String,dynamic> dat = json.decode(res.body);
                   int maxNum = 1;
@@ -150,7 +150,7 @@ class _MenuSumState extends State<MenuSum> {
                     'createdAt': Timestamp.now(),
                   }); 
 
-                  final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'summaryNum.json');
+                  final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryNum.json');
                   final response2 = await http.get(url2);
                   final Map<String,dynamic> resData2 = json.decode(response2.body);
                   for(final item in resData2.entries){
@@ -159,7 +159,7 @@ class _MenuSumState extends State<MenuSum> {
                     }
                   }
                   
-                  final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'summaryItemNumber.json');
+                  final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryItemNumber.json');
                   final response = await http.get(url);
                   final Map<String,dynamic> resData = json.decode(response.body);
                   for(final item in resData.entries){
@@ -283,7 +283,7 @@ class _MenuSumState extends State<MenuSum> {
                                       
                                     }
                                     else{
-                                      final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'summaryNum.json');
+                                      final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryNum.json');
                                       final res = await http.get(upURL);
                                       final Map<String,dynamic> dat = json.decode(res.body);
                                       int maxNum = 1;
@@ -317,7 +317,7 @@ class _MenuSumState extends State<MenuSum> {
                                         'createdAt': Timestamp.now(),
                                       }); 
                               
-                                      final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'summaryNum.json');
+                                      final url2 = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryNum.json');
                                       final response2 = await http.get(url2);
                                       final Map<String,dynamic> resData2 = json.decode(response2.body);
                                       for(final item in resData2.entries){
@@ -326,7 +326,7 @@ class _MenuSumState extends State<MenuSum> {
                                         }
                                       }
                                       
-                                      final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE--', 'summaryItemNumber.json');
+                                      final url = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryItemNumber.json');
                                       final response = await http.get(url);
                                       final Map<String,dynamic> resData = json.decode(response.body);
                                       for(final item in resData.entries){
