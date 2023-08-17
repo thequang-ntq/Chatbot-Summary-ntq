@@ -56,6 +56,7 @@ dependencies:
   auto_size_text: ^3.0.0
   shared_preferences: ^2.2.0
   whisper_dart: ^0.0.11
+  flutter_langdetect: ^0.0.2
 
 dev_dependencies:
   flutter_test:

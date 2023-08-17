@@ -3,6 +3,7 @@
 //then the text display of those two will be controlled by this code file.
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flutter_langdetect/flutter_langdetect.dart' as langdetect;
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter/services.dart';
@@ -22,9 +23,13 @@ class ChatWidget extends StatelessWidget {
   bool _isSpeaking = false;
 
   void _speak() async {
+
       _isSpeaking = !_isSpeaking;
+      
       if (_isSpeaking) {
-        await flutterTts.setLanguage("en-US");
+        await langdetect.initLangDetect();
+        var language = langdetect.detect(msg);
+        await flutterTts.setLanguage(language);
         await flutterTts.speak(msg);
       } else {
         flutterTts.stop();

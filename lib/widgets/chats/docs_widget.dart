@@ -4,6 +4,7 @@
 //in summarize screen
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flutter_langdetect/flutter_langdetect.dart' as langdetect;
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter/services.dart';
@@ -32,7 +33,9 @@ class DocsWidget extends StatelessWidget {
   void _speak() async {
       _isSpeaking = !_isSpeaking;
       if (_isSpeaking) {
-        await flutterTts.setLanguage("en-US");
+        await langdetect.initLangDetect();
+        var language = langdetect.detect(msg);
+        await flutterTts.setLanguage(language);
         await flutterTts.speak(msg);
       } else {
         flutterTts.stop();

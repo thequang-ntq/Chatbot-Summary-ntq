@@ -143,7 +143,7 @@ flutter run lib/main.dart
 - **To run this app on Android, you must have an .apk file of this app. To have that, follow this video:**
 - **BECAUSE AFTER YOU FILL IN THE CODE WITH YOUR HTTPS LINKS, THE CODE CHANGED, SO YOU MUST BUILD YOUR APK FILE YOURSELF. I AM SO SORRY FOR THIS INCONVENIENCE STEPS.** :disappointed_relieved:
 ![apk](assets/files/apk.gif)
-- After that, locale the 'app-release.apk' file in the video (or you can see in the image below):
+- After that, locale the 'app-release.apk' file in your project folder follow the video (or you can see in the image below):
 ![images](screenshots/apk.png)
 
 - **Or if you want to use the .apk file version using my Firebase, just click the link below:**
@@ -153,7 +153,7 @@ flutter run lib/main.dart
 <details>
 <summary>Download APK file on a connected Android device</summary>
 <br>
-Connect your Android device to your computer with a USB cable, then run the command line
+Connect your Android device to your computer with a USB cable, then run the command line.
 
 ```bash
   flutter install
