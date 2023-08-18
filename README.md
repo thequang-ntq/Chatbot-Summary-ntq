@@ -38,7 +38,7 @@ https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/205a0fdb-40
 
 ## Screenshots
 
-| Home                                 | Chat                                 | Summarize                                 |
+| Home                          | Chat                          | Summarize                          |
 |----------------------------------------------|----------------------------------------------|----------------------------------------------|
 | ![Home UI](screenshots/home.gif) | ![Chat UI](screenshots/chat.gif) | ![Summarize UI](screenshots/summary.gif) |
 

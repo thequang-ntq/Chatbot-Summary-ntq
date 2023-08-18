@@ -13,11 +13,11 @@ const template = '''
 Human chat : {humanChat}
 AI chat : {aiChat}
 ---END Conversation---
-Summarize the conversation above in 5 words or fewer.
+Detect language, Summarize the conversation above in 5 words or fewer.
 ''';
 
 const template2 = '''
-Answer this question: {question}, according to this text: {text}. If the text does not contains information
+Detect language, Answer this question: {question}, according to this text: {text}. Detect language, If the text does not contains information
 about that question, just say you don't have information about it.
 ''';
 
@@ -85,7 +85,7 @@ class ChatProvider with ChangeNotifier {
   Future<void> sendMessageAndGetAnswersSummarize(
       {required String msg}) async {
       final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' , temperature: 0);
-      if(GetV.filepath == "txt" || GetV.filepath == "wav" || GetV.filepath == "docx"){
+      if(GetV.filetype == "txt" || GetV.filetype == "wav" || GetV.filetype == "docx"){
         TextLoader loader = TextLoader(GetV.filepath);
         final documents = await loader.load();
         const textSplitter = CharacterTextSplitter(

@@ -27,10 +27,35 @@ import 'package:docx_to_text/docx_to_text.dart';
 import 'package:intl/intl.dart';
 import 'package:chatgpt/widgets/chats/chat_widget.dart';
 import 'package:chatgpt/menubar/menu_sum.dart';
-
+import 'package:open_file/open_file.dart';
 
 const template = '''
-Summarize the following text: {subject} in less than 250 words, then show 3 questions related to the paragraph just summarized in the following format:
+Detect language, Write a concise summary of the following context:
+
+"{context}"
+
+then give 3 short related questions. the Response Use Detected language with following:
+
+"TOPIC
+<br>
+SUMMARY
+
+<br>
+QUESTION 1
+
+<br>
+QUESTION 2
+
+<br>
+QUESTION 3"
+ ''';
+
+const template2 = '''
+Detect language, Summarize the following text {text} in 4 words or fewer.
+''';
+
+const templateX = '''
+Detect language, Summarize the following text: {subject} in less than 250 words, then show 3 questions related to the paragraph just summarized in the following format:
 
 <br>
 Question1:
@@ -46,13 +71,14 @@ Question3:
 
 ''';
 
-const template2 = '''
-Summarize the following text {text} in 4 words or fewer.
-''';
+const start = "SUMMARY:";
+const start1 = "QUESTION 1:";
+const start2 = "QUESTION 2:";
+const start3 = "QUESTION 3:";
 
-const start1 = "Question 1:";
-const start2 = "Question 2:";
-const start3 = "Question 3:";
+const starts1 = "Question 1:";
+const starts2 = "Question 2:";
+const starts3 = "Question 3:";
 
 class SummarizeScreen extends StatefulWidget {
   const SummarizeScreen({super.key});
@@ -185,6 +211,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         GetV.filepath = file.path!;
         
       });
+      GetV.filetype = fileType;
       GetV.filepath = file.path!;
       notify('Summarizing document...');
       await saveDocsSummarize(msg: textLast, file: file);  
@@ -429,68 +456,10 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                     children: [
                       //Button that contains the main text content of the file
                       TextButton(
-                        onPressed: () {
-                          final snackBar = SnackBar(
-                            backgroundColor: Colors.white,
-                            content: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const SizedBox(height: 2),
-                                  Text('FileName: $fileName', style: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 14,
-                                  )),
-                                  const SizedBox(width: 40,),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children:[
-                                      
-                                      const Text('Topic', style:TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 14,
-                                      )),
-                                      IconButton(
-                                        onPressed: () {
-                                          Clipboard.setData(ClipboardData(text: fileText));
-                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                            content: const Text('Text Copied to Clipboard!'),
-                                            duration: const Duration(milliseconds: 1000),
-                                            action: SnackBarAction(
-                                              label: 'ok',
-                                              onPressed: () {},
-                                            ),
-                                          ));
-                                        },
-                                        icon: const Icon(Icons.text_snippet_sharp),
-                                        color: Colors.black,
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 3,),
-                                  Flexible(
-                                    child: Text(fileText, style: const TextStyle(
-                                      backgroundColor: Color.fromARGB(255, 173, 172, 172),
-                                      color: Colors.black,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    )),
-                                  ),
-                                ]
-                              ),
-                            ),
-                            action: SnackBarAction(
-                              label: 'Ok',
-                              textColor: Colors.blue,
-                              onPressed: () {
-                              },
-                            ),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        onPressed: () async{
+                          if(fileName.isNotEmpty){
+                            OpenFile.open(GetV.filepath);
+                          }
                         },
                         style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.grey[100])),
                         child: Text(
@@ -635,47 +604,92 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   // This function will get the summarize content of the file you uploaded
   Future<void> saveDocsSummarize(
       {required String msg, required PlatformFile file}) async {
-      final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' ,temperature: 0);
-      final promptTemplate = PromptTemplate.fromTemplate(
-        template,
-      );
-      String embeddedText = '';
-      if(msg.length > 4000){
-        embeddedText = msg.substring(0, 4000);
+      if(GetV.filetype == "txt" || GetV.filetype == "wav" || GetV.filetype == "docx"){
+        TextLoader loader = TextLoader(GetV.filepath);
+        const textSplitter = RecursiveCharacterTextSplitter();
+        final docs = await loader.load();
+        final docsChunks = textSplitter.splitDocuments(docs);
+        notify('Store Document Embeddings...');
+        final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-16k-0613',temperature: 0);
+        final docPrompt = PromptTemplate.fromTemplate(
+          template,
+        );
+        final summarizeChain = SummarizeChain.stuff(
+          llm: llm,
+          promptTemplate: docPrompt,
+        );
+        notify('Summarize Document...');
+        final result = await summarizeChain.run(docsChunks);
+        final textSum = result.substring(result.indexOf(start) + start.length, result.indexOf(start1));
+        // print(result.indexOf(start1));
+        q1 = result.substring(result.indexOf(start1) + start1.length, result.indexOf(start2));
+        q2 = result.substring(result.indexOf(start2) + start2.length, result.indexOf(start3));
+        q3 = result.substring(result.indexOf(start3) + start3.length, result.length);
+        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
+          .collection('Summarize').doc(GetV.messageSummaryID).collection('SummaryItem${GetV.summaryNum}').add({
+          'text' : textSum,
+          'index' : 3,
+          'createdAt': Timestamp.now(),
+        });
+        if(GetV.title == ''){
+          final promptTemplate2 = PromptTemplate.fromTemplate(template2);
+          final prompt2 = promptTemplate2.format({'text' : textSum});
+          final result2 = await llm.predict(prompt2);
+          GetV.title = result2;
+          await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+          .doc(GetV.messageSummaryID).update(
+            {
+              'text' : result2,
+              'Index' : GetV.summaryNum,
+              'messageID': GetV.messageSummaryID,
+            }
+          );
+        }
+        GetV.summaryText = result;
       }
       else{
-        embeddedText = msg;
-      }
-      notify('Get response...');
-      final prompt = promptTemplate.format({'subject': embeddedText});
-      final result = await llm.predict(prompt);
-      
-      final textSum = result.substring(0, result.indexOf(start1));
-      // print(result.indexOf(start1));
-      q1 = result.substring(result.indexOf(start1) + start1.length, result.indexOf(start2));
-      q2 = result.substring(result.indexOf(start2) + start2.length, result.indexOf(start3));
-      q3 = result.substring(result.indexOf(start3) + start3.length, result.length);
-      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
-        .collection('Summarize').doc(GetV.messageSummaryID).collection('SummaryItem${GetV.summaryNum}').add({
-        'text' : textSum,
-        'index' : 3,
-        'createdAt': Timestamp.now(),
-      });
-      if(GetV.title == ''){
-        final promptTemplate2 = PromptTemplate.fromTemplate(template2);
-        final prompt2 = promptTemplate2.format({'text' : textSum});
-        final result2 = await llm.predict(prompt2);
-        GetV.title = result2;
-        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
-        .doc(GetV.messageSummaryID).update(
-          {
-            'text' : result2,
-            'Index' : GetV.summaryNum,
-            'messageID': GetV.messageSummaryID,
-          }
+        final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' ,temperature: 0);
+        final promptTemplateX = PromptTemplate.fromTemplate(
+          templateX,
         );
+        String embeddedText = '';
+        if(msg.length > 4000){
+          embeddedText = msg.substring(0, 4000);
+        }
+        else{
+          embeddedText = msg;
+        }
+        notify('Summarize documents...');
+        final promptX = promptTemplateX.format({'subject': embeddedText});
+        final result = await llm.predict(promptX);
+        
+        final textSum = result.substring(0, result.indexOf(starts1));
+        // print(result.indexOf(start1));
+        q1 = result.substring(result.indexOf(starts1) + starts1.length, result.indexOf(starts2));
+        q2 = result.substring(result.indexOf(starts2) + starts2.length, result.indexOf(starts3));
+        q3 = result.substring(result.indexOf(starts3) + starts3.length, result.length);
+        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
+          .collection('Summarize').doc(GetV.messageSummaryID).collection('SummaryItem${GetV.summaryNum}').add({
+          'text' : textSum,
+          'index' : 3,
+          'createdAt': Timestamp.now(),
+        });
+        if(GetV.title == ''){
+          final promptTemplate2 = PromptTemplate.fromTemplate(template2);
+          final prompt2 = promptTemplate2.format({'text' : textSum});
+          final result2 = await llm.predict(prompt2);
+          GetV.title = result2;
+          await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
+          .doc(GetV.messageSummaryID).update(
+            {
+              'text' : result2,
+              'Index' : GetV.summaryNum,
+              'messageID': GetV.messageSummaryID,
+            }
+          );
+        }
+        GetV.summaryText = result;
       }
-      GetV.summaryText = result;
       
     // notifyListeners();
   }

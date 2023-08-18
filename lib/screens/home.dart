@@ -21,6 +21,7 @@ class GetV{
   static late int chatNum;
   static late int summaryNum;
   static late String filepath;
+  static late String fileurl;
   static String text=  '';
   static String title = '';
   static String humanChat = '';
