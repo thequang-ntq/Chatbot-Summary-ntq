@@ -604,7 +604,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   // This function will get the summarize content of the file you uploaded
   Future<void> saveDocsSummarize(
       {required String msg, required PlatformFile file}) async {
-      if(GetV.filetype == "txt" || GetV.filetype == "wav" || GetV.filetype == "docx"){
+      if(GetV.filetype == "txt"){
         TextLoader loader = TextLoader(GetV.filepath);
         const textSplitter = RecursiveCharacterTextSplitter();
         final docs = await loader.load();

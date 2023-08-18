@@ -85,7 +85,7 @@ class ChatProvider with ChangeNotifier {
   Future<void> sendMessageAndGetAnswersSummarize(
       {required String msg}) async {
       final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' , temperature: 0);
-      if(GetV.filetype == "txt" || GetV.filetype == "wav" || GetV.filetype == "docx"){
+      if(GetV.filetype == "txt"){
         TextLoader loader = TextLoader(GetV.filepath);
         final documents = await loader.load();
         const textSplitter = CharacterTextSplitter(
