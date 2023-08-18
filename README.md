@@ -35,17 +35,13 @@
 ## USER INTERFACE
 | UI                       |
 |------------------------------------|
-|_________________ https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/205a0fdb-408a-4b43-a8e5-dba606d5901d ______________|
+| https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/205a0fdb-408a-4b43-a8e5-dba606d5901d |
 
 ## Screenshots
 
-| Home                          | Chat                          |
-|------------------------------------------|------------------------------------------|
-| ![Home UI](screenshots/home.gif) | ![Chat UI](screenshots/chat.gif) | 
-
-| Summarize                       |
-|-----------------------------------------------|
-| ![Summarize UI](screenshots/summary.gif) |
+| Home                          | Summarize                       | Chat                          |
+|-------------------------------------|---------------------------------------|-------------------------------------|
+| ![Home UI](screenshots/home.gif) | ![Summarize UI](screenshots/summary.gif) | ![Chat UI](screenshots/chat.gif) | 
 
 
 # HOW TO RUN THIS APP 
