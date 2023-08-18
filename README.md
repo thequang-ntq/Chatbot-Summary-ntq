@@ -29,8 +29,8 @@
 ## Features
 
 * Advanced AI-chatbot and summarize text / audio file
-* Chat with AI: Enjoy dynamic conversations with AI Chatbot, enable voice and message chat.
-* Summarize: Extract key information from a **.txt, .docx, or audio (.mp3, .wav, .mp4, .m4a)** file, and ask anything about that. 
+* Chat with AI: Chat with AI ChatBot, enable voice and message chat, copy and speak text.
+* Summarize: Extract key / main information from a **.txt, .docx, or audio (.mp3, .wav, .mp4, .m4a)** file, and ask anything about that. 
 
 ## USER INTERFACE
 
