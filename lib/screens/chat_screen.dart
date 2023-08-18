@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:connection_notifier/connection_notifier.dart';
 import 'package:chatgpt/screens/internet.dart';
 import 'package:chatgpt/providers/chats/chats_provider.dart';
+import 'package:chatgpt/screens/loading.dart';
 import 'package:chatgpt/widgets/chats/chat_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -163,8 +164,14 @@ class _ChatScreenState extends State<ChatScreen> {
               actions: [
                 IconButton(
                   onPressed: () async{
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Loadings()),
+                    );
                     GetV.title = '';
-                    
+                    GetV.submited = false;
+                    GetV.summarized =false;
+                    GetV.chated = false;
                     final res = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message')
                     .doc(GetV.messageChatID).get();
                     if(res['text'] == ''){
@@ -172,7 +179,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       .doc(GetV.messageChatID).delete();
                       
                     }
-                    
+                    Navigator.pop(context);
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const Tabs()),

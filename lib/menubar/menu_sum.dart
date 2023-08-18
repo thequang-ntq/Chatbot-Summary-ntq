@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:chatgpt/screens/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
+import 'package:chatgpt/screens/loading.dart';
 import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
 class MenuSum extends StatefulWidget {
@@ -43,6 +44,7 @@ class _MenuSumState extends State<MenuSum> {
               IconButton(
                 //Add icon button to create new summarize
                 onPressed: () async{
+                  
                   final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryNum.json');
                   final res = await http.get(upURL);
                   final Map<String,dynamic> dat = json.decode(res.body);
@@ -64,6 +66,7 @@ class _MenuSumState extends State<MenuSum> {
                     GetV.title = '';
                     GetV.summaryNum = maxNum + 1;
                     GetV.menuSumPressed = true;
+                    GetV.loadingUploadFile = false;
                   });
 
                   await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
@@ -98,8 +101,11 @@ class _MenuSumState extends State<MenuSum> {
                       item.value['summary-ItemNumber'] = GetV.summaryNum;
                     }
                   }
+                  setState(() {
+                    GetV.hasFiled = false;
+                    GetV.loadingUploadFile = false;
+                  });
                   widget.toRefresh();
-                  // Navigator.pop(context);
                 },
                 icon: const Icon(Icons.add, color: Colors.black),
               ),
@@ -112,6 +118,7 @@ class _MenuSumState extends State<MenuSum> {
                   color: Colors.black,
                 )),
                 onPressed: () async{
+                  
                   final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryNum.json');
                   final res = await http.get(upURL);
                   final Map<String,dynamic> dat = json.decode(res.body);
@@ -132,6 +139,8 @@ class _MenuSumState extends State<MenuSum> {
                   setState(() {
                     GetV.title = '';
                     GetV.summaryNum = maxNum + 1;
+                    GetV.hasFiled = false;
+                    GetV.loadingUploadFile = false;
                     GetV.menuSumPressed = true;
                   });
 
@@ -217,7 +226,11 @@ class _MenuSumState extends State<MenuSum> {
                                 visible: chatMessage['text'] != '',
                                 child: IconButton(
                                   //Summarize icon button contains history of a summarize and chat
-                                  onPressed: () async{ 
+                                  onPressed: () async{
+                                    setState(() {
+                                      GetV.hasFiled = true;
+                                    });
+                                    
                                     final resd = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
                                       .doc(GetV.messageSummaryID).get();
                                     if(resd['text'] == ''){
@@ -231,7 +244,6 @@ class _MenuSumState extends State<MenuSum> {
                                       GetV.menuSumPressed =true;
                                     });
                                     widget.toRefresh();
-                                    // Navigator.pop(context);
                                   },
                                   icon: const Icon(Icons.message_outlined, color: Colors.black),
                                 ),
@@ -251,6 +263,10 @@ class _MenuSumState extends State<MenuSum> {
                                     maxLines: 3,
                                   ),
                                   onPressed: () async{
+                                    setState(() {
+                                      GetV.hasFiled =true;
+                                    });
+                                    
                                     final resd = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
                                       .doc(GetV.messageSummaryID).get();
                                     if(resd['text'] == ''){
@@ -264,7 +280,6 @@ class _MenuSumState extends State<MenuSum> {
                                       GetV.menuSumPressed = true;
                                     });
                                     widget.toRefresh();
-                                    // Navigator.pop(context);
                                   }
                                 ),
                               ),
@@ -273,6 +288,7 @@ class _MenuSumState extends State<MenuSum> {
                                 child: IconButton(
                                   //Delete history button
                                   onPressed: () async{
+                                    
                                     final res = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
                                       .doc(chatMessage['messageID']).get();
                                     if(GetV.messageSummaryID != res['messageID']){
@@ -283,6 +299,10 @@ class _MenuSumState extends State<MenuSum> {
                                       
                                     }
                                     else{
+                                      setState(() {
+                                        GetV.hasFiled = false;
+                                        GetV.loadingUploadFile = false;
+                                      });
                                       final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'summaryNum.json');
                                       final res = await http.get(upURL);
                                       final Map<String,dynamic> dat = json.decode(res.body);
@@ -335,7 +355,6 @@ class _MenuSumState extends State<MenuSum> {
                                         }
                                       }
                                       widget.toRefresh();
-                                      // Navigator.pop(context);
                                     
                                     }
                                   },

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:chatgpt/screens/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
+import 'package:chatgpt/screens/loading.dart';
 import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
 class Menu extends StatefulWidget {
@@ -43,6 +44,7 @@ class _MenuState extends State<Menu> {
               IconButton(
                 //new chat icon button
                 onPressed: () async{
+                  
                   final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'chatNum.json');
                   final res = await http.get(upURL);
                   final Map<String,dynamic> dat = json.decode(res.body);
@@ -100,7 +102,6 @@ class _MenuState extends State<Menu> {
                     }
                   }
                   widget.toRefresh();
-                  // Navigator.pop(context);
                   
                 },
                 icon: const Icon(Icons.add, color: Colors.black),
@@ -114,6 +115,7 @@ class _MenuState extends State<Menu> {
                   color: Colors.black,
                 )),
                 onPressed: () async{
+                  
                   final upURL = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'chatNum.json');
                   final res = await http.get(upURL);
                   final Map<String,dynamic> dat = json.decode(res.body);
@@ -221,6 +223,7 @@ class _MenuState extends State<Menu> {
                                 child: IconButton(
                                   //Message history icon button that reload history chat
                                   onPressed: () async{ 
+                                    
                                     final resd = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message')
                                       .doc(GetV.messageChatID).get();
                                     if(resd['text'] == ''){
@@ -256,6 +259,7 @@ class _MenuState extends State<Menu> {
                                     maxLines: 3,
                                   ),
                                   onPressed: () async{
+                                    
                                     final resd = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message')
                                       .doc(GetV.messageChatID).get();
                                     if(resd['text'] == ''){
@@ -270,8 +274,8 @@ class _MenuState extends State<Menu> {
                                       GetV.refreshIndicatorKey.currentState?.show();
                                       GetV.menuPressed = true;
                                     });
+                                    
                                     widget.toRefresh();
-                                    // Navigator.pop(context);
                                     
                                   }
                                 ),
@@ -281,6 +285,7 @@ class _MenuState extends State<Menu> {
                                 child: IconButton(
                                   //Delete icon button that delete history chat
                                   onPressed: () async{
+                                    
                                     final res = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message')
                                       .doc(chatMessage['messageID']).get();
                                     if(GetV.messageChatID != res['messageID']){

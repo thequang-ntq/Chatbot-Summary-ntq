@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'package:connection_notifier/connection_notifier.dart';
 import 'package:chatgpt/screens/internet.dart';
 import 'package:flutter/services.dart';
+import 'package:chatgpt/screens/loading.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,7 @@ QUESTION 3"
  ''';
 
 const template2 = '''
-Detect language, Summarize the following text {text} in 4 words or fewer.
+Summarize the following text {text} in 4 words or fewer.
 ''';
 
 const templateX = '''
@@ -102,7 +103,6 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   late stt.SpeechToText _speech;
 
   late TextEditingController _summarizeText;
-  bool _hasFiled = false;
   bool _isTyping = false;
   bool _isListening = false;
   bool _first = true;
@@ -205,7 +205,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         textLast = fileText; 
       }
       setState(() {
-        _hasFiled = true;
+        GetV.hasFiled = true;
         GetV.text = fileText;
         GetV.filetype = fileType;
         GetV.filepath = file.path!;
@@ -288,8 +288,17 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           actions: [
             IconButton(
               onPressed: () async{
-                GetV.title = '';
-
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Loadings()),
+                );
+                setState(() {
+                  GetV.title = '';
+                  GetV.submited = false;
+                  GetV.summarized =false;
+                  GetV.chated = false;
+                  GetV.loadingUploadFile = false;
+                });
                 final res = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
                     .doc(GetV.messageSummaryID).get();
                 if(res['text'] == ''){
@@ -297,6 +306,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                   .doc(GetV.messageSummaryID).delete();
                   
                 }
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const Tabs()),
@@ -317,7 +327,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           },
           disconnected: const InternetErr(),
           connected: SafeArea(
-            child: _hasFiled == false?
+            child: GetV.hasFiled == false?
              
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -473,7 +483,14 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                       ),
                       const SizedBox(height: 10),
                       Flexible(
-                        child: StreamBuilder(
+                        child: GetV.loadingUploadFile == false?
+                          const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.black,
+                            ),
+                          )
+                        :
+                          StreamBuilder(
                           stream: FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
                             .collection('Summarize').doc(GetV.messageSummaryID)
                             .collection('SummaryItem${GetV.summaryNum}')
@@ -620,6 +637,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         );
         notify('Summarize Document...');
         final result = await summarizeChain.run(docsChunks);
+        setState(() {
+          GetV.loadingUploadFile = true;
+        });
         final textSum = result.substring(result.indexOf(start) + start.length, result.indexOf(start1));
         // print(result.indexOf(start1));
         q1 = result.substring(result.indexOf(start1) + start1.length, result.indexOf(start2));
@@ -662,7 +682,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         notify('Summarize documents...');
         final promptX = promptTemplateX.format({'subject': embeddedText});
         final result = await llm.predict(promptX);
-        
+        setState(() {
+          GetV.loadingUploadFile = true;
+        });
         final textSum = result.substring(0, result.indexOf(starts1));
         // print(result.indexOf(start1));
         q1 = result.substring(result.indexOf(starts1) + starts1.length, result.indexOf(starts2));

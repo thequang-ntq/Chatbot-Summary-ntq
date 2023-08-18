@@ -34,7 +34,7 @@
 
 ## USER INTERFACE
 
-https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/205a0fdb-408a-4b43-a8e5-dba606d5901d
+https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/292b905a-49ed-47b9-88f6-77e05af03e1d
 
 ## Screenshots
 
@@ -126,7 +126,7 @@ https://stackoverflow.com/questions/70320263/error-the-term-flutterfire-is-not-r
     + Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
 
 ### 4. Fill in the code
-- In the lib folder contains the code of this app, you must update (change) my comments that has in **every file with a ".dart" extensions in that lib folder**, for example: 
+- In the lib folder contains the code of this app, you must update (change) my comments that has in **4 specific files: menu.dart, menu_sum.dart, home.dart, tabs.dart in that lib folder**, for example: 
 ```bash
 '--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--'
 ```

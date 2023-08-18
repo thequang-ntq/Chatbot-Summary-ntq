@@ -3,6 +3,7 @@
 
 import 'dart:io';
 import 'dart:convert';
+import 'package:chatgpt/screens/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:connection_notifier/connection_notifier.dart';
 import 'package:chatgpt/screens/internet.dart';
@@ -26,6 +27,13 @@ class GetV{
   static String title = '';
   static String humanChat = '';
   static String aiChat = '';
+  static bool loadingMenuSum = false;
+  static bool loadingMenu = false;
+  static bool loadingUploadFile = false;
+  static bool submited = false;
+  static bool chated = false;
+  static bool summarized = false;
+  static bool hasFiled = false;
   static bool menuPressed = false;
   static bool menuSumPressed = false;
   static GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
@@ -314,15 +322,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   //Submit button
                   child: TextButton(
                     onPressed: ()  async{
-                      await checkApiKey(widget.apiKeyValue.text); 
-                      const CircularProgressIndicator();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Loadings()),
+                      );
+                      await checkApiKey(widget.apiKeyValue.text);
+                      Navigator.pop(context);
                       widget.toSubmit(widget.apiKeyValue, widget.name);
-                      
                       setState((){
                         GetV.apiKey = widget.apiKeyValue;
                         GetV.userName = widget.name;
-                        
+                        GetV.submited = true;
                       });
+                      
                     },
                       style: ButtonStyle(
                         fixedSize: MaterialStateProperty.all(

@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:chatgpt/screens/loading.dart';
 import 'package:chatgpt/screens/internet.dart';
 import 'package:chatgpt/screens/chat.dart';
 import 'package:chatgpt/screens/home.dart';
@@ -194,6 +195,10 @@ class _TabsState extends State<Tabs> {
         },
       );
     } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const Loadings()),
+        );
         final urlChatID = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'userChatID.json');
         final responseChatID = await http.get(urlChatID);
         final resDataChatID = await json.decode(responseChatID.body);
@@ -284,6 +289,7 @@ class _TabsState extends State<Tabs> {
             }),
           );
         }
+      Navigator.pop(context);
       setState(() {
         _activeScreen = 'chat-screen';
       });
@@ -312,6 +318,13 @@ class _TabsState extends State<Tabs> {
         },
       );
     } else {
+      setState(() {
+        GetV.loadingUploadFile = false;
+      });
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Loadings()),
+      );
       final urlSummaryID = Uri.https('--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--', 'userSummaryID.json');
       final responseSummaryID = await http.get(urlSummaryID);
 
@@ -404,6 +417,7 @@ class _TabsState extends State<Tabs> {
             }),
           );
         }
+      Navigator.pop(context);
       setState(() {
         _activeScreen = 'summarize-screen';
       });
