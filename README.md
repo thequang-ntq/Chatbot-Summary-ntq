@@ -33,9 +33,9 @@
 * Summarize: Extract key information from a **.txt, .docx, or audio (.mp3, .wav, .mp4, .m4a)** file, and ask anything about that. 
 
 ## USER INTERFACE
-
-https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/205a0fdb-408a-4b43-a8e5-dba606d5901d 
-
+| ......................... |
+https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/205a0fdb-408a-4b43-a8e5-dba606d5901d |
+................................ |
 ## Screenshots
 
 | Home                          |        ............         | Chat                          |
