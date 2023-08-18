@@ -34,8 +34,8 @@
 
 ## USER INTERFACE
 | ......................... |
-https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/205a0fdb-408a-4b43-a8e5-dba606d5901d |
-................................ |
+https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/205a0fdb-408a-4b43-a8e5-dba606d5901d
+|................................ |
 ## Screenshots
 
 | Home                          |        ............         | Chat                          |
