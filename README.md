@@ -33,15 +33,18 @@
 * Summarize: Extract key information from a **.txt, .docx, or audio (.mp3, .wav, .mp4, .m4a)** file, and ask anything about that. 
 
 ## USER INTERFACE
-| UI                       |
-|------------------------------------|
-| https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/205a0fdb-408a-4b43-a8e5-dba606d5901d |
+
+https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/205a0fdb-408a-4b43-a8e5-dba606d5901d 
 
 ## Screenshots
 
-| Home                          | Summarize                       | Chat                          |
-|-------------------------------------|---------------------------------------|-------------------------------------|
-| ![Home UI](screenshots/home.gif) | ![Summarize UI](screenshots/summary.gif) | ![Chat UI](screenshots/chat.gif) | 
+| Home                          | Summarize                          |
+|------------------------------------------|------------------------------------------|
+| ![Home UI](screenshots/home.gif) |  ![Summarize UI](screenshots/summary.gif) | 
+
+| Chat                      |
+|-----------------------------------------------|
+| ![Chat UI](screenshots/chat.gif) |
 
 
 # HOW TO RUN THIS APP 
