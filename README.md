@@ -38,13 +38,13 @@ https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/205a0fdb-40
 
 ## Screenshots
 
-| Home                          | Summarize                          |
-|------------------------------------------|------------------------------------------|
-| ![Home UI](screenshots/home.gif) |  ![Summarize UI](screenshots/summary.gif) | 
+| Home                          |        ............         | Chat                          |
+|------------------------------------------|-----------------------------------|------------------------------------------|
+| ![Home UI](screenshots/home.gif) | ......................... | ![Chat UI](screenshots/chat.gif) | 
 
-| Chat                      |
+| Summarize                       |
 |-----------------------------------------------|
-| ![Chat UI](screenshots/chat.gif) |
+| ![Summarize UI](screenshots/summary.gif) |
 
 
 # HOW TO RUN THIS APP 
