@@ -138,7 +138,7 @@ https://stackoverflow.com/questions/70320263/error-the-term-flutterfire-is-not-r
 
 ## III. Run App
 
-- This app can run on Web(recommended Chrome latest version) and Android( with version 12 or later).
+- This app can run on Web(recommended Chrome latest version) and Android( with **version 10 or later**).
 - **To run this app on Web, just open your project terminal in your code editor (mine is VS Code) and type:**
 ```bash
 flutter run lib/main.dart
