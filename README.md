@@ -159,10 +159,6 @@ flutter run lib/main.dart
 - After that, locale the 'app-release.apk' file in your project folder follow the video (or you can see in the image below):
 ![images](screenshots/apk.png)
 
-- **Or if you want to use the .apk file version using my Firebase, just click the link below:**
-
-- [Download .APK File](https://github.com/22T1020362/Chatbot-Summary-ntq/raw/main/outputs/apk/release/app-release.apk)
-
 <details>
 <summary>Download APK file on a connected Android device</summary>
 <br>
@@ -171,8 +167,6 @@ Connect your Android device to your computer with a USB cable, then run the comm
 ```bash
   flutter install
 ```
-
-**Or if you have an Android mobile phone, just download the APK file above.**
 
 </details>
 
