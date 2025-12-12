@@ -1,167 +1,245 @@
-//This is chat_widget which is the chat and summarize text appeared for both user and chatbot. Imagine
-//When you send message and the response was completely returned,
-//then the text display of those two will be controlled by this code file.
-
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter_langdetect/flutter_langdetect.dart' as langdetect;
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter/services.dart';
+import 'package:chatgpt/theme/app_theme.dart';
 
-class ChatWidget extends StatelessWidget {
-  ChatWidget(
-      {super.key,
-      required this.msg,
-      required this.chatIndex,
-      required this.dateTime,
-      this.shouldAnimate = false});
-  FlutterTts flutterTts = FlutterTts();
+class ChatWidget extends StatefulWidget {
+  const ChatWidget({
+    super.key,
+    required this.msg,
+    required this.chatIndex,
+    required this.dateTime,
+    this.shouldAnimate = false,
+  });
+
   final String msg;
   final int chatIndex;
   final bool shouldAnimate;
   final String dateTime;
+
+  @override
+  State<ChatWidget> createState() => _ChatWidgetState();
+}
+
+class _ChatWidgetState extends State<ChatWidget> {
+  FlutterTts flutterTts = FlutterTts();
   bool _isSpeaking = false;
 
-  void _speak() async {
-
-      _isSpeaking = !_isSpeaking;
-      
-      if (_isSpeaking) {
-        await langdetect.initLangDetect();
-        var language = langdetect.detect(msg);
-        await flutterTts.setLanguage(language);
-        await flutterTts.speak(msg);
-      } else {
-        flutterTts.stop();
-      }
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
   }
 
-  String? _getLanguage() {
-    RegExp regExp = RegExp(r"```(\w+)");
-    Match? match = regExp.firstMatch(msg);
-    String? languageName = match?.group(1);
-    return languageName;
+  void _speak() async {
+    setState(() {
+      _isSpeaking = !_isSpeaking;
+    });
+
+    if (_isSpeaking) {
+      await langdetect.initLangDetect();
+      var language = langdetect.detect(widget.msg);
+      await flutterTts.setLanguage(language);
+      await flutterTts.speak(widget.msg);
+    } else {
+      flutterTts.stop();
+    }
+  }
+
+  void _copyToClipboard() {
+    Clipboard.setData(ClipboardData(text: widget.msg));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.white),
+            SizedBox(width: 8),
+            Text('Text copied to clipboard!'),
+          ],
+        ),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Material(
-          color: chatIndex%2 == 0 ? Colors.white : Colors.grey[500],
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child:
-              chatIndex%2 == 0 ?
-                Column(
-                  children: [
-                    Text('-------  $dateTime  -----------', style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    )),
-                    const SizedBox(height: 6,),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image.asset('assets/images/person.png', width: 40,),
-                        const SizedBox(width: 8,),
-                        Expanded(
-                          child: Text(
-                            msg,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        const SizedBox.shrink(),
-                      ],
-                    ),
-                  ],
-                )
-              : 
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(width: 55,),                  
-                    Expanded(
-                      child: shouldAnimate ?
-                        DefaultTextStyle(
-                          textAlign: TextAlign.end,
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                              ),
-                          child: AnimatedTextKit(
-                              isRepeatingAnimation: false,
-                              repeatForever: false,
-                              displayFullTextOnTap: true,
-                              totalRepeatCount: 1,
-                              animatedTexts: [
-                                TyperAnimatedText(
-                                  textAlign: TextAlign.end,
-                                  msg.trim(),
-                                ),
-                              ]
-                          ),
-                        )
-                      :
-                        Text(
-                          textAlign: TextAlign.end,
-                          msg.trim(),
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                          ),
-                        ),
-                    ),
-                    const SizedBox(width: 8,),
-                    
-                    SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              Clipboard.setData(ClipboardData(text: msg));
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: const Text('Text Copied to Clipboard!'),
-                                duration: const Duration(milliseconds: 1000),
-                                action: SnackBarAction(
-                                  label: 'ok',
-                                  onPressed: () {},
-                                ),
-                              ));
-                            },
-                            icon: const Icon(Icons.copy),
-                            color: Colors.white,
-                          ),
-                          const SizedBox(height: 5,),
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            onPressed: _speak,
-                            icon:
-                                Icon(_isSpeaking ? Icons.volume_mute : Icons.volume_up),
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
-                    ),
-                    
-                    const SizedBox(width: 8,),
-                    Image.asset('assets/images/chat_logo.png', width: 40,),
-                  ],
+    final isUser = widget.chatIndex % 2 == 0;
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Time stamp
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                widget.dateTime,
+                style: AppTheme.caption.copyWith(
+                  fontWeight: FontWeight.w500,
                 ),
+              ),
+            ),
           ),
+          const SizedBox(height: 8),
           
+          // Message bubble
+          Row(
+            mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (!isUser) _buildAvatar(false),
+              if (!isUser) const SizedBox(width: 8),
+              
+              Flexible(
+                child: Container(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.75,
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isUser ? Colors.blue : Colors.grey[200],
+                    borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(20),
+                      topRight: const Radius.circular(20),
+                      bottomLeft: Radius.circular(isUser ? 20 : 5),
+                      bottomRight: Radius.circular(isUser ? 5 : 20),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha:0.1),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      widget.shouldAnimate && !isUser
+                          ? DefaultTextStyle(
+                              style: TextStyle(
+                                color: isUser ? Colors.white : Colors.black87,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              child: AnimatedTextKit(
+                                isRepeatingAnimation: false,
+                                repeatForever: false,
+                                displayFullTextOnTap: true,
+                                totalRepeatCount: 1,
+                                animatedTexts: [
+                                  TyperAnimatedText(
+                                    widget.msg.trim(),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Text(
+                              widget.msg.trim(),
+                              style: TextStyle(
+                                color: isUser ? Colors.white : Colors.black87,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                height: 1.4,
+                              ),
+                            ),
+                      
+                      // Action buttons for AI messages
+                      if (!isUser) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildActionButton(
+                              icon: Icons.copy,
+                              onTap: _copyToClipboard,
+                              tooltip: 'Copy',
+                            ),
+                            const SizedBox(width: 8),
+                            _buildActionButton(
+                              icon: _isSpeaking ? Icons.volume_off : Icons.volume_up,
+                              onTap: _speak,
+                              tooltip: _isSpeaking ? 'Stop' : 'Read aloud',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              
+              if (isUser) const SizedBox(width: 8),
+              if (isUser) _buildAvatar(true),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAvatar(bool isUser) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: isUser ? Colors.blue : Colors.grey[300],
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha:0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipOval(
+        child: Image.asset(
+          isUser ? 'assets/images/person.png' : 'assets/images/chat_logo.png',
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required VoidCallback onTap,
+    required String tooltip,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            size: 18,
+            color: Colors.black87,
+          ),
+        ),
+      ),
     );
   }
 }
-
-            

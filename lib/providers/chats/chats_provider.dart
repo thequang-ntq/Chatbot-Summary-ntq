@@ -1,5 +1,4 @@
-//This is the provider of AI ChatBot for chat and summarize, so its very important.
-//This file contains the code for the response of the chatbot for both chat and summarize.
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
+
 const template = '''
 ---BEGIN Conversation---
 Human chat : {humanChat}
@@ -24,143 +24,271 @@ about that question, just say you don't have information about it.
 class ChatProvider with ChangeNotifier {
   List<String> chatList = [];
   final String _voiceMessage = '';
+  
   List<String> get getChatList {
     return chatList;
   }
-  String get getVoiceMes{
+  
+  String get getVoiceMes {
     return _voiceMessage;
   }
+  
   void addUserMessage({required String msg}) {
     chatList.add(msg);
     notifyListeners();
   }
 
-  //Chat response function
-  Future<void> sendMessageAndGetAnswers(
-      {required String msg}) async {
-      final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' ,temperature: 0);
-      ConversationBufferMemory memo = ConversationBufferMemory();
-      final chatData = await FirebaseFirestore.instance.collection(GetV.userName.text).doc
-        (GetV.userChatID).collection('Message').doc(GetV.messageChatID).collection('ChatItem${GetV.chatNum}').get();
-      for(final item in chatData.docs){
-        await memo.saveContext(inputValues: {'humanChat' : item.data()['text'] }, outputValues: {'aiChat': item.data()['text']});
+  // Chat response function - Updated & Fixed
+  Future<void> sendMessageAndGetAnswers({required String msg}) async {
+    try {
+      final llm = ChatOpenAI(
+        apiKey: GetV.apiKey.text,
+        defaultOptions: const ChatOpenAIOptions(
+          model: 'gpt-4o-mini',
+          temperature: 0,
+        ),
+      );
+      
+      // Build conversation history
+      final chatData = await FirebaseFirestore.instance
+          .collection(GetV.userName.text)
+          .doc(GetV.userChatID)
+          .collection('Message')
+          .doc(GetV.messageChatID)
+          .collection('ChatItem${GetV.chatNum}')
+          .orderBy('createdAt')
+          .get();
+      
+      // Create chat messages from history
+      final messages = <ChatMessage>[];
+      for (final item in chatData.docs) {
+        final data = item.data();
+        if (data['index'] == 0) {
+          messages.add(ChatMessage.humanText(data['text']));
+        } else {
+          messages.add(ChatMessage.ai(data['text']));
+        }
       }
-      var conversation = ConversationChain(llm: llm, memory: memo);
-      final result = await conversation.call(msg, returnOnlyOutputs: true);
-      chatList.add(result['response']);
-      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message').doc(GetV.messageChatID).collection('ChatItem${GetV.chatNum}').add({
-        'text' : msg,
-        'index' : 0,
+      
+      // Add current message
+      messages.add(ChatMessage.humanText(msg));
+      
+      // Get response
+      final response = await llm.invoke(
+        PromptValue.chat(messages),
+      );
+      
+      final aiResponse = response.outputAsString;
+      chatList.add(aiResponse);
+      
+      // Save to Firestore
+      await FirebaseFirestore.instance
+          .collection(GetV.userName.text)
+          .doc(GetV.userChatID)
+          .collection('Message')
+          .doc(GetV.messageChatID)
+          .collection('ChatItem${GetV.chatNum}')
+          .add({
+        'text': msg,
+        'index': 0,
         'createdAt': Timestamp.now(),
       });
-      await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message').doc(GetV.messageChatID).collection('ChatItem${GetV.chatNum}').add({
-        'text' : result['response'],
-        'index' : 1,
+      
+      await FirebaseFirestore.instance
+          .collection(GetV.userName.text)
+          .doc(GetV.userChatID)
+          .collection('Message')
+          .doc(GetV.messageChatID)
+          .collection('ChatItem${GetV.chatNum}')
+          .add({
+        'text': aiResponse,
+        'index': 1,
         'createdAt': Timestamp.now(),
       });
-      if(GetV.title == ''){
-        GetV.humanChat = msg;
-        GetV.aiChat = result['response'];
-        final promptTemplate = PromptTemplate.fromTemplate(template);
-        final prompt = promptTemplate.format({'humanChat' : GetV.humanChat , 'aiChat' : GetV.aiChat});
-        final result2 = await llm.predict(prompt);
-        GetV.title = result2;
-        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message')
-        .doc(GetV.messageChatID).update(
-          {
-            'text' : result2,
-            'Index' : GetV.chatNum,
-            'messageID': GetV.messageChatID,
-          }
+      
+      // Generate title if first message
+      if (GetV.title == '') {
+        final titlePrompt = template
+            .replaceAll('{humanChat}', msg)
+            .replaceAll('{aiChat}', aiResponse);
+        
+        final titleResponse = await llm.invoke(
+          PromptValue.string(titlePrompt),
         );
-      }
-      else{
+        
+        GetV.title = titleResponse.outputAsString;
+        
+        await FirebaseFirestore.instance
+            .collection(GetV.userName.text)
+            .doc(GetV.userChatID)
+            .collection('Message')
+            .doc(GetV.messageChatID)
+            .update({
+          'text': GetV.title,
+          'Index': GetV.chatNum,
+          'messageID': GetV.messageChatID,
+        });
+      } else {
         GetV.humanChat = '';
         GetV.aiChat = '';
       }
-    notifyListeners();
+      
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error in sendMessageAndGetAnswers: $e');
+      rethrow;
+    }
   }
 
-  //Summarize response function
-  Future<void> sendMessageAndGetAnswersSummarize(
-      {required String msg}) async {
-      final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' , temperature: 0);
-      if(GetV.filetype == "txt"){
-        TextLoader loader = TextLoader(GetV.filepath);
-        final documents = await loader.load();
+  // Summarize response function - Updated & Fixed
+  Future<void> sendMessageAndGetAnswersSummarize({required String msg}) async {
+    try {
+      final llm = ChatOpenAI(
+        apiKey: GetV.apiKey.text,
+        defaultOptions: const ChatOpenAIOptions(
+          model: 'gpt-4o-mini',
+          temperature: 0,
+        ),
+      );
+      
+      if (GetV.filetype == "txt") {
+        // For TXT files - use RAG approach
+        // Load file manually
+        final file = File(GetV.filepath);
+        final content = await file.readAsString();
+        final documents = [
+          Document(pageContent: content, metadata: {'source': GetV.filepath}),
+        ];
+        
         const textSplitter = CharacterTextSplitter(
           chunkSize: 1200,
           chunkOverlap: 0,
         );
         final texts = textSplitter.splitDocuments(documents);
-        final textsWithSources = texts
-            .mapIndexed(
-              (final i, final d) => d.copyWith(
-                metadata: {
-                  ...d.metadata,
-                  'source': '$i-pl',
-                },
-              ),
-            )
-            .toList(growable: false);
+        
+        final textsWithSources = texts.mapIndexed(
+          (i, d) => d.copyWith(
+            metadata: {
+              ...d.metadata,
+              'source': '$i-pl',
+            },
+          ),
+        ).toList(growable: false);
+        
         final embeddings = OpenAIEmbeddings(apiKey: GetV.apiKey.text);
         final docSearch = await MemoryVectorStore.fromDocuments(
           documents: textsWithSources,
           embeddings: embeddings,
         );
-        final qaChain = OpenAIQAWithSourcesChain(llm: llm);
-        final docPrompt = PromptTemplate.fromTemplate(
-          'Please use the content from the txt file below to answer my question.\ncontent: {page_content}\nSource: {source}',
-        );
-        final finalQAChain = StuffDocumentsChain(
-          llmChain: qaChain,
-          documentPrompt: docPrompt,
-        );
-        final retrievalQA = RetrievalQAChain(
-          retriever: docSearch.asRetriever(),
-          combineDocumentsChain: finalQAChain,
-        );
-        final result = await retrievalQA(msg);
-        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
-        .collection('Summarize').doc(GetV.messageSummaryID).collection('SummaryItem${GetV.summaryNum}').add({
-          'text' : msg,
-          'index' : 0,
+        
+        // Create QA chain
+        final retriever = docSearch.asRetriever();
+        final retrievedDocs = await retriever.invoke(msg);
+        
+        // Build context from retrieved documents
+        final context = retrievedDocs
+            .map((doc) => doc.pageContent)
+            .join('\n\n');
+        
+        // Create prompt with context
+        final prompt = '''
+Context information:
+$context
+
+Question: $msg
+
+Please answer the question based on the context above. If you cannot find the answer in the context, say so.
+''';
+        
+        final response = await llm.invoke(PromptValue.string(prompt));
+        final result = response.outputAsString;
+        
+        // Save to Firestore
+        await FirebaseFirestore.instance
+            .collection(GetV.userName.text)
+            .doc(GetV.userSummaryID)
+            .collection('Summarize')
+            .doc(GetV.messageSummaryID)
+            .collection('SummaryItem${GetV.summaryNum}')
+            .add({
+          'text': msg,
+          'index': 0,
           'createdAt': Timestamp.now(),
         });
-        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
-        .doc(GetV.messageSummaryID).collection('SummaryItem${GetV.summaryNum}').add({
-          'text' : result['result'].toString(),
-          'index' : 1,
+        
+        await FirebaseFirestore.instance
+            .collection(GetV.userName.text)
+            .doc(GetV.userSummaryID)
+            .collection('Summarize')
+            .doc(GetV.messageSummaryID)
+            .collection('SummaryItem${GetV.summaryNum}')
+            .add({
+          'text': result,
+          'index': 1,
           'createdAt': Timestamp.now(),
         });
-      }
-      else{
-        final llm = ChatOpenAI(apiKey: GetV.apiKey.text, model: 'gpt-3.5-turbo-0613' ,temperature: 0);
-        ConversationBufferMemory memo = ConversationBufferMemory();
-        final promptTemplate2 = PromptTemplate.fromTemplate(
-        template2,
-        );
-        final prompt2 = promptTemplate2.format({'question': msg, 'text': GetV.text});
-        final summaryData = await FirebaseFirestore.instance.collection(GetV.userName.text).doc
-          (GetV.userSummaryID).collection('Summarize').doc(GetV.messageSummaryID).collection('SummaryItem${GetV.summaryNum}').get();
-        for(final item in summaryData.docs){
-          await memo.saveContext(inputValues: {'humanChat' : item.data()['text'] }, outputValues: {'aiChat': item.data()['text']});
+      } else {
+        // For other file types - use conversation with context
+        final summaryData = await FirebaseFirestore.instance
+            .collection(GetV.userName.text)
+            .doc(GetV.userSummaryID)
+            .collection('Summarize')
+            .doc(GetV.messageSummaryID)
+            .collection('SummaryItem${GetV.summaryNum}')
+            .orderBy('createdAt')
+            .get();
+        
+        // Build conversation history
+        final messages = <ChatMessage>[];
+        for (final item in summaryData.docs) {
+          final data = item.data();
+          if (data['index'] == 0) {
+            messages.add(ChatMessage.humanText(data['text']));
+          } else {
+            messages.add(ChatMessage.ai(data['text']));
+          }
         }
-        var conversation = ConversationChain(llm: llm, memory: memo);
-        final result = await conversation.call(prompt2, returnOnlyOutputs: true);
-        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID)
-        .collection('Summarize').doc(GetV.messageSummaryID).collection('SummaryItem${GetV.summaryNum}').add({
-          'text' : msg,
-          'index' : 0,
+        
+        // Add context and question
+        final promptText = template2
+            .replaceAll('{question}', msg)
+            .replaceAll('{text}', GetV.text);
+        
+        messages.add(ChatMessage.humanText(promptText));
+        
+        final response = await llm.invoke(PromptValue.chat(messages));
+        final result = response.outputAsString;
+        
+        // Save to Firestore
+        await FirebaseFirestore.instance
+            .collection(GetV.userName.text)
+            .doc(GetV.userSummaryID)
+            .collection('Summarize')
+            .doc(GetV.messageSummaryID)
+            .collection('SummaryItem${GetV.summaryNum}')
+            .add({
+          'text': msg,
+          'index': 0,
           'createdAt': Timestamp.now(),
         });
-        await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
-        .doc(GetV.messageSummaryID).collection('SummaryItem${GetV.summaryNum}').add({
-          'text' : result['response'],
-          'index' : 1,
+        
+        await FirebaseFirestore.instance
+            .collection(GetV.userName.text)
+            .doc(GetV.userSummaryID)
+            .collection('Summarize')
+            .doc(GetV.messageSummaryID)
+            .collection('SummaryItem${GetV.summaryNum}')
+            .add({
+          'text': result,
+          'index': 1,
           'createdAt': Timestamp.now(),
         });
       }
-    notifyListeners();
+      
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error in sendMessageAndGetAnswersSummarize: $e');
+      rethrow;
+    }
   }
 }

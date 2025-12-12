@@ -29,7 +29,7 @@ class _SummarizeState extends State<Summarize> {
         theme: ThemeData(
             scaffoldBackgroundColor: Colors.grey[300],
             appBarTheme: AppBarTheme(
-              color: Colors.grey[50],
+              backgroundColor: Colors.grey[50],
             )),
         home: const SummarizeScreen(),
       ),

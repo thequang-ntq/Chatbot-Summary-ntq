@@ -16,15 +16,22 @@
 
 ## Table of Contents
 
-- [Features](#features)
-- [User Interface](#user-interface)
-- [Screenshots](#screenshots)
-- [Prerequisites](#i-prerequisites)
-- [Setup](#ii-setup)
-- [Run App](#iii-run-app)
-- [Error](#error)
-- [Time-tracking](#time-tracking)
-- [Future Work](#future-work)
+- [chatbot-summary - ntq](#chatbot-summary---ntq)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [USER INTERFACE](#user-interface)
+  - [Screenshots](#screenshots)
+- [HOW TO RUN THIS APP](#how-to-run-this-app)
+  - [I. Prerequisites](#i-prerequisites)
+  - [II. Setup](#ii-setup)
+    - [1. Clone this github repository app](#1-clone-this-github-repository-app)
+    - [2. Setup flutterfire](#2-setup-flutterfire)
+    - [3. Follow these steps:](#3-follow-these-steps)
+    - [4. Fill in the code](#4-fill-in-the-code)
+  - [III. Run App](#iii-run-app)
+  - [Error](#error)
+  - [Time Tracking](#time-tracking)
+        - [Future Work](#future-work)
 
 ## Features
 
@@ -34,17 +41,21 @@
 
 ## USER INTERFACE
 
-https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/292b905a-49ed-47b9-88f6-77e05af03e1d
+https://github.com/user-attachments/assets/2842d877-9e29-434f-ac42-eaa0550c3dd7
 
 ## Screenshots
 
-| Home                          |        ............         | Chat                          |
-|------------------------------------------|-----------------------------------|------------------------------------------|
-| ![Home UI](screenshots/home.gif) | ......................... | ![Chat UI](screenshots/chat.gif) | 
+| Home                             | . | Chat                             |
+|----------------------------------|---|----------------------------------|
+| ![Home UI](screenshots/home.gif) | . | ![Chat UI](screenshots/chat.gif) |
 
-| Summarize                       |
-|-----------------------------------------------|
-| ![Summarize UI](screenshots/summary.gif) |
+| Chat History                                    | . | Summarize                                  |
+|-------------------------------------------------|---|--------------------------------------------|
+| ![ChatHistory UI](screenshots/chat_history.gif) | . | ![Summarize UI](screenshots/summarize.gif) |
+
+| Summarize Output                                            | . | Summarize Histoy                                   |
+|-------------------------------------------------------------|---|----------------------------------------------------|
+| ![SummarizeOutput UI](screenshots/summarize_output.gif)     | . | ![Summarize UI](screenshots/summarize_history.gif) |
 
 
 # HOW TO RUN THIS APP 
@@ -52,8 +63,7 @@ https://github.com/thequang-ntq/Chatbot-Summary-ntq/assets/115056697/292b905a-49
 ## I. Prerequisites
 
 - **SYSTEM:** 4GB RAM, At Least 12GB of Free Space in C Drive, And 3.5GB of Free Space in your App Folder.
-- **INSTALLED:** [npm](https://nodejs.org/en) (v18.17.0), [Flutter](https://docs.flutter.dev/get-started/install)(version in "pubspec.lock"), [Git](https://git-scm.com/downloads)(v2.41.0)
-[VSCode](https://code.visualstudio.com/)(v1.81.1)
+- **INSTALLED:** [npm](https://nodejs.org/en) (v11.6.0), [Flutter](https://docs.flutter.dev/get-started/install)(3.38.4), [Git](https://git-scm.com/downloads)(v2.48.1), [Dart] (3.10.3, update with Flutter), [VSCode](https://code.visualstudio.com/)(v1.107.0)
 - **You must have Wifi / Internet Access to run this app**
 
 ## II. Setup
@@ -151,7 +161,7 @@ flutter run lib/main.dart
 
 - **Or if you want to use the .apk file version using my Firebase, just click the link below:**
 
-- [Download .APK File](https://github.com/22T1020362/Chatbot-Summary-ntq/raw/master/outputs/apk/release/app-release.apk)
+- [Download .APK File](https://github.com/22T1020362/Chatbot-Summary-ntq/raw/main/outputs/apk/release/app-release.apk)
 
 <details>
 <summary>Download APK file on a connected Android device</summary>
@@ -211,6 +221,7 @@ https://bobbyhadz.com/blog/flutterfire-is-not-recognized-as-internal-or-external
 | 11/08/2023     | Firebase     |  Fixed firebase   |
 | 12-14/08/2023     | Write readme file     |  |
 | 15-19/08/2023     | Add comment, Fixed UI, write readme file     | Fixed submit, widget UI  |
+| 11-30/12/2025     | Update this App to match with new version in 2025     | Fix code, update package,...  |
 
 ##### Future Work
 - [ ] Update app structure, optimize and clean code.
