@@ -4,12 +4,14 @@ import 'package:chatgpt/screens/tabs.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:chatgpt/theme/app_theme.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // Chỉ import connection_notifier khi không phải web
 import 'package:connection_notifier/connection_notifier.dart' 
     if (dart.library.html) 'dart:html';
 
-void main() async {
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   
   // Khởi tạo Firebase

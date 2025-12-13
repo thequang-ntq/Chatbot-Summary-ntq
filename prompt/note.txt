@@ -1,0 +1,6 @@
+1. Xóa tick xanh khi thông tin không hợp lệ -> OK
+2. Hiện loading khi exit về trang chủ -> OK
+3. Hiện tên file ở đầu summarize screen -> OK
+4. Load lại nội dung tóm tắt từ lịch sử cùng với tên file -> OK
+5. Sửa hàm check apikey trong ở trang chủ -> OK
+6. Gửi ảnh được trong Chat cùng với cloudinary -> OK

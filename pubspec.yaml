@@ -54,6 +54,14 @@ dependencies:
   # Network status
   connection_notifier: ^2.0.1
 
+  # Image for Chat
+  image_picker: ^1.0.7
+  firebase_storage: ^12.3.2
+  cloudinary_public: ^0.21.0
+
+  # Security env
+  flutter_dotenv: ^5.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -63,6 +71,7 @@ flutter:
   uses-material-design: true
 
   assets:
+   - .env
    - assets/
    - assets/images/
    - assets/service_account/

@@ -33,6 +33,12 @@ class GetV {
   static bool hasFiled = false;
   static bool menuPressed = false;
   static bool menuSumPressed = false;
+  // File summarize
+  static String fileName = '';
+  static String fileType = '';
+  // Image chat
+  static String imageUrl = '';
+  static bool isImageMessage = false;
   static GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 }
@@ -114,19 +120,25 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     });
   }
 
-  Future<void> checkApiKey(String apiKey) async {
-    final response = await http.get(
-      Uri.parse("https://api.openai.com/v1/models"),
-      headers: {"Authorization": "Bearer $apiKey"},
-    );
-    if (response.statusCode == 200) {
-      setState(() {
-        GetV.isAPI = true;
-      });
-    } else {
-      setState(() {
-        GetV.isAPI = false;
-      });
+  Future<bool> checkApiKey(String apiKey) async {
+    try {
+      final response = await http.get(
+        Uri.parse("https://api.openai.com/v1/models"),
+        headers: {
+          "Authorization": "Bearer $apiKey",
+          "Content-Type": "application/json",
+        },
+      ).timeout(const Duration(seconds: 10));
+      
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        debugPrint('API Key validation failed: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error checking API key: $e');
+      return false;
     }
   }
 
@@ -371,12 +383,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       height: 50,
       child: ElevatedButton.icon(
         onPressed: () async {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Loadings()),
-          );
-          await checkApiKey(widget.apiKeyValue.text);
-          Navigator.pop(context);
           widget.toSubmit(widget.apiKeyValue, widget.name);
           setState(() {
             GetV.apiKey = widget.apiKeyValue;

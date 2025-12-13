@@ -68,6 +68,10 @@ class _MenuSumState extends State<MenuSum> with SingleTickerProviderStateMixin {
       GetV.summaryNum = maxNum + 1;
       GetV.menuSumPressed = true;
       GetV.loadingUploadFile = false;
+      // THÊM: Reset file info khi tạo summary mới
+      GetV.fileName = '';
+      GetV.fileType = '';
+      GetV.filepath = '';
     });
 
     await FirebaseFirestore.instance
@@ -313,13 +317,25 @@ class _MenuSumState extends State<MenuSum> with SingleTickerProviderStateMixin {
             // Set state để load conversation cũ
             setState(() {
               GetV.hasFiled = true;
-              GetV.loadingUploadFile = true; // Đã có data, set true để hiển thị
-              GetV.summaryNum = chatMessage['Index'];
-              GetV.messageSummaryID = chatMessage['messageID'];
-              GetV.menuSumPressed = true;
+              GetV.loadingUploadFile = true;
+              GetV.summaryNum = chatMessage['Index']; //STT
+              GetV.messageSummaryID = chatMessage['messageID']; //ID Document
+              GetV.menuSumPressed = true; //Trigger reload
+               
+              // Load lại fileName nếu có trong chatMessage
+              if (chatMessage.containsKey('fileName') && chatMessage['fileName'] != null) { // SỬA: Thêm check null
+                GetV.fileName = chatMessage['fileName'];
+                GetV.fileType = chatMessage['fileType'] ?? ''; // SỬA: Thêm default value
+                GetV.filepath = chatMessage['filePath'] ?? '';
+              } else {
+                // THÊM: Nếu không có fileName, reset về empty
+                GetV.fileName = '';
+                GetV.fileType = '';
+                GetV.filepath = '';
+              }
             });
             
-            widget.toRefresh();
+            widget.toRefresh(); //Navigate lại về summarize screen
           },
           child: Padding(
             padding: const EdgeInsets.all(12),

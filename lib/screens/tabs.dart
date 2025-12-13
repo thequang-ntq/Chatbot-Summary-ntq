@@ -21,6 +21,7 @@ class Tabs extends StatefulWidget {
 }
 
 class _TabsState extends State<Tabs> {
+  BuildContext? loadingDialogContext;
   var _activeScreen = 'home-screen';
   var _enteredApiKey = '';
   var _apiKeyValue = TextEditingController();
@@ -38,135 +39,334 @@ class _TabsState extends State<Tabs> {
     super.initState();
   }
 
-  //Submit function
-  void toSubmit(TextEditingController apiKeyValue, TextEditingController userName) async{
+  Future<bool> checkApiKey(String apiKey) async {
+    try {
+      final response = await http.get(
+        Uri.parse("https://api.openai.com/v1/models"),
+        headers: {
+          "Authorization": "Bearer $apiKey",
+          "Content-Type": "application/json",
+        },
+      ).timeout(const Duration(seconds: 10));
+      
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        debugPrint('API Key validation failed: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error checking API key: $e');
+      return false;
+    }
+  }
+
+  //Submit function - Fix
+  void toSubmit(TextEditingController apiKeyValue, TextEditingController userName) async {
     _apiKeyValue = apiKeyValue;
     _userName = userName;
-    if (apiKeyValue.text.isEmpty || apiKeyValue.text == '' || apiKeyValue.text.trim().length < 120 ||
-      apiKeyValue.text.substring(0,3) != "sk-" || GetV.isAPI == false)
-    {
+    
+    // Kiểm tra format cơ bản trước
+    if (apiKeyValue.text.isEmpty || apiKeyValue.text.trim().length < 20) {
+      setState(() {
+        GetV.isAPI = false;
+      });
       showDialog(
         context: context,
-        builder: (context) {
-          Future.delayed(const Duration(milliseconds: 500), () {
-                    const CircularProgressIndicator();
-          });
-          return const AlertDialog(
-            content: Text('Please enter a valid Api Key'),
-          );
-        },
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.red),
+              SizedBox(width: 8),
+              Text('Invalid API Key'),
+            ],
+          ),
+          content: const Text('Please enter a valid API Key (must start with "sk-" and have correct length)'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
       );
+      return;
     }
-    else if (userName.text.isEmpty)
-    {
+    
+    if (!apiKeyValue.text.startsWith("sk-")) {
+      setState(() {
+        GetV.isAPI = false;
+      });
       showDialog(
         context: context,
-        builder: (context) {
-          Future.delayed(const Duration(milliseconds: 500), () {
-                    const CircularProgressIndicator();
-          });
-          return const AlertDialog(
-            content: Text('Please enter a UserName'),
-          );
-        },
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.red),
+              SizedBox(width: 8),
+              Text('Invalid API Key Format'),
+            ],
+          ),
+          content: const Text('API Key must start with "sk-"'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
       );
-    } 
-    else {
+      return;
+    }
+    
+    if (userName.text.isEmpty || userName.text.trim().length < 3) {
+      setState(() {
+        GetV.isAPI = false;
+      });
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.red),
+              SizedBox(width: 8),
+              Text('Invalid Username'),
+            ],
+          ),
+          content: const Text('Please enter a valid username (at least 3 characters)'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    
+    // Hiện loading
+    loadingDialogContext = null;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogCtx) {
+        loadingDialogContext = dialogCtx;
+        return const PopScope(
+          canPop: false,
+          child: const Center(
+            child: Card(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Validating API Key...'),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    // Kiểm tra API
+    final isValid = await checkApiKey(apiKeyValue.text.trim());
+
+    // Đóng dialog đúng cách
+    if (loadingDialogContext != null && mounted) {
+      Navigator.of(loadingDialogContext!).pop();
+      loadingDialogContext = null;
+    }
+
+    if (!mounted) return;
+    
+    if (!isValid) {
+      setState(() {
+        GetV.isAPI = false;
+      });
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.red),
+              SizedBox(width: 8),
+              Text('API Key Verification Failed'),
+            ],
+          ),
+          content: const Text(
+            'The API Key you entered is invalid or has expired. Please check:\n\n'
+            '• The key is copied correctly\n'
+            '• The key has not been revoked\n'
+            '• You have an active OpenAI account\n'
+            '• Your internet connection is stable'
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    
+    // API Key hợp lệ
+    setState(() {
+      GetV.isAPI = true;
       _enteredApiKey = apiKeyValue.text;
       _enteredUserName = userName.text;
       GetV.apiKey.text = _enteredApiKey;
       GetV.userName.text = _enteredUserName;
-      showDialog(
-        context: context,
-        builder: (context) {
-          Future.delayed(const Duration(milliseconds: 500), () {
-                    const CircularProgressIndicator();
-          });
-          return const AlertDialog(
-            content: Text('API Key and UserName corrected! Thanks for using our app!'),
-          );
-        },
-      );
-      final url = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'api-keys.json');
-      final response = await http.get(url);
-      if(response.body.contains(apiKeyValue.text)==false){
-        await http.post(url, 
+    });
+    
+    // Hiện thông báo thành công
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.green),
+            SizedBox(width: 8),
+            Text('Success'),
+          ],
+        ),
+        content: const Text('API Key and Username verified successfully! You can now use the app.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+    
+    // Lưu vào Firebase
+    final url = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'api-keys.json');
+    final response = await http.get(url);
+    final Map<String, dynamic> resData = json.decode(response.body);
+    
+    bool apiExists = false;
+    for (final item in resData.entries) {
+      if (item.value['api-key'] == apiKeyValue.text) {
+        apiExists = true;
+        break;
+      }
+    }
+    
+    if (!apiExists) {
+      await http.post(url, 
         headers: {
-          'Content-Type' : 'apikey/json',
+          'Content-Type': 'application/json',
         },
         body: json.encode({
           'api-key': apiKeyValue.text,
         }),
       );
+    }
+    
+    // Xử lý username trong Firebase (giữ nguyên phần này)
+    final url2 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userNames.json');
+    final response2 = await http.get(url2);
+    final Map<String, dynamic> resData2 = json.decode(response2.body);
+    
+    bool userExists = false;
+    for (final item in resData2.entries) {
+      if (item.value['user-name'] == userName.text) {
+        userExists = true;
+        break;
       }
+    }
+    
+    if (!userExists) {
+      await http.post(url2, 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'user-name': userName.text,
+        }),
+      );
       
-      final url2 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userNames.json');
-      final response2 = await http.get(url2);
-      if(response2.body.contains(userName.text)==false){
-        await http.post(url2, 
-          headers: {
-            'Content-Type' : 'userName/json',
-          },
-          body: json.encode({
-            'user-name': userName.text,
-          }),
-        );
-        await FirebaseFirestore.instance.collection(userName.text).add(
-          {'Chat': 'Chat'}
-        ).then((DocumentReference doc){
-          GetV.userChatID = doc.id;
-        });
-        final url3 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userChatID.json');
-        await http.post(url3, 
-          headers: {
-            'Content-Type' : 'userchatid/json',
-          },
-          body: json.encode({
-            'user-chatID': GetV.userChatID,
-            'user-name': userName.text,
-          }),
-        );
-        await FirebaseFirestore.instance.collection(userName.text).add(
-          {'Summary': 'Summary'}
-        ).then((DocumentReference doc){
-          GetV.userSummaryID = doc.id;
-        });
-        final url4 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userSummaryID.json');
-        await http.post(url4, 
-          headers: {
-            'Content-Type' : 'usersummaryid/json',
-          },
-          body: json.encode({
-            'user-summaryID': GetV.userSummaryID,
-            'user-name': userName.text,
-          }),
-        );
-        GetV.userName.text = _enteredUserName;
-      }
-      else if(response2.body.contains(userName.text)==true){
-        final url5 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userChatID.json');
-        final response5 = await http.get(url5);
-        final resData5 = await json.decode(response5.body);
-        for(final item in resData5.entries){
-          if(_enteredUserName == item.value['user-name']){
-            GetV.userChatID = item.value['user-chatID'];
-            GetV.userName.text = _enteredUserName;
-          }
+      // Tạo collections mới
+      await FirebaseFirestore.instance.collection(userName.text).add(
+        {'Chat': 'Chat'}
+      ).then((DocumentReference doc){
+        GetV.userChatID = doc.id;
+      });
+      
+      final url3 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userChatID.json');
+      await http.post(url3, 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'user-chatID': GetV.userChatID,
+          'user-name': userName.text,
+        }),
+      );
+      
+      await FirebaseFirestore.instance.collection(userName.text).add(
+        {'Summary': 'Summary'}
+      ).then((DocumentReference doc){
+        GetV.userSummaryID = doc.id;
+      });
+      
+      final url4 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userSummaryID.json');
+      await http.post(url4, 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'user-summaryID': GetV.userSummaryID,
+          'user-name': userName.text,
+        }),
+      );
+      
+      GetV.userName.text = _enteredUserName;
+    } else {
+      // Load existing user data
+      final url5 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userChatID.json');
+      final response5 = await http.get(url5);
+      final resData5 = await json.decode(response5.body);
+      for(final item in resData5.entries){
+        if(_enteredUserName == item.value['user-name']){
+          GetV.userChatID = item.value['user-chatID'];
+          GetV.userName.text = _enteredUserName;
         }
-
-        final url6 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userSummaryID.json');
-        final response6 = await http.get(url6);
-
-        final resData6 = await json.decode(response6.body);
-        for(final item in resData6.entries){
-          if(_enteredUserName == item.value['user-name']){
-            GetV.userSummaryID = item.value['user-summaryID'];
-            GetV.userName.text = _enteredUserName;
-            // break;
-          }
-        } 
-        GetV.userName.text = _enteredUserName;
       }
+
+      final url6 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userSummaryID.json');
+      final response6 = await http.get(url6);
+      final resData6 = await json.decode(response6.body);
+      for(final item in resData6.entries){
+        if(_enteredUserName == item.value['user-name']){
+          GetV.userSummaryID = item.value['user-summaryID'];
+          GetV.userName.text = _enteredUserName;
+        }
+      } 
+      GetV.userName.text = _enteredUserName;
     }
   }
 

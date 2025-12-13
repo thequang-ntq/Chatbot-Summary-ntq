@@ -27,7 +27,7 @@
     - [1. Clone this github repository app](#1-clone-this-github-repository-app)
     - [2. Setup flutterfire](#2-setup-flutterfire)
     - [3. Follow these steps:](#3-follow-these-steps)
-    - [4. Fill in the code](#4-fill-in-the-code)
+    - [4. Fill in the code (Now it is not needed because I fill in with my firebase link)](#4-fill-in-the-code-now-it-is-not-needed-because-i-fill-in-with-my-firebase-link)
   - [III. Run App](#iii-run-app)
   - [Error](#error)
   - [Time Tracking](#time-tracking)
@@ -126,6 +126,17 @@ https://stackoverflow.com/questions/70320263/error-the-term-flutterfire-is-not-r
     + (CHOOSE THE FIREBASE PROJECT YOU JUST CREATE ABOVE TO LINK TO THIS APP)
     + (CHOOSE YES TO ALL TO REPLACE MY FIREBASE_OPTIONS.DART FILE WITH YOURS)
 
+- **7, Add your Cloudinary-Cloud Name and Cloudinary-Upload Presets.**
+- Copy `.env.example` to `.env`:
+```bash
+   cp .env.example .env
+```
+
+- Fill in your Cloudinary credentials in `.env`:
+```env
+   CLOUDINARY_CLOUD_NAME=your_cloud_name
+   CLOUDINARY_UPLOAD_PRESET=your_upload_preset
+```
 
 ### 3. Follow these steps: 
 - Follow this video:
@@ -135,7 +146,7 @@ https://stackoverflow.com/questions/70320263/error-the-term-flutterfire-is-not-r
     + Get a ChatGPT API-KEY . You can log in to 'https://platform.openai.com/account/api-keys' to get one or simply just borrow ones.
     + Use that key to log into 'http://api.openai.com/v1/models' with username blanks (not insert anything) and password is your API-KEY.
 
-### 4. Fill in the code
+### 4. Fill in the code (Now it is not needed because I fill in with my firebase link)
 - In the lib folder contains the code of this app, you must update (change) my comments that has in **4 specific files: menu.dart, menu_sum.dart, home.dart, tabs.dart in that lib folder**, for example: 
 ```bash
 '--YOUR HTTPS LINK TO THE REALTIME DATABASE WITHOUT "https://"--'

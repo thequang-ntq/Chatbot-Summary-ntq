@@ -15,6 +15,11 @@ import 'package:chatgpt/menubar/menu.dart';
 import 'package:intl/intl.dart';
 import 'package:chatgpt/theme/app_theme.dart';
 import 'package:chatgpt/utils/snackbar_helper.dart';
+import 'package:image_picker/image_picker.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
+// Import Cloudinary service:
+import 'package:chatgpt/services/cloudinary_service.dart';
+import 'dart:io';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -31,6 +36,12 @@ class _ChatScreenState extends State<ChatScreen> {
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
   late FocusNode focusNode;
+
+  // THÊM CÁC BIẾN NÀY
+  final ImagePicker _imagePicker = ImagePicker();
+  File? _selectedImage;
+  String? _uploadedImageUrl;
+  bool _isUploadingImage = false;
   
   @override
   void initState() {
@@ -77,6 +88,57 @@ class _ChatScreenState extends State<ChatScreen> {
         _speech.stop();
       });
     }
+  }
+
+  // Hàm xử lý ảnh cho Chat
+  Future<void> _pickImage() async {
+    try {
+      final XFile? pickedFile = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+      
+      if (pickedFile != null) {
+        setState(() {
+          _selectedImage = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+      if (!mounted) return;
+      SnackbarHelper.showError(context, 'Failed to pick image');
+    }
+  }
+
+  Future<String?> _uploadImageToCloudinary(File imageFile) async {
+    try {
+      setState(() {
+        _isUploadingImage = true;
+      });
+      
+      final String? downloadUrl = await CloudinaryService.uploadImage(imageFile);
+      
+      setState(() {
+        _isUploadingImage = false;
+      });
+      
+      return downloadUrl;
+    } catch (e) {
+      debugPrint('Error uploading image: $e');
+      setState(() {
+        _isUploadingImage = false;
+      });
+      return null;
+    }
+  }
+
+  void _removeSelectedImage() {
+    setState(() {
+      _selectedImage = null;
+      _uploadedImageUrl = null;
+    });
   }
 
   @override
@@ -151,9 +213,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 IconButton(
                   onPressed: () async {
                     if (!mounted) return;
-                    const Center(
-                      child: CircularProgressIndicator()
+                    
+                    //loading
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Loadings()),
                     );
+
                     GetV.title = '';
                     GetV.submited = false;
                     GetV.summarized = false;
@@ -173,6 +239,10 @@ class _ChatScreenState extends State<ChatScreen> {
                           .delete();
                     }
                     if (!mounted) return;
+                    
+                    // POP LOADING TRƯỚC
+                    Navigator.pop(context);
+                    // SAU ĐÓ POP VỀ TABS
                     Navigator.pop(context);
                     Navigator.push(
                       context,
@@ -207,6 +277,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   msg: chatMessage['text'],
                                   dateTime: formattedDate,
                                   chatIndex: chatMessage['index'],
+                                  imageUrl: chatMessage['imageUrl'] ?? '',
                                   shouldAnimate: false,
                                 );
                               },
@@ -269,64 +340,120 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(25),
+      child: Column(
+        children: [
+          // THÊM PHẦN PREVIEW ẢNH
+          if (_selectedImage != null)
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(
+                      _selectedImage!,
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: IconButton(
+                      onPressed: _removeSelectedImage,
+                      icon: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          
+          // PHẦN INPUT HIỆN TẠI
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              children: [
+                // THÊM NÚT CHỌN ẢNH
+                IconButton(
+                  onPressed: _isUploadingImage ? null : _pickImage,
+                  icon: _isUploadingImage
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.image, color: Colors.blue),
+                  tooltip: 'Select image',
                 ),
-                child: TextField(
-                  focusNode: focusNode,
-                  controller: textEditingController,
-                  onSubmitted: (value) async {
+                
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: TextField(
+                      focusNode: focusNode,
+                      controller: textEditingController,
+                      onSubmitted: (value) async {
+                        final provider = Provider.of<ChatProvider>(context, listen: false);
+                        await sendMessageFCT(chatProvider: provider);
+                      },
+                      decoration: const InputDecoration.collapsed(
+                        hintText: "How can I help you?",
+                      ),
+                      maxLines: null,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: () async {
                     final provider = Provider.of<ChatProvider>(context, listen: false);
                     await sendMessageFCT(chatProvider: provider);
                   },
-                  decoration: const InputDecoration.collapsed(
-                    hintText: "How can I help you?",
+                  tooltip: 'Send message',
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
+                      color: Colors.blue,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
-                  maxLines: null,
                 ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            IconButton(
-              onPressed: () async {
-                final provider = Provider.of<ChatProvider>(context, listen: false);
-                await sendMessageFCT(chatProvider: provider);
-              },
-              tooltip: 'Send message',
-              icon: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
-                  shape: BoxShape.circle,
+                const SizedBox(width: 4),
+                FloatingActionButton(
+                  mini: true,
+                  backgroundColor: _isListening ? Colors.red : Colors.blue,
+                  onPressed: () => onListen(),
+                  tooltip: 'Voice input',
+                  child: Icon(
+                    _isListening ? Icons.mic_off : Icons.mic,
+                    color: Colors.white,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.send,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
+              ],
             ),
-            const SizedBox(width: 4),
-            FloatingActionButton(
-              mini: true,
-              backgroundColor: _isListening ? Colors.red : Colors.blue,
-              onPressed: () => onListen(),
-              tooltip: 'Voice input',
-              child: Icon(
-                _isListening ? Icons.mic_off : Icons.mic,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -349,14 +476,26 @@ class _ChatScreenState extends State<ChatScreen> {
       return;
     }
     
-    if (textEditingController.text.isEmpty) {
+    if (textEditingController.text.isEmpty && _selectedImage == null) {
       if (!mounted) return;
-      SnackbarHelper.showWarning(context, "Please type a message");
+      SnackbarHelper.showWarning(context, "Please type a message or select an image");
       return;
     }
     
     try {
       String msg = textEditingController.text;
+      String? imageUrl;
+      
+      // Upload ảnh nếu có
+      if (_selectedImage != null) {
+        imageUrl = await _uploadImageToCloudinary(_selectedImage!); // Đổi tên hàm
+        if (imageUrl == null) {
+          if (!mounted) return;
+          SnackbarHelper.showError(context, "Failed to upload image");
+          return;
+        }
+      }
+      
       if (_isListening) {
         setState(() {
           _isListening = false;
@@ -366,12 +505,17 @@ class _ChatScreenState extends State<ChatScreen> {
       
       setState(() {
         _isTyping = true;
-        chatProvider.addUserMessage(msg: msg);
+        chatProvider.addUserMessage(msg: msg.isEmpty ? "[Image]" : msg);
         textEditingController.clear();
+        _selectedImage = null; // Clear selected image
         focusNode.unfocus();
       });
       
-      await chatProvider.sendMessageAndGetAnswers(msg: msg);
+      await chatProvider.sendMessageAndGetAnswers(
+        msg: msg.isEmpty ? "I sent you an image" : msg,
+        imageUrl: imageUrl,
+      );
+      
       if (mounted) {
         setState(() {});
       }

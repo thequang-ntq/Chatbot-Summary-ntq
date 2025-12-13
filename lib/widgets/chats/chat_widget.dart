@@ -11,6 +11,7 @@ class ChatWidget extends StatefulWidget {
     required this.msg,
     required this.chatIndex,
     required this.dateTime,
+    this.imageUrl, // THÊM PARAMETER NÀY
     this.shouldAnimate = false,
   });
 
@@ -18,6 +19,7 @@ class ChatWidget extends StatefulWidget {
   final int chatIndex;
   final bool shouldAnimate;
   final String dateTime;
+  final String? imageUrl; // THÊM DÒNG NÀY
 
   @override
   State<ChatWidget> createState() => _ChatWidgetState();
@@ -128,6 +130,34 @@ class _ChatWidgetState extends State<ChatWidget> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // THÊM PHẦN HIỂN THỊ ẢNH
+                      if (widget.imageUrl != null && widget.imageUrl!.isNotEmpty) ...[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            widget.imageUrl!,
+                            width: 200,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const SizedBox(
+                                width: 200,
+                                height: 200,
+                                child: Center(child: CircularProgressIndicator()),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                width: 200,
+                                height: 200,
+                                color: Colors.grey[300],
+                                child: const Icon(Icons.broken_image, size: 50),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
                       widget.shouldAnimate && !isUser
                           ? DefaultTextStyle(
                               style: TextStyle(

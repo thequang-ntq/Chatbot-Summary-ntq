@@ -117,11 +117,47 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Kiểm tra nếu đang load lại conversation cũ
+    // Load lại thông tin khi vào từ menu
     if (GetV.menuSumPressed) {
       setState(() {
         GetV.menuSumPressed = false;
+        // Load lại fileName và fileType
+        fileName = GetV.fileName;
+        fileType = GetV.fileType;
+        
+        // THÊM: Load lại q1, q2, q3 từ Firestore
+        _loadQuestionsFromFirestore();
       });
+    }
+  }
+
+  // Thêm hàm này sau hàm didChangeDependencies
+  Future<void> _loadQuestionsFromFirestore() async {
+    try {
+      final summaryData = await FirebaseFirestore.instance
+          .collection(GetV.userName.text)
+          .doc(GetV.userSummaryID)
+          .collection('Summarize')
+          .doc(GetV.messageSummaryID)
+          .collection('SummaryItem${GetV.summaryNum}')
+          .where('index', isEqualTo: 3) // Lấy document tóm tắt
+          .limit(1)
+          .get();
+      
+      if (summaryData.docs.isNotEmpty) {
+        final doc = summaryData.docs.first.data();
+        
+        // Lấy questions từ document
+        if (doc.containsKey('q1')) {
+          setState(() {
+            q1 = doc['q1'] ?? 'Empty';
+            q2 = doc['q2'] ?? 'Empty';
+            q3 = doc['q3'] ?? 'Empty';
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading questions: $e');
     }
   }
 
@@ -159,6 +195,11 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       q1 = 'Empty';
       q2 = 'Empty';
       q3 = 'Empty';
+      
+      // THÊM: Reset GetV file info
+      GetV.fileName = '';
+      GetV.fileType = '';
+      GetV.filepath = '';
     });
     
     Navigator.pop(context);
@@ -208,7 +249,10 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       PlatformFile file = result.files.first;
       fileType = file.name.split('.').last;
       fileName = file.name;
+      // Lưu vào GetV
       GetV.filetype = fileType;
+      GetV.fileName = fileName;
+      GetV.fileType = fileType;
       notify('Uploading file');
       
       if(fileType == "txt"){
@@ -334,8 +378,10 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           IconButton(
             onPressed: () async{
               if (!mounted) return;
-              const Center(
-                child: CircularProgressIndicator()
+              // LOADING
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Loadings()),
               );
               setState(() {
                 GetV.title = '';
@@ -352,6 +398,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                 .doc(GetV.messageSummaryID).delete();
               }
               if (!mounted) return;
+              // POP LOADING TRƯỚC
+              Navigator.pop(context);
+              // SAU ĐÓ POP VỀ TABS
               Navigator.pop(context);
               Navigator.push(
                 context,
@@ -474,11 +523,20 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   }
 
   Widget _buildFileNameButton() {
+    // Kiểm tra nếu không có fileName thì return empty
+    if (fileName.isEmpty && GetV.fileName.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    
+    // Sử dụng fileName từ state hoặc GetV
+    final displayFileName = fileName.isNotEmpty ? fileName : GetV.fileName;
+    final displayFileType = fileType.isNotEmpty ? fileType : GetV.fileType;
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ElevatedButton.icon(
         onPressed: () async {
-          if (fileName.isNotEmpty) {
+          if (displayFileName.isNotEmpty && GetV.filepath.isNotEmpty) {
             OpenFilex.open(GetV.filepath);
           }
         },
@@ -490,9 +548,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        icon: Icon(_getFileIcon(), size: 20),
+        icon: Icon(_getFileIconForType(displayFileType), size: 20),
         label: Text(
-          fileName,
+          displayFileName,
           style: const TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 16,
@@ -503,8 +561,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     );
   }
 
-  IconData _getFileIcon() {
-    switch (fileType.toLowerCase()) {
+  // Thêm helper function
+  IconData _getFileIconForType(String type) {
+    switch (type.toLowerCase()) {
       case 'pdf':
         return Icons.picture_as_pdf;
       case 'docx':
@@ -736,9 +795,12 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
               .doc(GetV.messageSummaryID)
               .collection('SummaryItem${GetV.summaryNum}')
               .add({
-            'text': textSum,
-            'index': 3,
+            'text': textSum, //full text tóm tắt
+            'index': 3, // Đánh dấu là document tóm tắt
             'createdAt': Timestamp.now(),
+            'q1': q1,
+            'q2': q2,
+            'q3': q3,
           });
 
           // Generate title if needed
@@ -753,9 +815,12 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                 .collection('Summarize')
                 .doc(GetV.messageSummaryID)
                 .update({
-              'text': GetV.title,
+              'text': GetV.title, //title ngắn 4 từ 
               'Index': GetV.summaryNum,
               'messageID': GetV.messageSummaryID,
+              'fileName': GetV.fileName, // THÊM
+              'fileType': GetV.fileType, // THÊM
+              'filePath': GetV.filepath, // THÊM
             });
           }
 
@@ -800,6 +865,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             'text': textSum,
             'index': 3,
             'createdAt': Timestamp.now(),
+            'q1': q1,
+            'q2': q2,
+            'q3': q3,
           });
 
           // Generate title if needed
@@ -817,6 +885,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
               'text': GetV.title,
               'Index': GetV.summaryNum,
               'messageID': GetV.messageSummaryID,
+              'fileName': GetV.fileName, // Add
+              'fileType': GetV.fileType, // Add
+              'filePath': GetV.filepath, // Add
             });
           }
 

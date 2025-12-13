@@ -38,13 +38,16 @@ class ChatProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Chat response function - Updated & Fixed
-  Future<void> sendMessageAndGetAnswers({required String msg}) async {
+  // Chat response function - Updated & Fixed, Add Image
+  Future<void> sendMessageAndGetAnswers({
+    required String msg,
+    String? imageUrl, // THÊM PARAMETER NÀY
+  }) async {
     try {
       final llm = ChatOpenAI(
         apiKey: GetV.apiKey.text,
         defaultOptions: const ChatOpenAIOptions(
-          model: 'gpt-4o-mini',
+          model: 'gpt-4o-mini', // hoặc 'gpt-4-vision-preview' nếu cần analyze ảnh
           temperature: 0,
         ),
       );
@@ -81,7 +84,7 @@ class ChatProvider with ChangeNotifier {
       final aiResponse = response.outputAsString;
       chatList.add(aiResponse);
       
-      // Save to Firestore
+      // Save to Firestore - THÊM imageUrl
       await FirebaseFirestore.instance
           .collection(GetV.userName.text)
           .doc(GetV.userChatID)
@@ -92,6 +95,7 @@ class ChatProvider with ChangeNotifier {
         'text': msg,
         'index': 0,
         'createdAt': Timestamp.now(),
+        'imageUrl': imageUrl ?? '', // THÊM DÒNG NÀY
       });
       
       await FirebaseFirestore.instance
@@ -104,6 +108,7 @@ class ChatProvider with ChangeNotifier {
         'text': aiResponse,
         'index': 1,
         'createdAt': Timestamp.now(),
+        'imageUrl': '', // AI không có ảnh
       });
       
       // Generate title if first message
