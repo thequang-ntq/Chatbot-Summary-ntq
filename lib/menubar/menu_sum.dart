@@ -327,11 +327,13 @@ class _MenuSumState extends State<MenuSum> with SingleTickerProviderStateMixin {
                 GetV.fileName = chatMessage['fileName'];
                 GetV.fileType = chatMessage['fileType'] ?? ''; // SỬA: Thêm default value
                 GetV.filepath = chatMessage['filePath'] ?? '';
+                GetV.fileurl = chatMessage['fileUrl'] ?? '';
               } else {
                 // THÊM: Nếu không có fileName, reset về empty
                 GetV.fileName = '';
                 GetV.fileType = '';
                 GetV.filepath = '';
+                GetV.fileurl = '';
               }
             });
             

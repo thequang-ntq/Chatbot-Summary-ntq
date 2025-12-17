@@ -26,47 +26,52 @@ import 'package:chatgpt/widgets/chats/chat_widget.dart';
 import 'package:chatgpt/menubar/menu_sum.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:chatgpt/services/file_storage_service.dart';
+import 'package:path_provider/path_provider.dart';
+
+// Ở đầu file summarize_screen.dart, thay thế các template:
 
 const template = '''
-Detect language, Write a concise summary of the following context:
+Detect language and respond in that language.
 
+Summarize this context concisely:
 "{context}"
 
-then give 3 short related questions. the Response Use Detected language with following:
+Then provide 3 related questions.
 
-"TOPIC
-<br>
-SUMMARY
+Format your response EXACTLY like this:
+SUMMARY:
+[Your summary here]
 
-<br>
-QUESTION 1
+QUESTION 1:
+[Question here]
 
-<br>
-QUESTION 2
+QUESTION 2:
+[Question here]
 
-<br>
-QUESTION 3"
- ''';
-
-const template2 = '''
-Summarize the following text {text} in 4 words or fewer.
+QUESTION 3:
+[Question here]
 ''';
 
 const templateX = '''
-Detect language, Summarize the following text: {subject} in less than 250 words, then show 3 questions related to the paragraph just summarized in the following format:
+Detect language and respond in that language.
 
-<br>
-Question1:
-</br>
+Summarize this text in less than 250 words:
+{subject}
 
-<br>
-Question2:
-</br>
+Then provide 3 related questions.
 
-<br>
-Question3:
-</br>
+Format your response EXACTLY like this:
+[Your summary here]
 
+Question 1:
+[Question here]
+
+Question 2:
+[Question here]
+
+Question 3:
+[Question here]
 ''';
 
 const start = "SUMMARY:";
@@ -245,103 +250,347 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     final result = await FilePicker.platform.pickFiles(type: FileType.any);
     if (result == null) {
       return;
+    }
+    
+    PlatformFile file = result.files.first;
+    fileType = file.name.split('.').last;
+    fileName = file.name;
+    
+    GetV.filetype = fileType;
+    GetV.fileName = fileName;
+    GetV.fileType = fileType;
+    
+    notify('Uploading file');
+    
+    String? fileUrl;
+    
+    // Upload file lên Cloudinary
+    if (fileType != "txt") {
+      final File uploadFile = File(file.path!);
+      fileUrl = await FileStorageService.uploadFile(uploadFile, fileType);
+      
+      if (fileUrl == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to upload file'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+      GetV.fileurl = fileUrl;
+    }
+    
+    // Đọc nội dung file
+    if (fileType == "txt") {
+      final File txtFile = File(file.path!);
+      fileText = await txtFile.readAsString();
+      textLast = fileText;
+    } else if (fileType == "pdf") {
+      fileText = await extractTextFromPdf(file.path!);
+      textLast = fileText;
+    } else if (fileType == "docx") {
+      final fileDoc = File(file.path!);
+      final Uint8List bytes = await fileDoc.readAsBytes();
+      fileText = docxToText(bytes);
+      textLast = fileText;
     } else {
-      PlatformFile file = result.files.first;
-      fileType = file.name.split('.').last;
-      fileName = file.name;
-      // Lưu vào GetV
-      GetV.filetype = fileType;
-      GetV.fileName = fileName;
-      GetV.fileType = fileType;
-      notify('Uploading file');
-      
-      if(fileType == "txt"){
-        final File txtFile = File(file.path!);
-        fileText = await txtFile.readAsString();
-        textLast = fileText;
-      }
-      else if (fileType == "pdf"){
-        fileText = await extractTextFromPdf(file.path!);
-        textLast = fileText;
-      }
-      else if (fileType == "docx"){
-        final fileDoc = File(file.path!);
-        final Uint8List bytes = await fileDoc.readAsBytes();
-        fileText = docxToText(bytes);
-        textLast = fileText;
-      }
-      else {
-        convertSpeechToText(file.path!).then((value) {
-          if (mounted) {
-            setState(() {
-              fileText = value;
-              textLast = fileText;
-            });
-          }
-        });
-        textLast = fileText;
-      }
-      
-      if (mounted) {
-        setState(() {
-          GetV.hasFiled = true;
-          GetV.text = fileText;
-          GetV.filetype = fileType;
-          GetV.filepath = file.path!;
-          GetV.loadingUploadFile = false; // Đặt false để hiển thị loading
-        });
-      }
-      
-      GetV.filetype = fileType;
-      GetV.filepath = file.path!;
-      notify('Summarizing document');
-      
-      // Chỉ gọi saveDocsSummarize 1 lần duy nhất
-      await saveDocsSummarize(msg: textLast, file: file);
-      
-      // Sau khi lưu xong mới set loadingUploadFile = true
-      if (mounted) {
-        setState(() {
-          GetV.loadingUploadFile = true;
-        });
-      }
-      return;
+      convertSpeechToText(file.path!).then((value) {
+        if (mounted) {
+          setState(() {
+            fileText = value;
+            textLast = fileText;
+          });
+        }
+      });
+      textLast = fileText;
+    }
+    
+    if (mounted) {
+      setState(() {
+        GetV.hasFiled = true;
+        GetV.text = fileText;
+        GetV.filetype = fileType;
+        GetV.filepath = file.path!;
+        GetV.loadingUploadFile = false;
+      });
+    }
+    
+    notify('Summarizing document');
+    
+    await saveDocsSummarize(msg: textLast, file: file, fileUrl: fileUrl);
+    
+    if (mounted) {
+      setState(() {
+        GetV.loadingUploadFile = true;
+      });
     }
   }
 
+  // Thêm hàm này vào _SummarizeScreenState:
+  void _showFileOptionsDialog(String fileName, String fileType) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Icon(_getFileIconForType(fileType), color: Colors.blue),
+            const SizedBox(width: 8),
+            const Flexible(
+              child: Text(
+                'File Options',
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              fileName,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Type: ${fileType.toUpperCase()}',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'The original file is no longer on this device, but it\'s stored online.',
+              style: TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: GetV.fileurl));
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Row(
+                    children: [
+                      Icon(Icons.check_circle, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text('File URL copied to clipboard!'),
+                    ],
+                  ),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+            icon: const Icon(Icons.copy),
+            label: const Text('Copy URL'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () async {
+              Navigator.pop(context);
+              _downloadAndOpenFile();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+            icon: const Icon(Icons.download),
+            label: const Text('Download & Open'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _downloadAndOpenFile() async {
+    if (GetV.fileurl.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('File URL not available'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Show loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: Card(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Downloading file...'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Download file
+      final response = await http.get(Uri.parse(GetV.fileurl));
+      
+      if (response.statusCode == 200) {
+        // Lấy thư mục Downloads hoặc temp
+        final directory = await getTemporaryDirectory();
+        final fileName = GetV.fileName.isNotEmpty 
+            ? GetV.fileName 
+            : 'downloaded_file.${GetV.fileType}';
+        final filePath = '${directory.path}/$fileName';
+        
+        // Lưu file
+        final file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
+        
+        // Close loading
+        if (mounted) Navigator.pop(context);
+        
+        // Mở file
+        final result = await OpenFilex.open(filePath);
+        
+        if (result.type != ResultType.done) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Cannot open file: ${result.message}'),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
+        }
+      } else {
+        if (mounted) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Download failed: ${response.statusCode}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error downloading file: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  // Thay thế hàm onListen() hiện tại:
   void onListen() async {
     if (!_isListening) {
       bool available = await _speech.initialize(
-          onStatus: (val) {
-            if (val == "done") {
-              if (mounted) {
-                setState(() {
-                  _isListening = false;
-                  _speech.stop();
-                });
-              }
+        onStatus: (val) {
+          debugPrint("Speech status: $val");
+          if (val == "done" || val == "notListening") {
+            if (mounted) {
+              setState(() {
+                _isListening = false;
+              });
             }
-          },
-          onError: (val) => debugPrint("error: $val"));
+          }
+        },
+        onError: (val) {
+          debugPrint("Speech error: $val");
+          if (mounted) {
+            setState(() {
+              _isListening = false;
+            });
+            if (val.errorMsg != 'error_speech_timeout') {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Speech error: ${val.errorMsg}')),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('No speech detected. Please speak clearly into the microphone.'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
+          }
+        },
+      );
+      
       if (available) {
         setState(() {
           _isListening = true;
         });
-        _speech.listen(
-            localeId: "vi_VN",
-            listenFor: const Duration(hours: 12),
-            onResult: (val) => setState(() {
-                  _askText.text = val.recognizedWords;
-                  if (_isTyping == true) {
-                    _askText.clear();
-                  }
-                }));
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('🎤 Listening... Please speak now'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+        
+        await _speech.listen(
+          localeId: "vi_VN",
+          listenFor: const Duration(seconds: 10),
+          pauseFor: const Duration(seconds: 3),
+          partialResults: true,
+          onResult: (val) {
+            if (mounted) {
+              setState(() {
+                _askText.text = val.recognizedWords;
+              });
+            }
+          },
+        );
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Speech recognition not available. Please check microphone permissions.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     } else {
       setState(() {
         _isListening = false;
-        _speech.stop();
       });
+      await _speech.stop();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Stopped listening'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
     }
   }
 
@@ -523,40 +772,82 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   }
 
   Widget _buildFileNameButton() {
-    // Kiểm tra nếu không có fileName thì return empty
     if (fileName.isEmpty && GetV.fileName.isEmpty) {
       return const SizedBox.shrink();
     }
     
-    // Sử dụng fileName từ state hoặc GetV
     final displayFileName = fileName.isNotEmpty ? fileName : GetV.fileName;
     final displayFileType = fileType.isNotEmpty ? fileType : GetV.fileType;
     
+    // Check nếu file còn tồn tại local
+    final bool hasLocalFile = GetV.filepath.isNotEmpty && File(GetV.filepath).existsSync();
+    final bool hasCloudFile = GetV.fileurl.isNotEmpty;
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: ElevatedButton.icon(
-        onPressed: () async {
-          if (displayFileName.isNotEmpty && GetV.filepath.isNotEmpty) {
-            OpenFilex.open(GetV.filepath);
-          }
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.grey[100],
-          foregroundColor: Colors.black,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+      child: Row(
+        children: [
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                if (displayFileName.isNotEmpty) {
+                  if (hasLocalFile) {
+                    // Mở file local
+                    OpenFilex.open(GetV.filepath);
+                  } else if (hasCloudFile) {
+                    // Hiển thị dialog với options
+                    _showFileOptionsDialog(displayFileName, displayFileType);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('File not available'),
+                        backgroundColor: Colors.orange,
+                      ),
+                    );
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey[100],
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              icon: Icon(_getFileIconForType(displayFileType), size: 20),
+              label: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      displayFileName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  // Hiển thị icon status
+                  Icon(
+                    hasLocalFile 
+                        ? Icons.check_circle 
+                        : hasCloudFile 
+                            ? Icons.cloud_done 
+                            : Icons.error_outline,
+                    size: 16,
+                    color: hasLocalFile 
+                        ? Colors.green 
+                        : hasCloudFile 
+                            ? Colors.blue 
+                            : Colors.orange,
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-        icon: Icon(_getFileIconForType(displayFileType), size: 20),
-        label: Text(
-          displayFileName,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
-          overflow: TextOverflow.ellipsis,
-        ),
+        ],
       ),
     );
   }
@@ -744,7 +1035,11 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   }
 
   // Updated saveDocsSummarize function
-  Future<void> saveDocsSummarize({required String msg, required PlatformFile file}) async {
+  Future<void> saveDocsSummarize({
+    required String msg, 
+    required PlatformFile file,
+    String? fileUrl,
+  }) async {
     try {
       final llm = ChatOpenAI(
         apiKey: GetV.apiKey.text,
@@ -755,10 +1050,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       );
 
       if (GetV.filetype == "txt") {
-        // Load and split documents
         // Load file manually
-        final file = File(GetV.filepath);
-        final content = await file.readAsString();
+        final fileObj = File(GetV.filepath);
+        final content = await fileObj.readAsString();
         final documents = [
           Document(pageContent: content, metadata: {'source': GetV.filepath}),
         ];
@@ -780,60 +1074,97 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         final response = await llm.invoke(PromptValue.string(prompt));
         final result = response.outputAsString;
 
-        // Extract summary and questions
-        try {
-          final textSum = _extractSection(result, start, start1);
-          q1 = _extractSection(result, start1, start2);
-          q2 = _extractSection(result, start2, start3);
-          q3 = result.substring(result.indexOf(start3) + start3.length).trim();
+        // PARSE KẾT QUẢ AN TOÀN HƠN
+        String textSum = '';
+        String q1Text = 'What is the main topic?';
+        String q2Text = 'What are the key points?';
+        String q3Text = 'What conclusions can be drawn?';
 
-          // Save to Firestore - CHỈ LƯU 1 LẦN
+        try {
+          // Thử parse với các marker tiêu chuẩn
+          if (result.contains(start) && result.contains(start1)) {
+            textSum = _extractSection(result, start, start1);
+            
+            if (result.contains(start1) && result.contains(start2)) {
+              q1Text = _extractSection(result, start1, start2);
+            }
+            
+            if (result.contains(start2) && result.contains(start3)) {
+              q2Text = _extractSection(result, start2, start3);
+            }
+            
+            final q3Index = result.indexOf(start3);
+            if (q3Index != -1) {
+              q3Text = result.substring(q3Index + start3.length).trim();
+            }
+          } else {
+            // Nếu không tìm thấy marker, tách thủ công
+            final lines = result.split('\n');
+            textSum = lines.take(3).join('\n').trim(); // Lấy 3 dòng đầu làm summary
+            
+            // Tìm các dòng có "?" để làm câu hỏi
+            final questionLines = lines.where((line) => line.contains('?')).toList();
+            if (questionLines.isNotEmpty) {
+              q1Text = questionLines.length > 0 ? questionLines[0].trim() : q1Text;
+              q2Text = questionLines.length > 1 ? questionLines[1].trim() : q2Text;
+              q3Text = questionLines.length > 2 ? questionLines[2].trim() : q3Text;
+            }
+          }
+        } catch (e) {
+          debugPrint('Error parsing with markers: $e');
+          // Fallback: dùng toàn bộ text làm summary
+          textSum = result.length > 500 
+              ? result.substring(0, 500) + '...' 
+              : result;
+        }
+
+        setState(() {
+          q1 = q1Text;
+          q2 = q2Text;
+          q3 = q3Text;
+        });
+
+        // Save to Firestore
+        await FirebaseFirestore.instance
+            .collection(GetV.userName.text)
+            .doc(GetV.userSummaryID)
+            .collection('Summarize')
+            .doc(GetV.messageSummaryID)
+            .collection('SummaryItem${GetV.summaryNum}')
+            .add({
+          'text': textSum,
+          'index': 3,
+          'createdAt': Timestamp.now(),
+          'q1': q1Text,
+          'q2': q2Text,
+          'q3': q3Text,
+        });
+
+        // Generate title if needed
+        if (GetV.title == '') {
+          final titlePrompt = template2.replaceAll('{text}', textSum);
+          final titleResponse = await llm.invoke(PromptValue.string(titlePrompt));
+          GetV.title = titleResponse.outputAsString;
+
           await FirebaseFirestore.instance
               .collection(GetV.userName.text)
               .doc(GetV.userSummaryID)
               .collection('Summarize')
               .doc(GetV.messageSummaryID)
-              .collection('SummaryItem${GetV.summaryNum}')
-              .add({
-            'text': textSum, //full text tóm tắt
-            'index': 3, // Đánh dấu là document tóm tắt
-            'createdAt': Timestamp.now(),
-            'q1': q1,
-            'q2': q2,
-            'q3': q3,
+              .update({
+            'text': GetV.title,
+            'Index': GetV.summaryNum,
+            'messageID': GetV.messageSummaryID,
+            'fileName': GetV.fileName,
+            'fileType': GetV.fileType,
+            'filePath': GetV.filepath,
+            'fileUrl': fileUrl ?? '',
           });
-
-          // Generate title if needed
-          if (GetV.title == '') {
-            final titlePrompt = template2.replaceAll('{text}', textSum);
-            final titleResponse = await llm.invoke(PromptValue.string(titlePrompt));
-            GetV.title = titleResponse.outputAsString;
-
-            await FirebaseFirestore.instance
-                .collection(GetV.userName.text)
-                .doc(GetV.userSummaryID)
-                .collection('Summarize')
-                .doc(GetV.messageSummaryID)
-                .update({
-              'text': GetV.title, //title ngắn 4 từ 
-              'Index': GetV.summaryNum,
-              'messageID': GetV.messageSummaryID,
-              'fileName': GetV.fileName, // THÊM
-              'fileType': GetV.fileType, // THÊM
-              'filePath': GetV.filepath, // THÊM
-            });
-          }
-
-          GetV.summaryText = result;
-        } catch (e) {
-          debugPrint('Error parsing summary result: $e');
-          // Fallback if parsing fails
-          q1 = 'What is the main topic?';
-          q2 = 'What are the key points?';
-          q3 = 'What conclusions can be drawn?';
         }
+
+        GetV.summaryText = result;
       } else {
-        // For other file types
+        // For other file types (PDF, DOCX, etc.)
         String embeddedText = '';
         if (msg.length > 4000) {
           embeddedText = msg.substring(0, 4000);
@@ -847,65 +1178,103 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         final response = await llm.invoke(PromptValue.string(prompt));
         final result = response.outputAsString;
 
-        // Extract summary and questions
-        try {
-          final textSum = result.substring(0, result.indexOf(starts1)).trim();
-          q1 = _extractSection(result, starts1, starts2);
-          q2 = _extractSection(result, starts2, starts3);
-          q3 = result.substring(result.indexOf(starts3) + starts3.length).trim();
+        // PARSE KẾT QUẢ AN TOÀN HƠN
+        String textSum = '';
+        String q1Text = 'What is discussed in this document?';
+        String q2Text = 'What are the main findings?';
+        String q3Text = 'What should I know?';
 
-          // Save to Firestore - CHỈ LƯU 1 LẦN
+        try {
+          // Thử parse với các marker
+          if (result.contains(starts1)) {
+            final summaryEndIndex = result.indexOf(starts1);
+            if (summaryEndIndex != -1) {
+              textSum = result.substring(0, summaryEndIndex).trim();
+            }
+            
+            if (result.contains(starts1) && result.contains(starts2)) {
+              q1Text = _extractSection(result, starts1, starts2);
+            }
+            
+            if (result.contains(starts2) && result.contains(starts3)) {
+              q2Text = _extractSection(result, starts2, starts3);
+            }
+            
+            final q3Index = result.indexOf(starts3);
+            if (q3Index != -1) {
+              q3Text = result.substring(q3Index + starts3.length).trim();
+            }
+          } else {
+            // Fallback parsing
+            final lines = result.split('\n');
+            final nonEmptyLines = lines.where((l) => l.trim().isNotEmpty).toList();
+            
+            if (nonEmptyLines.isNotEmpty) {
+              textSum = nonEmptyLines.take(5).join('\n').trim();
+            }
+            
+            final questionLines = nonEmptyLines.where((line) => line.contains('?')).toList();
+            if (questionLines.isNotEmpty) {
+              q1Text = questionLines.length > 0 ? questionLines[0].trim() : q1Text;
+              q2Text = questionLines.length > 1 ? questionLines[1].trim() : q2Text;
+              q3Text = questionLines.length > 2 ? questionLines[2].trim() : q3Text;
+            }
+          }
+        } catch (e) {
+          debugPrint('Error parsing result: $e');
+          textSum = result.length > 500 
+              ? result.substring(0, 500) + '...' 
+              : result;
+        }
+
+        setState(() {
+          q1 = q1Text;
+          q2 = q2Text;
+          q3 = q3Text;
+        });
+
+        // Save to Firestore
+        await FirebaseFirestore.instance
+            .collection(GetV.userName.text)
+            .doc(GetV.userSummaryID)
+            .collection('Summarize')
+            .doc(GetV.messageSummaryID)
+            .collection('SummaryItem${GetV.summaryNum}')
+            .add({
+          'text': textSum,
+          'index': 3,
+          'createdAt': Timestamp.now(),
+          'q1': q1Text,
+          'q2': q2Text,
+          'q3': q3Text,
+        });
+
+        // Generate title if needed
+        if (GetV.title == '') {
+          final titlePrompt = template2.replaceAll('{text}', textSum);
+          final titleResponse = await llm.invoke(PromptValue.string(titlePrompt));
+          GetV.title = titleResponse.outputAsString;
+
           await FirebaseFirestore.instance
               .collection(GetV.userName.text)
               .doc(GetV.userSummaryID)
               .collection('Summarize')
               .doc(GetV.messageSummaryID)
-              .collection('SummaryItem${GetV.summaryNum}')
-              .add({
-            'text': textSum,
-            'index': 3,
-            'createdAt': Timestamp.now(),
-            'q1': q1,
-            'q2': q2,
-            'q3': q3,
+              .update({
+            'text': GetV.title,
+            'Index': GetV.summaryNum,
+            'messageID': GetV.messageSummaryID,
+            'fileName': GetV.fileName,
+            'fileType': GetV.fileType,
+            'filePath': GetV.filepath,
+            'fileUrl': fileUrl ?? '',
           });
-
-          // Generate title if needed
-          if (GetV.title == '') {
-            final titlePrompt = template2.replaceAll('{text}', textSum);
-            final titleResponse = await llm.invoke(PromptValue.string(titlePrompt));
-            GetV.title = titleResponse.outputAsString;
-
-            await FirebaseFirestore.instance
-                .collection(GetV.userName.text)
-                .doc(GetV.userSummaryID)
-                .collection('Summarize')
-                .doc(GetV.messageSummaryID)
-                .update({
-              'text': GetV.title,
-              'Index': GetV.summaryNum,
-              'messageID': GetV.messageSummaryID,
-              'fileName': GetV.fileName, // Add
-              'fileType': GetV.fileType, // Add
-              'filePath': GetV.filepath, // Add
-            });
-          }
-
-          GetV.summaryText = result;
-        } catch (e) {
-          debugPrint('Error parsing summary result: $e');
-          q1 = 'What is discussed in this document?';
-          q2 = 'What are the main findings?';
-          q3 = 'What should I know?';
         }
+
+        GetV.summaryText = result;
       }
-      
-      // QUAN TRỌNG: Không gọi setState ở đây
-      // Chỉ notify completion thông qua các biến GetV đã set ở trên
-      
     } catch (e) {
       debugPrint('Error in saveDocsSummarize: $e');
-      // Nếu có lỗi, vẫn set loadingUploadFile = true để không bị loading mãi
       if (mounted) {
         setState(() {
           GetV.loadingUploadFile = true;
@@ -920,11 +1289,23 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       final startIndex = text.indexOf(startMarker);
       final endIndex = text.indexOf(endMarker);
       
-      if (startIndex != -1 && endIndex != -1) {
-        return text.substring(startIndex + startMarker.length, endIndex).trim();
+      if (startIndex == -1) {
+        debugPrint('Start marker not found: $startMarker');
+        return '';
       }
-      return '';
+      
+      if (endIndex == -1 || endIndex <= startIndex) {
+        // Nếu không tìm thấy endMarker, lấy đến cuối text
+        final extracted = text.substring(startIndex + startMarker.length).trim();
+        // Giới hạn độ dài
+        return extracted.length > 200 
+            ? extracted.substring(0, 200) + '...' 
+            : extracted;
+      }
+      
+      return text.substring(startIndex + startMarker.length, endIndex).trim();
     } catch (e) {
+      debugPrint('Error extracting section: $e');
       return '';
     }
   }

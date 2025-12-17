@@ -40,7 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
   // THÊM CÁC BIẾN NÀY
   final ImagePicker _imagePicker = ImagePicker();
   File? _selectedImage;
-  String? _uploadedImageUrl;
+  // String? _uploadedImageUrl;
   bool _isUploadingImage = false;
   
   @override
@@ -52,41 +52,95 @@ class _ChatScreenState extends State<ChatScreen> {
     _speech = stt.SpeechToText();
   }
 
+  // Thay thế hàm onListen() hiện tại:
   void onListen() async {
     if (!_isListening) {
       bool available = await _speech.initialize(
         onStatus: (val) {
-          if (val == "done") {
+          debugPrint("Speech status: $val");
+          if (val == "done" || val == "notListening") {
             if (mounted) {
               setState(() {
                 _isListening = false;
-                _speech.stop();
               });
             }
           }
         },
-        onError: (val) => debugPrint("error: $val"),
+        onError: (val) {
+          debugPrint("Speech error: $val");
+          if (mounted) {
+            setState(() {
+              _isListening = false;
+            });
+            // Chỉ hiện error nếu không phải timeout
+            if (val.errorMsg != 'error_speech_timeout') {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Speech error: ${val.errorMsg}')),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('No speech detected. Please speak clearly into the microphone.'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
+          }
+        },
       );
+      
       if (available) {
         setState(() {
           _isListening = true;
         });
-        _speech.listen(
-          localeId: "vi_VN",
-          listenFor: const Duration(hours: 24),
-          onResult: (val) => setState(() {
-            textEditingController.text = val.recognizedWords;
-            if (_isTyping == true) {
-              textEditingController.clear();
-            }
-          }),
+        
+        // Hiện thông báo hướng dẫn
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('🎤 Listening... Please speak now'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
         );
+        
+        await _speech.listen(
+          localeId: "vi_VN",
+          listenFor: const Duration(seconds: 10), // Giảm xuống 10s
+          pauseFor: const Duration(seconds: 3),   // Giảm xuống 3s
+          partialResults: true, // THÊM: Hiện kết quả từng phần
+          onResult: (val) {
+            if (mounted) {
+              setState(() {
+                textEditingController.text = val.recognizedWords;
+              });
+            }
+          },
+        );
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Speech recognition not available. Please check microphone permissions.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     } else {
       setState(() {
         _isListening = false;
-        _speech.stop();
       });
+      await _speech.stop();
+      
+      // Hiện thông báo dừng
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Stopped listening'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
     }
   }
 
@@ -137,7 +191,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void _removeSelectedImage() {
     setState(() {
       _selectedImage = null;
-      _uploadedImageUrl = null;
+      // _uploadedImageUrl = null;
     });
   }
 
