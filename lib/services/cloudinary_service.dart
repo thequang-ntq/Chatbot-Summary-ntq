@@ -24,7 +24,7 @@ class CloudinaryService {
       CloudinaryResponse response = await cloudinary.uploadFile(
         CloudinaryFile.fromFile(
           imageFile.path,
-          folder: 'chat_app',
+          folder: 'files',
           resourceType: CloudinaryResourceType.Image,
         ),
       );

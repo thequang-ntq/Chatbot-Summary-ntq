@@ -1,0 +1,1 @@
+1) Ở các đoạn lịch sử Summarize, khi bấm vào tiêu đề trong menu_sum thì đã hiện lại nội dung summarize và trò chuyện, nhưng chưa hiện lại nút để xem nội dung file ở đầu. Hãy bổ sung thêm.

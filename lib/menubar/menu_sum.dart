@@ -68,7 +68,9 @@ class _MenuSumState extends State<MenuSum> with SingleTickerProviderStateMixin {
       GetV.summaryNum = maxNum + 1;
       GetV.menuSumPressed = true;
       GetV.loadingUploadFile = false;
-      // THÊM: Reset file info khi tạo summary mới
+      // ✅ THÊM DÒNG NÀY:
+      GetV.hasFiled = false; // Reset về chưa có file
+      // Reset file info khi tạo summary mới
       GetV.fileName = '';
       GetV.fileType = '';
       GetV.filepath = '';
@@ -316,20 +318,25 @@ class _MenuSumState extends State<MenuSum> with SingleTickerProviderStateMixin {
             
             // Set state để load conversation cũ
             setState(() {
+              // ✅ QUAN TRỌNG: Luôn set hasFiled = true khi load history
+              // Vì nếu đã có trong history nghĩa là đã upload file rồi
               GetV.hasFiled = true;
               GetV.loadingUploadFile = true;
-              GetV.summaryNum = chatMessage['Index']; //STT
-              GetV.messageSummaryID = chatMessage['messageID']; //ID Document
-              GetV.menuSumPressed = true; //Trigger reload
-               
-              // Load lại fileName nếu có trong chatMessage
-              if (chatMessage.containsKey('fileName') && chatMessage['fileName'] != null) { // SỬA: Thêm check null
+              GetV.summaryNum = chatMessage['Index'];
+              GetV.messageSummaryID = chatMessage['messageID'];
+              GetV.menuSumPressed = true;
+              
+              // Load lại fileName nếu có (cho data mới)
+              if (chatMessage.containsKey('fileName') && 
+                  chatMessage['fileName'] != null && 
+                  chatMessage['fileName'].toString().isNotEmpty) {
                 GetV.fileName = chatMessage['fileName'];
-                GetV.fileType = chatMessage['fileType'] ?? ''; // SỬA: Thêm default value
+                GetV.fileType = chatMessage['fileType'] ?? '';
                 GetV.filepath = chatMessage['filePath'] ?? '';
                 GetV.fileurl = chatMessage['fileUrl'] ?? '';
               } else {
-                // THÊM: Nếu không có fileName, reset về empty
+                // ✅ SỬA: Với data cũ (không có fileName), vẫn cho phép xem
+                // nhưng không hiển thị nút file
                 GetV.fileName = '';
                 GetV.fileType = '';
                 GetV.filepath = '';
@@ -337,7 +344,7 @@ class _MenuSumState extends State<MenuSum> with SingleTickerProviderStateMixin {
               }
             });
             
-            widget.toRefresh(); //Navigate lại về summarize screen
+            widget.toRefresh();
           },
           child: Padding(
             padding: const EdgeInsets.all(12),

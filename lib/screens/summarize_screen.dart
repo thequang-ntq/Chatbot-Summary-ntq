@@ -130,7 +130,10 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         fileName = GetV.fileName;
         fileType = GetV.fileType;
         
-        // THÊM: Load lại q1, q2, q3 từ Firestore
+        // ✅ KHÔNG CẦN CHECK fileName nữa
+        // Vì GetV.hasFiled đã được set đúng trong menu_sum.dart
+        
+        // Load lại questions từ Firestore
         _loadQuestionsFromFirestore();
       });
     }
@@ -158,6 +161,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             q1 = doc['q1'] ?? 'Empty';
             q2 = doc['q2'] ?? 'Empty';
             q3 = doc['q3'] ?? 'Empty';
+            _first = true;  // ✅ THÊM: Đảm bảo hiển thị DocsWidget
           });
         }
       }
