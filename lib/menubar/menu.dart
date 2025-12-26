@@ -270,15 +270,37 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildChatHistoryItem(Map<String, dynamic> chatMessage) {
+    // THÊM: Kiểm tra xem item này có đang được chọn không
+    final bool isSelected = chatMessage['messageID'] == GetV.messageChatID;
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        // ĐỔI MÀU: Gradient xanh dương khi được chọn
+        gradient: isSelected
+            ? LinearGradient(
+                colors: [Colors.blue[400]!, Colors.blue[600]!],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        color: isSelected ? null : Colors.grey[50],
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.grey[200]!,
-          width: 1,
+          // ĐỔI MÀU VIỀN: Xanh đậm khi được chọn
+          color: isSelected ? Colors.blue[700]! : Colors.grey[200]!,
+          width: isSelected ? 2 : 1,
         ),
+        // THÊM SHADOW: Shadow mạnh hơn khi được chọn
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: Colors.blue.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ]
+            : null,
       ),
       child: Material(
         color: Colors.transparent,
@@ -314,12 +336,16 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.1),
+                    // ĐỔI MÀU ICON: Trắng khi được chọn
+                    color: isSelected 
+                        ? Colors.white.withValues(alpha: 0.3)
+                        : Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.chat_bubble_outline,
-                    color: Colors.blue,
+                    // ĐỔI MÀU ICON: Trắng khi được chọn
+                    color: isSelected ? Colors.white : Colors.blue,
                     size: 20,
                   ),
                 ),
@@ -329,6 +355,8 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
                     chatMessage['text'],
                     style: AppTheme.bodyText1.copyWith(
                       fontWeight: FontWeight.w500,
+                      // ĐỔI MÀU CHỮ: Trắng khi được chọn
+                      color: isSelected ? Colors.white : Colors.black87,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -337,7 +365,8 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.delete_outline, size: 20),
-                  color: Colors.red[400],
+                  // ĐỔI MÀU NÚT XÓA: Trắng/hồng khi được chọn
+                  color: isSelected ? Colors.white : Colors.red[400],
                   onPressed: () => _deleteChat(chatMessage),
                 ),
               ],
