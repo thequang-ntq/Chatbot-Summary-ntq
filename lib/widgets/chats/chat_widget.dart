@@ -1,3 +1,8 @@
+// Widget hiển thị một tin nhắn chat 
+// Hiển thị Message Bubble
+// Text To Speech
+// Copy to Clipboard
+
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter_langdetect/flutter_langdetect.dart' as langdetect;
 import 'package:flutter/material.dart';
@@ -35,6 +40,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     super.dispose();
   }
 
+  // Hàm text to speech
   void _speak() async {
     setState(() {
       _isSpeaking = !_isSpeaking;
@@ -50,6 +56,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     }
   }
 
+  // Hàm copy nội dung tin nhắn vào clip board
   void _copyToClipboard() {
     Clipboard.setData(ClipboardData(text: widget.msg));
     ScaffoldMessenger.of(context).showSnackBar(
@@ -70,6 +77,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     );
   }
 
+  // Giao diện 1 tin nhắn chat trong đoạn chat (Của người hoặc của Chatbot thì sẽ đổi bên)
   @override
   Widget build(BuildContext context) {
     final isUser = widget.chatIndex % 2 == 0;
@@ -221,6 +229,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     );
   }
 
+  // Avatar ở trước message bubble
   Widget _buildAvatar(bool isUser) {
     return Container(
       width: 40,
@@ -247,6 +256,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     );
   }
 
+  // Nút copy to clipboard và nút đọc tin nhắn bằng giọng AI
   Widget _buildActionButton({
     required IconData icon,
     required VoidCallback onTap,

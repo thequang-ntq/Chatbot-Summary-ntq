@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+// Hiển thị màn hình khi không có mạng
 class InternetErr extends StatelessWidget {
   const InternetErr({super.key});
 

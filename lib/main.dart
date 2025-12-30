@@ -1,3 +1,9 @@
+// Điểm khởi đầu ứng dụng (entry point)
+// - Tạo MaterialApp (wrapper chính)
+// - Áp dụng theme (giao diện)
+// - Set màn hình home là `Tabs()`
+// - Xử lý khác biệt giữa web và mobile
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:chatgpt/screens/tabs.dart';
@@ -11,19 +17,22 @@ import 'package:connection_notifier/connection_notifier.dart'
     if (dart.library.html) 'dart:html';
 
 Future<void> main() async {
+  // 1. Load file .env (chứa API keys)
   await dotenv.load(fileName: ".env");
+  // 2. Khởi tạo Flutter binding
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Khởi tạo Firebase
+  // 3.Khởi tạo Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   
-  // Chỉ khởi tạo connection notifier khi không phải web
+  // 4.Chỉ khởi tạo connection notifier khi không phải web, chỉ trên mobile
   if (!kIsWeb) {
     await ConnectionNotifierTools.initialize();
   }
   
+  // 5.Chạy app
   runApp(const App());
 }
 

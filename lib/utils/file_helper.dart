@@ -1,4 +1,6 @@
 // lib/utils/file_helper.dart
+// Xử lý file 
+
 class FileHelper {
   static String getFileExtension(String fileName) {
     return fileName.split('.').last.toLowerCase();

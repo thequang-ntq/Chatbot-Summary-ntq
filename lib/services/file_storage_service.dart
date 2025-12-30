@@ -1,3 +1,5 @@
+// Upload file (PDF, DOCX) lên Cloudinary 
+
 import 'dart:io';
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -25,7 +27,9 @@ class FileStorageService {
       // Xác định resource type dựa vào file type
       if (fileType == 'pdf' || fileType == 'docx' || fileType == 'txt') {
         resourceType = CloudinaryResourceType.Raw;
-      } else {
+      } 
+      
+      else {
         resourceType = CloudinaryResourceType.Auto;
       }
       

@@ -1,4 +1,10 @@
 //This file add the provider to chat_screen and just that : ))
+// Wrapper thêm Provider cho chat_screen 
+// •	Bọc ChatScreen trong ChangeNotifierProvider
+// •	Cung cấp ChatProvider cho toàn bộ widget tree bên dưới
+// •	Áp dụng theme
+// Tách biệt logic provider khỏi UI
+
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

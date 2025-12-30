@@ -1,3 +1,6 @@
+// Màn hình summarize tóm tắt tài liệu
+// 
+
 import 'dart:async';
 import 'dart:ui';
 import 'dart:io';
@@ -29,8 +32,11 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:chatgpt/services/file_storage_service.dart';
 import 'package:path_provider/path_provider.dart';
 
-// Ở đầu file summarize_screen.dart, thay thế các template:
+// Các template được dùng
 
+// Template này dùng để tóm tắt nội dung file được gửi.
+// Trả lời theo ngôn ngữ được phát hiện trong nội dung file, rồi gửi 3 câu hỏi liên quan.
+// Tất cả tóm lại thành 1 câu trả lời từ Chatbot.
 const template = '''
 Detect language and respond in that language.
 
@@ -53,6 +59,7 @@ QUESTION 3:
 [Question here]
 ''';
 
+// Tương tự template trên nhưng tóm tắt trong dưới 250 từ.
 const templateX = '''
 Detect language and respond in that language.
 
@@ -130,7 +137,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         fileName = GetV.fileName;
         fileType = GetV.fileType;
         
-        // ✅ KHÔNG CẦN CHECK fileName nữa
+        // KHÔNG CẦN CHECK fileName nữa
         // Vì GetV.hasFiled đã được set đúng trong menu_sum.dart
         
         // Load lại questions từ Firestore
@@ -139,7 +146,14 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
-  // Thêm hàm này sau hàm didChangeDependencies
+  // Thêm hàm này sau hàm didChangeDependencies, tải lại question từ firestore
+  // Nội dung tin trả lời AI cho Chatbot:
+  // createdAt: Thời điểm tạo
+  // q1: Câu hỏi 1
+  // q2: Câu hỏi 2
+  // q3: Câu hỏi 3
+  // text: Nội dung tóm tắt
+  // index = 3 cho biết là nội dung tóm tắt chứ không phải câu hỏi câu trả lời sau khi tóm tắt.
   Future<void> _loadQuestionsFromFirestore() async {
     try {
       final summaryData = await FirebaseFirestore.instance
@@ -161,11 +175,12 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             q1 = doc['q1'] ?? 'Empty';
             q2 = doc['q2'] ?? 'Empty';
             q3 = doc['q3'] ?? 'Empty';
-            _first = true;  // ✅ THÊM: Đảm bảo hiển thị DocsWidget
+            _first = true;  // THÊM: Đảm bảo hiển thị DocsWidget
           });
         }
       }
-    } catch (e) {
+    } 
+    catch (e) {
       debugPrint('Error loading questions: $e');
     }
   }
@@ -178,6 +193,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     super.dispose();
   }
 
+  // Thông báo
   void notify(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -192,6 +208,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     );
   }
 
+  // Tải lại từ menu
   void toRefresh(){
     if (!mounted) return;
     // Reset state
@@ -220,6 +237,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   }
 
   // Updated PDF text extraction using syncfusion_flutter_pdf
+  // Hàm tách nội dung trong file PDF
   Future<String> extractTextFromPdf(String filePath) async {
     try {
       final File pdfFile = File(filePath);
@@ -229,12 +247,14 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       document.dispose();
       
       return text;
-    } catch (e) {
+    } 
+    catch (e) {
       debugPrint('Error extracting PDF text: $e');
       return '';
     }
   }
 
+  // Speech to Text, chuyển nội dung nói thành nội dung chữ viết.
   Future<String> convertSpeechToText(String filePath) async {
     String apiKey = GetV.apiKey.text;
     var url = Uri.https("api.openai.com", "v1/audio/transcriptions");
@@ -250,6 +270,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     return responseData['text'];
   }
 
+  // Hàm upload file ngoại trừ loại file txt lên cloudinary
+  // File txt thì không upload không có file url
   Future<void> _uploadFile() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.any);
     if (result == null) {
@@ -324,6 +346,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     
     notify('Summarizing document');
     
+    // Lưu tin nhắn tóm tắt + 3 câu hỏi vào Firestore
     await saveDocsSummarize(msg: textLast, file: file, fileUrl: fileUrl);
     
     if (mounted) {
@@ -333,7 +356,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
-  // Thêm hàm này vào _SummarizeScreenState:
+  // Hàm mở FileOption dialog 
   void _showFileOptionsDialog(String fileName, String fileType) {
     showDialog(
       context: context,
@@ -380,10 +403,12 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           ],
         ),
         actions: [
+          // Nút thoát Dialog
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'),
           ),
+          // Nút copy URL file
           ElevatedButton.icon(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: GetV.fileurl));
@@ -404,6 +429,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             icon: const Icon(Icons.copy),
             label: const Text('Copy URL'),
           ),
+          // Nút tải file
           ElevatedButton.icon(
             onPressed: () async {
               Navigator.pop(context);
@@ -421,6 +447,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     );
   }
 
+  // Hàm tải file trong FileOption Dialog, tải xong mở file
   Future<void> _downloadAndOpenFile() async {
     if (GetV.fileurl.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -472,7 +499,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         // Close loading
         if (mounted) Navigator.pop(context);
         
-        // Mở file
+        // Mở file với app mặc định của điện thoại
         final result = await OpenFilex.open(filePath);
         
         if (result.type != ResultType.done) {
@@ -485,7 +512,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             );
           }
         }
-      } else {
+      } 
+      else {
         if (mounted) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -496,7 +524,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           );
         }
       }
-    } catch (e) {
+    } 
+    catch (e) {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -509,7 +538,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
-  // Thay thế hàm onListen() hiện tại:
+  // Hàm Speech to Text
   void onListen() async {
     if (!_isListening) {
       bool available = await _speech.initialize(
@@ -562,7 +591,12 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           localeId: "vi_VN",
           listenFor: const Duration(seconds: 10),
           pauseFor: const Duration(seconds: 3),
-          partialResults: true,
+          listenOptions: stt.SpeechListenOptions(
+            partialResults: true, // Hiển thị kết quả từng phần khi đang nói
+            autoPunctuation: true, // Tự động thêm dấu câu (. , ? !)
+            enableHapticFeedback: true, // Rung khi bắt đầu/kết thúc ghi âm
+            cancelOnError: true, // Tự động cancel khi có lỗi
+          ),
           onResult: (val) {
             if (mounted) {
               setState(() {
@@ -598,6 +632,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
+  // Hàm nhấn vào thì lấy nội dung câu hỏi
   void onPress(String question){
     setState(() {
       _askText.text = question;
@@ -613,6 +648,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
+              // Nút mở menu
               icon: const Icon(
                 Icons.menu,
                 color: Colors.black,
@@ -628,6 +664,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         title: const Text('Summarize', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
         centerTitle: false,
         actions: [
+          // Nút thoát khỏi trang summary, về lại trang chủ (Home)
           IconButton(
             onPressed: () async{
               if (!mounted) return;
@@ -644,6 +681,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                 GetV.loadingUploadFile = false;
                 GetV.hasFiled = false; // Reset về trạng thái chưa có file
               });
+              // Lấy đoạn summary hiện tại, nếu chưa có tiêu đề thì xóa (Chưa thực hiện tóm tắt)
               final res = await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize')
                   .doc(GetV.messageSummaryID).get();
               if(res.exists && res['text'] == ''){
@@ -683,6 +721,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     );
   }
 
+  // Chưa có file -> Chưa tóm tắt -> Trạng thái ban đầu sẽ có nút Chọn file to ở chính giữa
   Widget _buildUploadView() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -748,10 +787,12 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     );
   }
 
+  // Đã gửi file -> Hiện nội dung các tin nhắn, và tin tóm tắt sẽ ở đầu.
   Widget _buildChatView(ChatProvider chatProvider) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // Nút để xem nội dung file
         _buildFileNameButton(),
         const SizedBox(height: 10),
         Flexible(
@@ -775,6 +816,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     );
   }
 
+  // Nút xem nội dung file
   Widget _buildFileNameButton() {
     if (fileName.isEmpty && GetV.fileName.isEmpty) {
       return const SizedBox.shrink();
@@ -784,6 +826,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     final displayFileType = fileType.isNotEmpty ? fileType : GetV.fileType;
     
     // Check nếu file còn tồn tại local
+    // Local ở file path
+    // Server ở file url
     final bool hasLocalFile = GetV.filepath.isNotEmpty && File(GetV.filepath).existsSync();
     final bool hasCloudFile = GetV.fileurl.isNotEmpty;
     
@@ -794,11 +838,15 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           Expanded(
             child: ElevatedButton.icon(
               onPressed: () async {
+                // Nếu có file name
                 if (displayFileName.isNotEmpty) {
+                  // Nếu có file path
                   if (hasLocalFile) {
                     // Mở file local
                     OpenFilex.open(GetV.filepath);
-                  } else if (hasCloudFile) {
+                  } 
+                  // Nếu có file server thì có file option dialog để tải về máy điện thoại
+                  else if (hasCloudFile) {
                     // Hiển thị dialog với options
                     _showFileOptionsDialog(displayFileName, displayFileType);
                   } else {
@@ -835,12 +883,14 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                   const SizedBox(width: 4),
                   // Hiển thị icon status
                   Icon(
+                    // Nếu file local thì icon tick, file server thì icon tick cloud, không có thì icon lỗi.
                     hasLocalFile 
                         ? Icons.check_circle 
                         : hasCloudFile 
                             ? Icons.cloud_done 
                             : Icons.error_outline,
                     size: 16,
+                    // Tương tự màu local là xanh lá, server là xanh dương, không thì cam.
                     color: hasLocalFile 
                         ? Colors.green 
                         : hasCloudFile 
@@ -857,6 +907,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   }
 
   // Thêm helper function
+  // Lấy ảnh dựa vào loại file: file type.
   IconData _getFileIconForType(String type) {
     switch (type.toLowerCase()) {
       case 'pdf':
@@ -871,8 +922,10 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
+  // Tạo danh sách tin nhắn, bao gồm tin tóm tắt và tin hỏi trả lời về nội dung tóm tắt.
   Widget _buildMessagesList() {
     return StreamBuilder(
+      // Lấy các tin nhắn của đoạn summary
       stream: FirebaseFirestore.instance
           .collection(GetV.userName.text)
           .doc(GetV.userSummaryID)
@@ -902,7 +955,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             final chatMessage = loadedMessages[index].data();
             DateTime time = chatMessage['createdAt'].toDate();
             String formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(time);
-            
+            // DocsWidget để hiển thị tin tóm tắt
+            // ChatWidgets để hiển thị tin hỏi và trả lời của user và chatbot.
             return _first
                 ? DocsWidget(
                     msg: chatMessage['text'],
@@ -926,6 +980,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     );
   }
 
+  // Tạo khu vực nhập câu hỏi sau khi đã chọn file và tóm tắt file xong.
   Widget _buildInputArea() {
     return Container(
       decoration: BoxDecoration(
@@ -948,9 +1003,12 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
                   style: const TextStyle(color: Colors.white),
                   controller: _askText,
                   onSubmitted: (value) async {
+                    // Đã có file thì gửi và nhận câu trả lời AI
                     if (GetV.hasFiled) {
                       await sendMessageFCT(chatProvider: Provider.of<ChatProvider>(context, listen: false));
-                    } else {
+                    } 
+                    // Không thì 
+                    else {
                       _showNoFileDialog();
                     }
                   },
@@ -965,9 +1023,11 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             const SizedBox(width: 8),
             IconButton(
               onPressed: () async {
+                // Tương tự cho nút gửi tin nhắn, giống khi enter submit từ text input field ở trên
                 if (GetV.hasFiled) {
                   await sendMessageFCT(chatProvider: Provider.of<ChatProvider>(context, listen: false));
-                } else {
+                } 
+                else {
                   _showNoFileDialog();
                 }
               },
@@ -1002,6 +1062,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     );
   }
 
+  // Hàm hiển thị thông báo lỗi khi chưa gửi file để tóm tắt mà đã hỏi trong input area.
   void _showNoFileDialog() {
     if (!mounted) return;
     showDialog(
@@ -1039,6 +1100,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   }
 
   // Updated saveDocsSummarize function
+  // Tạo nội dung trả lời tóm tắt, tách các câu hỏi ra và lưu vào Firestore
   Future<void> saveDocsSummarize({
     required String msg, 
     required PlatformFile file,
@@ -1053,6 +1115,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         ),
       );
 
+      // Nếu là file txt thì tải nội dung thủ công từ file path trên cloudinary
       if (GetV.filetype == "txt") {
         // Load file manually
         final fileObj = File(GetV.filepath);
@@ -1061,21 +1124,26 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           Document(pageContent: content, metadata: {'source': GetV.filepath}),
         ];
 
+        // RAG cho txt
+        // Tách text, chia tài liệu thành chunks nhỏ
         const textSplitter = RecursiveCharacterTextSplitter(
           chunkSize: 1000,
           chunkOverlap: 200,
         );
+        // Nhóm
         final docsChunks = textSplitter.splitDocuments(documents);
 
         notify('Store Document Embeddings');
 
         // Create summarization prompt
+        // Dùng template tóm tắt thông thường
         final docContents = docsChunks.map((doc) => doc.pageContent).join('\n\n');
         final prompt = template.replaceAll('{context}', docContents);
 
         notify('Summarize Document');
 
         final response = await llm.invoke(PromptValue.string(prompt));
+        // Trả lời AI
         final result = response.outputAsString;
 
         // PARSE KẾT QUẢ AN TOÀN HƠN
@@ -1086,6 +1154,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
 
         try {
           // Thử parse với các marker tiêu chuẩn
+          // Tách câu hỏi từ câu trả lời theo ký tự phân tách, chỉ để lại nội dung tóm tắt.
           if (result.contains(start) && result.contains(start1)) {
             textSum = _extractSection(result, start, start1);
             
@@ -1101,7 +1170,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             if (q3Index != -1) {
               q3Text = result.substring(q3Index + start3.length).trim();
             }
-          } else {
+          } 
+          else {
             // Nếu không tìm thấy marker, tách thủ công
             final lines = result.split('\n');
             textSum = lines.take(3).join('\n').trim(); // Lấy 3 dòng đầu làm summary
@@ -1114,11 +1184,12 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
               q3Text = questionLines.length > 2 ? questionLines[2].trim() : q3Text;
             }
           }
-        } catch (e) {
+        } 
+        catch (e) {
           debugPrint('Error parsing with markers: $e');
           // Fallback: dùng toàn bộ text làm summary
           textSum = result.length > 500 
-              ? result.substring(0, 500) + '...' 
+              ? '${result.substring(0, 500)}...' 
               : result;
         }
 
@@ -1129,6 +1200,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         });
 
         // Save to Firestore
+        // Lưu tin nhắn tóm tắt vào đoạn sumamry với index = 3
         await FirebaseFirestore.instance
             .collection(GetV.userName.text)
             .doc(GetV.userSummaryID)
@@ -1145,11 +1217,13 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         });
 
         // Generate title if needed
+        // Nếu chưa có tiêu đề thì tạo (Mới tóm tắt) dựa vào nội dung tóm tắt đã tách câu hỏi ra
         if (GetV.title == '') {
           final titlePrompt = template2.replaceAll('{text}', textSum);
           final titleResponse = await llm.invoke(PromptValue.string(titlePrompt));
           GetV.title = titleResponse.outputAsString;
 
+          // Cập nhật tiêu đề đoạn summary
           await FirebaseFirestore.instance
               .collection(GetV.userName.text)
               .doc(GetV.userSummaryID)
@@ -1167,17 +1241,21 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         }
 
         GetV.summaryText = result;
-      } else {
+      } 
+      else {
+        // Nếu không phải file txt
         // For other file types (PDF, DOCX, etc.)
         String embeddedText = '';
         if (msg.length > 4000) {
           embeddedText = msg.substring(0, 4000);
-        } else {
+        } 
+        else {
           embeddedText = msg;
         }
 
         notify('Summarize documents');
 
+        // Dùng templateX tóm tắt < 250 từ
         final prompt = templateX.replaceAll('{subject}', embeddedText);
         final response = await llm.invoke(PromptValue.string(prompt));
         final result = response.outputAsString;
@@ -1190,6 +1268,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
 
         try {
           // Thử parse với các marker
+          // Tách 3 câu hỏi ra nội dung tóm tắt tin nhắn AI
           if (result.contains(starts1)) {
             final summaryEndIndex = result.indexOf(starts1);
             if (summaryEndIndex != -1) {
@@ -1227,7 +1306,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         } catch (e) {
           debugPrint('Error parsing result: $e');
           textSum = result.length > 500 
-              ? result.substring(0, 500) + '...' 
+              ? '${result.substring(0, 500)}...' 
               : result;
         }
 
@@ -1238,6 +1317,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         });
 
         // Save to Firestore
+        // Lưu nội dung tóm tắt + 3 câu hỏi vào đoạn summary dưới dạng tin nhắn
         await FirebaseFirestore.instance
             .collection(GetV.userName.text)
             .doc(GetV.userSummaryID)
@@ -1254,11 +1334,13 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         });
 
         // Generate title if needed
+        // Tạo tiêu đề nếu chưa có (Mới tóm tắt)
         if (GetV.title == '') {
           final titlePrompt = template2.replaceAll('{text}', textSum);
           final titleResponse = await llm.invoke(PromptValue.string(titlePrompt));
           GetV.title = titleResponse.outputAsString;
-
+          
+          // Cập nhật tiêu đề
           await FirebaseFirestore.instance
               .collection(GetV.userName.text)
               .doc(GetV.userSummaryID)
@@ -1277,7 +1359,8 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
 
         GetV.summaryText = result;
       }
-    } catch (e) {
+    } 
+    catch (e) {
       debugPrint('Error in saveDocsSummarize: $e');
       if (mounted) {
         setState(() {
@@ -1288,6 +1371,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
+  // Hàm dùng để tách câu hỏi từ những vị trí được đánh dấu và đoạn text nhập vào.
   String _extractSection(String text, String startMarker, String endMarker) {
     try {
       final startIndex = text.indexOf(startMarker);
@@ -1303,19 +1387,22 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         final extracted = text.substring(startIndex + startMarker.length).trim();
         // Giới hạn độ dài
         return extracted.length > 200 
-            ? extracted.substring(0, 200) + '...' 
+            ? '${extracted.substring(0, 200)}...' 
             : extracted;
       }
       
       return text.substring(startIndex + startMarker.length, endIndex).trim();
-    } catch (e) {
+    } 
+    catch (e) {
       debugPrint('Error extracting section: $e');
       return '';
     }
   }
 
+  // Hàm gửi và nhận câu trả lời AI
   Future<void> sendMessageFCT({required ChatProvider chatProvider}) async {
     if (_isTyping) {
+      // Gửi tin nhắn khi đang chờ câu trả lời
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -1338,6 +1425,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
+            // Chưa có nội dung câu hỏi
             "Please type a message",
             style: TextStyle(
               color: Colors.white,
@@ -1368,11 +1456,13 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         focusNode.unfocus();
       });
       
+      // Nhận và gửi câu trả lời, lưu câu hỏi và câu trả lời vào Firestore.
       await chatProvider.sendMessageAndGetAnswersSummarize(msg: msg);
       if (mounted) {
         setState(() {});
       }
-    } catch (error) {
+    } 
+    catch (error) {
       log("error $error");
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,4 +1,6 @@
 // lib/utils/text_helper.dart
+// Xử lý text 
+
 class TextHelper {
   static String truncate(String text, int maxLength) {
     if (text.length <= maxLength) return text;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Hiển thị màn hình Loading
 class Loadings extends StatelessWidget {
   const Loadings({super.key});
 

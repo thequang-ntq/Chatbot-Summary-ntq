@@ -1,3 +1,9 @@
+// •	Firebase Storage có quota giới hạn
+// •	Cloudinary free tier hào phóng hơn
+// •	Tự động optimize ảnh
+// •	CDN nhanh
+// Upload ảnh lên Cloudinary 
+
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:io';

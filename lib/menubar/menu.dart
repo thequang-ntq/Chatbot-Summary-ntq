@@ -1,3 +1,9 @@
+// Drawer menu cho Chat screen 
+// Hiển thị lịch sử Chat
+// Tạo chat mới
+// Xóa chat
+// Highlight chat đang chọn
+
 import 'package:flutter/material.dart';
 import 'package:chatgpt/screens/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -36,12 +42,15 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
+  // Hàm tạo đoạn chat mới
   Future<void> _createNewChat() async {
     final upURL = Uri.https(
-        'your-project-name-b1e6c-default-rtdb.firebaseio.com', 'chatNum.json');
+      'your-project-name-b1e6c-default-rtdb.firebaseio.com', 'chatNum.json'
+    );
     final res = await http.get(upURL);
     final Map<String, dynamic> dat = json.decode(res.body);
     int maxNum = 1;
+    // Lấy ra đoạn chat mới nhất với số index lớn nhất
     for (final item in dat.entries) {
       if (GetV.userName.text == item.value['user-name']) {
         if (maxNum < item.value['chat-num']) {
@@ -50,6 +59,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
       }
     }
     
+    // Lấy ra đoạn chat hiện tại, nếu tiêu đề rỗng thì xóa
     final resd = await FirebaseFirestore.instance
         .collection(GetV.userName.text)
         .doc(GetV.userChatID)
@@ -65,12 +75,14 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
           .delete();
     }
 
+    // Đoạn chat mới có số index lớn hơn số index của đoạn chat mới nhất hiện tại = +1.
     setState(() {
       GetV.title = '';
       GetV.chatNum = maxNum + 1;
       GetV.menuPressed = true;
     });
     
+    // Tạo doc đoạn chat mới với ID đoạn chat mới nhất ở trên (= +1)
     await FirebaseFirestore.instance
         .collection(GetV.userName.text)
         .doc(GetV.userChatID)
@@ -84,6 +96,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
       GetV.messageChatID = doc.id;
     });
     
+    // Cập nhập lại cho đúng ID đoạn chat
     await FirebaseFirestore.instance
         .collection(GetV.userName.text)
         .doc(GetV.userChatID)
@@ -96,8 +109,10 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
       'createdAt': Timestamp.now(),
     });
     
+    // Cập nhật lại số chat num mới nhất cho user name hiện tại
     final url2 = Uri.https(
-        'your-project-name-b1e6c-default-rtdb.firebaseio.com', 'chatNum.json');
+      'your-project-name-b1e6c-default-rtdb.firebaseio.com', 'chatNum.json'
+    );
     final response2 = await http.get(url2);
     final Map<String, dynamic> resData2 = json.decode(response2.body);
     for (final item in resData2.entries) {
@@ -106,8 +121,10 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
       }
     }
 
+    // Cập nhật lại chat item number là số chat num mới nhất hiện tại.
+    // Nhưng hiện tại cái này không dùng, nên thừa.
     final url = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com',
-        'chatItemNumber.json');
+      'chatItemNumber.json');
     final response = await http.get(url);
     final Map<String, dynamic> resData = json.decode(response.body);
     for (final item in resData.entries) {
@@ -135,6 +152,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
     );
   }
 
+  // Tạo header cho menu
   Widget _buildDrawerHeader() {
     return Container(
       width: double.infinity,
@@ -177,12 +195,14 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
     );
   }
 
+  // Tạo nút New Chat
   Widget _buildNewChatButton() {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton.icon(
+          // Tạo đoạn chat mới
           onPressed: _createNewChat,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blue,
@@ -206,6 +226,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
     );
   }
 
+  // Tạo lịch sử đoạn chat
   Widget _buildChatHistory() {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
@@ -250,7 +271,8 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
             ),
           );
         }
-
+        
+        // Danh sách đoạn chat
         return ListView.builder(
           controller: _listScrollController,
           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -262,6 +284,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
               return const SizedBox.shrink();
             }
 
+            // Bấm đoạn chat thì tạo lịch sử tin nhắn của đoạn chat
             return _buildChatHistoryItem(chatMessage);
           },
         );
@@ -269,6 +292,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
     );
   }
 
+  // Tạo lịch sử tin nhắn của đoạn chat
   Widget _buildChatHistoryItem(Map<String, dynamic> chatMessage) {
     // THÊM: Kiểm tra xem item này có đang được chọn không
     final bool isSelected = chatMessage['messageID'] == GetV.messageChatID;
@@ -306,6 +330,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
+          // Nhấn vào đoạn chat lịch sử thì tiện thể xóa đoạn chat hiện tại nếu không có tiêu đề.
           onTap: () async {
             final resd = await FirebaseFirestore.instance
                 .collection(GetV.userName.text)
@@ -377,6 +402,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
     );
   }
 
+  // Hàm xóa đoạn chat (Nút thùng rác)
   Future<void> _deleteChat(Map<String, dynamic> chatMessage) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -391,6 +417,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
             Text('Delete Chat'),
           ],
         ),
+        // Thông báo xác nhận xóa
         content: const Text('Are you sure you want to delete this chat?'),
         actions: [
           TextButton(
@@ -409,8 +436,11 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
       ),
     );
 
+    // Nếu bấm Cancel thì hủy
     if (confirm != true) return;
 
+    // Ngược lại bấm Delete thì xóa.
+    // Lấy đoạn chat
     final res = await FirebaseFirestore.instance
         .collection(GetV.userName.text)
         .doc(GetV.userChatID)
@@ -418,6 +448,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
         .doc(chatMessage['messageID'])
         .get();
 
+    // Nếu không phải đoạn chat hiện tại là đoạn chat cần xóa thì chỉ xóa ở menu
     if (GetV.messageChatID != res['messageID']) {
       String text = res['messageID'];
       await FirebaseFirestore.instance
@@ -427,7 +458,9 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
           .doc(text)
           .delete();
       widget.toRefresh();
-    } else {
+    } 
+    // Ngược lại thì xóa và tạo 1 đoạn chat mới và đổi qua đoạn chat mới đó
+    else {
       // Delete current chat and create new one
       final upURL = Uri.https(
           'your-project-name-b1e6c-default-rtdb.firebaseio.com', 'chatNum.json');
@@ -442,6 +475,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
         }
       }
       
+      // Xóa
       await FirebaseFirestore.instance
           .collection(GetV.userName.text)
           .doc(GetV.userChatID)
@@ -455,6 +489,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
         GetV.menuPressed = true;
       });
       
+      // Tạo đoạn chat mới
       await FirebaseFirestore.instance
           .collection(GetV.userName.text)
           .doc(GetV.userChatID)
@@ -480,6 +515,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
         'createdAt': Timestamp.now(),
       });
       
+      // Cập nhật chat Num của đoạn chat mới
       final url2 = Uri.https(
           'your-project-name-b1e6c-default-rtdb.firebaseio.com', 'chatNum.json');
       final response2 = await http.get(url2);
@@ -490,6 +526,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
         }
       }
 
+      // Cập nhật chat item number, hiện không dùng.
       final url = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com',
           'chatItemNumber.json');
       final response = await http.get(url);
@@ -503,6 +540,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
     }
   }
 
+  // Thông tin người dùng
   Widget _buildUserInfo() {
     return Container(
       padding: const EdgeInsets.all(16),

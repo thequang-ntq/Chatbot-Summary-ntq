@@ -1,4 +1,6 @@
 // lib/utils/responsive_helper.dart
+// Xử lý responsive design 
+
 import 'package:flutter/material.dart';
 
 class ResponsiveHelper {

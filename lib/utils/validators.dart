@@ -1,4 +1,5 @@
 // lib/utils/validators.dart
+// Validate dữ liệu nhập
 class Validators {
   static bool isValidApiKey(String apiKey) {
     if (apiKey.isEmpty || apiKey.length != 51) return false;

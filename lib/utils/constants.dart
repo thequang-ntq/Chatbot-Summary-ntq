@@ -1,4 +1,5 @@
 // lib/utils/constants.dart
+// Lưu các hàm số
 class AppConstants {
   // API
   static const String firebaseUrl = 'your-project-name-b1e6c-default-rtdb.firebaseio.com';

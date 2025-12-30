@@ -1,6 +1,17 @@
 //This is an important code file that controls navigation between 
 //home, chat and summarize screen.
 //This is like the main UI for all the app.
+// - Quản lý 3 màn hình: Home, Chat, Summarize
+// - Xử lý submit API key và username
+// - Khởi tạo dữ liệu Firebase cho user mới
+// - Load dữ liệu cho user cũ
+// FLow hoạt động:
+// 1. User nhập API key + username
+// 2. Validate API key (gọi OpenAI API)
+// 3. Kiểm tra user đã tồn tại chưa:
+//   - Nếu mới: Tạo collections trong Firestore
+//   - Nếu cũ: Load userChatID và userSummaryID
+// 4. Cho phép chuyển sang Chat hoặc Summarize
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -39,6 +50,7 @@ class _TabsState extends State<Tabs> {
     super.initState();
   }
 
+  // Hàm kiểm tra API Key hợp lệ, dùng trong toSubmit
   Future<bool> checkApiKey(String apiKey) async {
     try {
       final response = await http.get(
@@ -49,24 +61,28 @@ class _TabsState extends State<Tabs> {
         },
       ).timeout(const Duration(seconds: 10));
       
+      // Hợp lệ nếu mã trả về là 200
       if (response.statusCode == 200) {
         return true;
-      } else {
+      } 
+      else {
         debugPrint('API Key validation failed: ${response.statusCode}');
         return false;
       }
-    } catch (e) {
+    } 
+    catch (e) {
       debugPrint('Error checking API key: $e');
       return false;
     }
   }
 
   //Submit function - Fix
+  // Xác thực và lưu thông tin User
   void toSubmit(TextEditingController apiKeyValue, TextEditingController userName) async {
     _apiKeyValue = apiKeyValue;
     _userName = userName;
     
-    // Kiểm tra format cơ bản trước
+    // Kiểm tra format cơ bản trước, API Key không rỗng và phải dài hơn 20 ký tự
     if (apiKeyValue.text.isEmpty || apiKeyValue.text.trim().length < 20) {
       setState(() {
         GetV.isAPI = false;
@@ -96,6 +112,7 @@ class _TabsState extends State<Tabs> {
       return;
     }
     
+    // Không hợp format của API key -> Fail
     if (!apiKeyValue.text.startsWith("sk-")) {
       setState(() {
         GetV.isAPI = false;
@@ -125,6 +142,7 @@ class _TabsState extends State<Tabs> {
       return;
     }
     
+    // User name không rỗng và lớn hơn 3 ký tự
     if (userName.text.isEmpty || userName.text.trim().length < 3) {
       setState(() {
         GetV.isAPI = false;
@@ -156,7 +174,7 @@ class _TabsState extends State<Tabs> {
     
     // Hiện loading
     loadingDialogContext = null;
-
+    // Dialog đang kiểm tra API Key
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -164,7 +182,7 @@ class _TabsState extends State<Tabs> {
         loadingDialogContext = dialogCtx;
         return const PopScope(
           canPop: false,
-          child: const Center(
+          child: Center(
             child: Card(
               child: Padding(
                 padding: EdgeInsets.all(20.0),
@@ -183,7 +201,7 @@ class _TabsState extends State<Tabs> {
       },
     );
 
-    // Kiểm tra API
+    // Kiểm tra API sau khi validate sơ bộ
     final isValid = await checkApiKey(apiKeyValue.text.trim());
 
     // Đóng dialog đúng cách
@@ -193,7 +211,7 @@ class _TabsState extends State<Tabs> {
     }
 
     if (!mounted) return;
-    
+    // Lỗi Api Key đã expired hoặc invalid
     if (!isValid) {
       setState(() {
         GetV.isAPI = false;
@@ -268,6 +286,7 @@ class _TabsState extends State<Tabs> {
     final Map<String, dynamic> resData = json.decode(response.body);
     
     bool apiExists = false;
+    // Kiểm tra Api Key đã có trong Realtime DB chưa
     for (final item in resData.entries) {
       if (item.value['api-key'] == apiKeyValue.text) {
         apiExists = true;
@@ -275,6 +294,7 @@ class _TabsState extends State<Tabs> {
       }
     }
     
+    // Nếu chưa thì tạo mới.
     if (!apiExists) {
       await http.post(url, 
         headers: {
@@ -286,12 +306,13 @@ class _TabsState extends State<Tabs> {
       );
     }
     
-    // Xử lý username trong Firebase (giữ nguyên phần này)
+    // Xử lý username trong Firebase, Realtime DB
     final url2 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userNames.json');
     final response2 = await http.get(url2);
     final Map<String, dynamic> resData2 = json.decode(response2.body);
     
     bool userExists = false;
+    // Kiểm tra Username đã có chưa
     for (final item in resData2.entries) {
       if (item.value['user-name'] == userName.text) {
         userExists = true;
@@ -299,6 +320,7 @@ class _TabsState extends State<Tabs> {
       }
     }
     
+    //Nếu chưa thì tạo mới username, userChatID và userSummaryID, chứa các đoạn chat và đoạn summary.
     if (!userExists) {
       await http.post(url2, 
         headers: {
@@ -309,13 +331,15 @@ class _TabsState extends State<Tabs> {
         }),
       );
       
-      // Tạo collections mới
+      // Tạo collections mới: Tạo collection Chat lưu các đoạn chat cho username trong Firestore
+      // Username -> Chat
       await FirebaseFirestore.instance.collection(userName.text).add(
         {'Chat': 'Chat'}
       ).then((DocumentReference doc){
         GetV.userChatID = doc.id;
       });
       
+      // Lấy UserChatID ở trên lưu vào realtime DB, phần userChatID với thông tin username và userChatID tương ứng. 
       final url3 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userChatID.json');
       await http.post(url3, 
         headers: {
@@ -327,12 +351,14 @@ class _TabsState extends State<Tabs> {
         }),
       );
       
+      // Tương tự, tạo collection Summary lưu các đoạn Summary cho username trong Firestore
       await FirebaseFirestore.instance.collection(userName.text).add(
         {'Summary': 'Summary'}
       ).then((DocumentReference doc){
         GetV.userSummaryID = doc.id;
       });
       
+      // Lấy userSummaryID ở trên lưu vào Realtime DB, phần userSummaryID.
       final url4 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userSummaryID.json');
       await http.post(url4, 
         headers: {
@@ -345,7 +371,9 @@ class _TabsState extends State<Tabs> {
       );
       
       GetV.userName.text = _enteredUserName;
-    } else {
+    }
+    // Nếu đã có dữ liệu username thì lấy lại username, userChatID và userSummaryID trong Realtime DB. 
+    else {
       // Load existing user data
       final url5 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userChatID.json');
       final response5 = await http.get(url5);
@@ -370,7 +398,8 @@ class _TabsState extends State<Tabs> {
     }
   }
 
-  //Change to chat screen
+  // Change to chat screen
+  // Khởi tạo ChatSession mới, chuyển qua trang Chat.
   void toChat() async{
     if(GetV.apiKey.text.isNotEmpty){
       setState(() {
@@ -382,6 +411,7 @@ class _TabsState extends State<Tabs> {
         _enteredUserName = GetV.userName.text;
       });
     }
+    // Kiểm tra API Key và Username chưa hợp lệ thì chưa cho chuyển
     if (_enteredApiKey == '' || _enteredApiKey.isEmpty || _enteredUserName.isEmpty) {
       showDialog(
         context: context,
@@ -389,15 +419,18 @@ class _TabsState extends State<Tabs> {
           return const AlertDialog(
             // Retrieve the text the that user has entered by using the
             // TextEditingController.
-            content: Text('You are not entered the Api Key. Please enter one!'),
+            content: Text('You are not entered the Api Key or not entered the Username. Please enter!'),
           );
         },
       );
-    } else {
+    } 
+    else {
+        // Qua màn hình đợi
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const Loadings()),
         );
+        // Lấy UserChatID được tạo hoặc đã có dữ liệu ở trên
         final urlChatID = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userChatID.json');
         final responseChatID = await http.get(urlChatID);
         final resDataChatID = await json.decode(responseChatID.body);
@@ -407,20 +440,26 @@ class _TabsState extends State<Tabs> {
             GetV.userName.text = _enteredUserName;
           }
         }
+        // Lấy dữ liệu chatNum, dữ liệu này cho biết index là số thứ tự của đoạn chat.
+        // Để lấy ra được đoạn chat tương ứng. chatNum này khi mới vào trang Chat thì
+        // sẽ lấy số trong chatNum trong dữ liệu realtime DB hiện tại + 1, bảo đảm ra index đoạn chat mới, không trùng
+        // index những đoạn chat trước đó. Đây là trường hợp username đã có trong realtime DB, username cũ, 
+        // đã có dùng và vào trang chat, chatNum đã có trước đó.
         final url2 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'chatNum.json');
         final response2 = await http.get(url2);
         if (response2.body.contains(_enteredUserName) == true){
           final Map<String,dynamic> resData2 = json.decode(response2.body);
           for(final item in resData2.entries){
             if(_enteredUserName == item.value['user-name']){
-              
+              // Cộng 1 tránh trùng, bảo đảm đoạn chat mới.
               int temp = item.value['chat-num'] + 1;
+              // Xóa chatNum cũ
               await http.delete(url2, 
                 headers: {
                   'Content-Type' : 'chatNum/json',
                 },
               );
-
+              // Thêm chatNum mới
               await http.post(url2, 
                 headers: {
                   'Content-Type' : 'chatNum/json',
@@ -430,12 +469,14 @@ class _TabsState extends State<Tabs> {
                   'user-name': _enteredUserName,
                 }),
               );
+              // Gán dữ liệu
               GetV.chatNum = temp;
               
               // break;
             }
           }
         }
+        // Trường hợp tạo username lần đầu, chatNum = 1 là bắt đầu.
         else if (response2.body.contains(_enteredUserName) == false){
           await http.post(url2, 
             headers: {
@@ -448,22 +489,25 @@ class _TabsState extends State<Tabs> {
           );
           GetV.chatNum = 1;
         }
-
+        // Tạm thêm đoạn chat với tiêu đề text rỗng, index = chatNum. messageChatID là ID đoạn chat trong Chat.
         await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message').add({
             'text' : '',
             'Index' : GetV.chatNum,
             'messageID': GetV.messageChatID,
             'createdAt': Timestamp.now(),
           }).then((DocumentReference doc){
-            GetV.messageChatID = doc.id;
+            GetV.messageChatID = doc.id; // Gán dữ liệu ID Đoạn chat
           });
+        // Cập nhật đoạn chat mới tạo ở trên, sửa lại messageChatID cho đúng với messageChatID của đoạn chat mới tạo sau khi gán dữ liệu.
         await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userChatID).collection('Message').doc(GetV.messageChatID).update({
             'text' : '',
             'Index' : GetV.chatNum,
             'messageID': GetV.messageChatID,
             'createdAt': Timestamp.now(),
           }); 
-
+        // Nguyên bản đây là chatItemNumber, là số thứ tự của đoạn chat được tạo sau khi vào trang, username và ID đoạn chat.
+        // Kiểm tra xem cái số thứ tự đoạn chat hiện tại đã có trong chatItemNumber chưa, nếu chưa thì thêm vào.
+        // Nhưng hiện tại không cần dùng vì có chatNum là đủ rồi.
         final url = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'chatItemNumber.json');
         final response = await http.get(url);
         bool check = true;
@@ -489,13 +533,15 @@ class _TabsState extends State<Tabs> {
           );
         }
       Navigator.pop(context);
+      // Chuyển qua chat screen
       setState(() {
         _activeScreen = 'chat-screen';
       });
     }
   }
 
-  //Change to summarize screen
+  // Change to summarize screen
+  // Khởi tạo summarize session mới
   void toSummarize() async{
     if(GetV.apiKey.text.isNotEmpty){
       setState(() {
@@ -507,23 +553,27 @@ class _TabsState extends State<Tabs> {
         _enteredUserName = GetV.userName.text;
       });
     }
+    // Kiểm tra API Key và Username chưa hợp lệ thì chưa cho chuyển
     if (_enteredApiKey == '' || _enteredApiKey.isEmpty || _enteredUserName.isEmpty) {
       showDialog(
         context: context,
         builder: (context) {
           return const AlertDialog(
-            content: Text('You are not entered the Api Key. Please enter one!'),
+            content: Text('You are not entered the Api Key or not entered the Username. Please enter!'),
           );
         },
       );
-    } else {
+    } 
+    else {
       setState(() {
         GetV.loadingUploadFile = false;
       });
+      // Chuyển qua trang đợi
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const Loadings()),
       );
+      // Lấy UserSummaryID được tạo hoặc đã có dữ liệu ở trên
       final urlSummaryID = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userSummaryID.json');
       final responseSummaryID = await http.get(urlSummaryID);
 
@@ -535,6 +585,12 @@ class _TabsState extends State<Tabs> {
         }
       }
 
+      // summaryNum là số thứ tự đoạn summary.
+      // Lấy dữ liệu summaryNum, dữ liệu này cho biết index là số thứ tự của đoạn summary.
+      // Để lấy ra được đoạn summary tương ứng. summaryNum này khi mới vào trang Sumamry thì
+      // sẽ lấy số trong summaryNum trong dữ liệu realtime DB hiện tại + 1, bảo đảm ra index đoạn sumamry mới, không trùng
+      // index những đoạn summary trước đó. Đây là trường hợp username đã có trong realtime DB, username cũ, 
+      // đã có dùng và vào trang summary, summaryNum đã có trước đó.
       final url2 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'summaryNum.json');
         final response2 = await http.get(url2);
         if (response2.body.contains(_enteredUserName) == true){
@@ -564,6 +620,7 @@ class _TabsState extends State<Tabs> {
             }
           }
         }
+        // Chưa có thì tạo mới
         else if (response2.body.contains(_enteredUserName) == false){
           await http.post(url2, 
             headers: {
@@ -577,6 +634,7 @@ class _TabsState extends State<Tabs> {
           GetV.summaryNum = 1;
         }
 
+        // Tạo collection đoạn summary mới, ban đầu tiêu đề text rỗng, index là ID đoạn summary.
         await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').add({
             'text' : '',
             'Index' : GetV.summaryNum,
@@ -585,6 +643,7 @@ class _TabsState extends State<Tabs> {
           }).then((DocumentReference doc){
             GetV.messageSummaryID = doc.id;
           }); 
+        // Cập nhật gán lại ID đoạn summary cho đúng trong collection đoạn summary tạo ở trên.
         await FirebaseFirestore.instance.collection(GetV.userName.text).doc(GetV.userSummaryID).collection('Summarize').doc(GetV.messageSummaryID).update({
             'text' : '',
             'Index' : GetV.summaryNum,
@@ -592,6 +651,9 @@ class _TabsState extends State<Tabs> {
             'createdAt': Timestamp.now(),
           }); 
 
+        // Nguyên bản đây là sumamryItemNumber, là số thứ tự của đoạn summary được tạo sau khi vào trang, username và ID đoạn sumamry.
+        // Kiểm tra xem cái số thứ tự đoạn summary hiện tại đã có trong summaryItemNumber chưa, nếu chưa thì thêm vào.
+        // Nhưng hiện tại không cần dùng vì có summaryNum là đủ rồi.
         final url = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'summaryItemNumber.json');
         final response = await http.get(url);
         bool check = true;
@@ -625,6 +687,10 @@ class _TabsState extends State<Tabs> {
 
   @override
   Widget build(BuildContext context) {
+    // Trang hiện tại là HomeScreen, của home.dart, trang chủ Home. Lấy các giá trị Widget Values và các hàm cần thiết trong
+    // trang chủ là các biến ở đây.
+    // Ban đầu qua trang Home.
+    // Truyền biến từ tabs qua home.
     Widget screenWidget = HomeScreen(
       apiKeyValue: _apiKeyValue,
       name: _userName,
@@ -633,14 +699,17 @@ class _TabsState extends State<Tabs> {
       toSummarize: toSummarize,
     );
 
+    // Chuyển qua trang Chat
     if (_activeScreen == 'chat-screen') {
       screenWidget = const Chat();
     }
 
+    // Chuyển qua trang Summary
     if (_activeScreen == 'summarize-screen') {
       screenWidget = const Summarize();
     }
 
+    // Trả về screen hiện tại là Home, Chat hoặc Summary.
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(

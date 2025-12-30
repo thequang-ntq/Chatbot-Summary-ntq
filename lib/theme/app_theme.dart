@@ -1,4 +1,10 @@
 // lib/theme/app_theme.dart
+// Định nghĩa theme thống nhất cho toàn app 
+// •	Dễ thay đổi màu sắc toàn app
+// •	Đảm bảo tính nhất quán
+// •	Dễ implement dark mode
+// •	Code clean hơn
+
 import 'package:flutter/material.dart';
 
 class AppTheme {

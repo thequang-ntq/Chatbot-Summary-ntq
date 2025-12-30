@@ -1,3 +1,9 @@
+// Wrapper xử lý connection check cho cả web và mobile 
+// •	Package connection_notifier không hỗ trợ web
+// •	Tránh lỗi compile trên web
+// •	Code linh hoạt cho nhiều platform
+
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:connection_notifier/connection_notifier.dart' 

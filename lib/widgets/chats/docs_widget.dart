@@ -1,3 +1,6 @@
+// Widget hiển thị summary message với 3 câu hỏi gợi ý 
+// Hiển thị nội dung tóm tắt
+
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter_langdetect/flutter_langdetect.dart' as langdetect;
 import 'package:flutter/material.dart';
@@ -41,6 +44,7 @@ class _DocsWidgetState extends State<DocsWidget> {
     super.dispose();
   }
 
+  // Hàm speech to text
   void _speak() async {
     setState(() {
       _isSpeaking = !_isSpeaking;
@@ -189,6 +193,7 @@ class _DocsWidgetState extends State<DocsWidget> {
                       ],
 
                       // Suggested Questions (only for summary - index 3)
+                      // Câu hỏi gợi ý
                       if (widget.chatIndex == 3) ...[
                         const SizedBox(height: 16),
                         Container(
@@ -283,6 +288,7 @@ class _DocsWidgetState extends State<DocsWidget> {
     );
   }
 
+  // Nút này để tạo cho chức năng copy to clipboard và chức năng đọc tin nhắn bằng giọng AI
   Widget _buildActionButton({
     required IconData icon,
     required VoidCallback onTap,
@@ -309,6 +315,7 @@ class _DocsWidgetState extends State<DocsWidget> {
     );
   }
 
+  // Nút này để điền nội dung câu hỏi gợi ý được chọn vào text input
   Widget _buildQuestionButton({
     required String question,
     required IconData icon,
@@ -338,7 +345,7 @@ class _DocsWidgetState extends State<DocsWidget> {
               Container(
                 width: 28,
                 height: 28,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.blue,
                   shape: BoxShape.circle,
                 ),

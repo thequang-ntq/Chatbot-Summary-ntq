@@ -1,3 +1,6 @@
+// Kiểm tra kết nối internet 
+// Chỉ trên máy điện thoại
+
 import 'package:flutter/foundation.dart';
 
 class ConnectivityService {

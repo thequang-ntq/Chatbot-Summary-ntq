@@ -1,3 +1,8 @@
+// Màn hình Chat chính
+// •	_buildEmptyState(): Hiển thị khi chưa có tin nhắn
+// •	_buildInputArea(): Thanh nhập tin nhắn + nút gửi + nút mic + nút chọn ảnh
+// •	StreamBuilder: Lắng nghe realtime từ Firestore
+
 import 'dart:developer';
 import 'package:connection_notifier/connection_notifier.dart';
 import 'package:chatgpt/screens/internet.dart';
@@ -30,8 +35,8 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   late stt.SpeechToText _speech;
-  bool _isTyping = false;
-  bool _isListening = false;
+  bool _isTyping = false; // Đang chờ AI trả lời
+  bool _isListening = false; // Đang ghi âm
 
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
@@ -39,9 +44,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // THÊM CÁC BIẾN NÀY
   final ImagePicker _imagePicker = ImagePicker();
-  File? _selectedImage;
+  File? _selectedImage; // Ảnh đã chọn
   // String? _uploadedImageUrl;
-  bool _isUploadingImage = false;
+  bool _isUploadingImage = false; // Đang upload ảnh
   
   @override
   void initState() {
@@ -52,9 +57,10 @@ class _ChatScreenState extends State<ChatScreen> {
     _speech = stt.SpeechToText();
   }
 
-  // Thay thế hàm onListen() hiện tại:
+  // Hàm ghi âm speech to text
   void onListen() async {
     if (!_isListening) {
+      // Khởi tọa speech recognition
       bool available = await _speech.initialize(
         onStatus: (val) {
           debugPrint("Speech status: $val");
@@ -89,6 +95,7 @@ class _ChatScreenState extends State<ChatScreen> {
         },
       );
       
+      
       if (available) {
         setState(() {
           _isListening = true;
@@ -103,11 +110,17 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         );
         
+        // Bắt đầu lắng nghe 10 giây
         await _speech.listen(
           localeId: "vi_VN",
           listenFor: const Duration(seconds: 10), // Giảm xuống 10s
           pauseFor: const Duration(seconds: 3),   // Giảm xuống 3s
-          partialResults: true, // THÊM: Hiện kết quả từng phần
+          listenOptions: stt.SpeechListenOptions(
+            partialResults: true, // Hiển thị kết quả từng phần khi đang nói
+            autoPunctuation: true, // Tự động thêm dấu câu (. , ? !)
+            enableHapticFeedback: true, // Rung khi bắt đầu/kết thúc ghi âm
+            cancelOnError: true, // Tự động cancel khi có lỗi
+          ),
           onResult: (val) {
             if (mounted) {
               setState(() {
@@ -144,7 +157,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  // Hàm xử lý ảnh cho Chat
+  // Hàm xử lý ảnh cho Chat. Lấy ảnh từ local lên.
   Future<void> _pickImage() async {
     try {
       final XFile? pickedFile = await _imagePicker.pickImage(
@@ -159,13 +172,15 @@ class _ChatScreenState extends State<ChatScreen> {
           _selectedImage = File(pickedFile.path);
         });
       }
-    } catch (e) {
+    } 
+    catch (e) {
       debugPrint('Error picking image: $e');
       if (!mounted) return;
       SnackbarHelper.showError(context, 'Failed to pick image');
     }
   }
 
+  // Gửi ảnh lấy được lên server cloudinary.
   Future<String?> _uploadImageToCloudinary(File imageFile) async {
     try {
       setState(() {
@@ -177,9 +192,10 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         _isUploadingImage = false;
       });
-      
+      // Trả về đường link url của ảnh để tải về.
       return downloadUrl;
-    } catch (e) {
+    } 
+    catch (e) {
       debugPrint('Error uploading image: $e');
       setState(() {
         _isUploadingImage = false;
@@ -188,6 +204,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  // Xóa ảnh được chọn
   void _removeSelectedImage() {
     setState(() {
       _selectedImage = null;
@@ -203,6 +220,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+  // Tải lại của Menu
   void toRefresh() {
     if (!mounted) return;
     Navigator.pop(context);
@@ -215,12 +233,16 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Có thể tải lại
     return RefreshIndicator(
       color: Colors.white,
       backgroundColor: Colors.black,
       onRefresh: () async {
         return Future<void>.delayed(const Duration(seconds: 1));
       },
+      // Cập nhật liên tục theo thời gian thực.
+      // Lấy các document - ở đây là các tin nhắn của người và Chatbot của 1 đoạn chat trong collection Chat
+      // sắp xếp theo thời điểm tạo, từ trên xuống dưới là thời điểm tạo tăng dần, tạo sớm nhất ở trên nhất.
       child: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection(GetV.userName.text)
@@ -247,6 +269,7 @@ class _ChatScreenState extends State<ChatScreen> {
             );
           }
 
+          // Dữ liệu các tin nhắn
           final loadedMessages = snapshot.data!.docs;
 
           return Scaffold(
@@ -254,6 +277,7 @@ class _ChatScreenState extends State<ChatScreen> {
               leading: Builder(
                 builder: (BuildContext context) {
                   return IconButton(
+                    // Nút Menu
                     icon: const Icon(Icons.menu),
                     onPressed: () {
                       Scaffold.of(context).openDrawer();
@@ -264,6 +288,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               title: const Text("New Chat"),
               actions: [
+                // Nút thoát khỏi trang chat, về lại trang chủ có tác dụng:
                 IconButton(
                   onPressed: () async {
                     if (!mounted) return;
@@ -273,17 +298,19 @@ class _ChatScreenState extends State<ChatScreen> {
                       context,
                       MaterialPageRoute(builder: (context) => const Loadings()),
                     );
-
+                    // Reset các giá trị về ban đầu
                     GetV.title = '';
                     GetV.submited = false;
                     GetV.summarized = false;
                     GetV.chated = false;
+                    // Lấy ra doc là đoạn chat tương ứng
                     final res = await FirebaseFirestore.instance
                         .collection(GetV.userName.text)
                         .doc(GetV.userChatID)
                         .collection('Message')
                         .doc(GetV.messageChatID)
                         .get();
+                    // Nếu doc chưa tiêu đề -> doc mới, chưa có tin nhắn trong đoạn chat này, thì xóa doc.
                     if (res['text'] == '') {
                       await FirebaseFirestore.instance
                           .collection(GetV.userName.text)
@@ -307,7 +334,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ],
             ),
+            // Thanh kéo
             drawer: Menu(toRefresh: toRefresh),
+            // Yêu cầu có mạng để tải tin nhắn
             body: ConnectionNotifierToggler(
               onConnectionStatusChanged: (connected) {
                 if (connected == null) return;
@@ -319,6 +348,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Flexible(
                       child: loadedMessages.isEmpty
                           ? _buildEmptyState()
+                          // Danh sách tin nhắn
                           : ListView.builder(
                               controller: _listScrollController,
                               itemCount: loadedMessages.length,
@@ -327,6 +357,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 DateTime time = chatMessage['createdAt'].toDate();
                                 String formattedDate =
                                     DateFormat('dd/MM/yyyy, hh:mm a').format(time);
+                                // mỗi tin nhắn được biểu diễn bởi một ChatWidget
                                 return ChatWidget(
                                   msg: chatMessage['text'],
                                   dateTime: formattedDate,
@@ -337,6 +368,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               },
                             ),
                     ),
+                    // Nếu là đang chờ trả lời thì hiện ra dấu 3 chấm xanh ở trên thanh gửi tin nhắn
                     if (_isTyping) ...[
                       const Padding(
                         padding: EdgeInsets.all(8.0),
@@ -346,6 +378,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       ),
                     ],
+                    // Khu vực thanh nhập tin nhắn
                     _buildInputArea(),
                   ],
                 ),
@@ -357,6 +390,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  // Tạo ra giao diện khi chưa có dữ liệu (Chưa có tin nhắn nào trong đoạn chat)
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -382,6 +416,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  // Tạo thanh gửi tin nhắn
   Widget _buildInputArea() {
     return Container(
       decoration: BoxDecoration(
@@ -396,7 +431,7 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       child: Column(
         children: [
-          // THÊM PHẦN PREVIEW ẢNH
+          // THÊM PHẦN PREVIEW ẢNH ở trên text input field
           if (_selectedImage != null)
             Container(
               padding: const EdgeInsets.all(8),
@@ -439,7 +474,7 @@ class _ChatScreenState extends State<ChatScreen> {
             padding: const EdgeInsets.all(12.0),
             child: Row(
               children: [
-                // THÊM NÚT CHỌN ẢNH
+                // THÊM NÚT CHỌN ẢNH ở đầu, chỉ được chọn 1 ảnh 1 lần
                 IconButton(
                   onPressed: _isUploadingImage ? null : _pickImage,
                   icon: _isUploadingImage
@@ -474,6 +509,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
+                // Nút gửi tin nhắn
                 IconButton(
                   onPressed: () async {
                     final provider = Provider.of<ChatProvider>(context, listen: false);
@@ -494,6 +530,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
                 const SizedBox(width: 4),
+                // Nút ghi âm speech to text
                 FloatingActionButton(
                   mini: true,
                   backgroundColor: _isListening ? Colors.red : Colors.blue,
@@ -520,7 +557,9 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  // Hàm xử ly gửi tin nhắn
   Future<void> sendMessageFCT({required ChatProvider chatProvider}) async {
+    // Đang nhắn
     if (_isTyping) {
       if (!mounted) return;
       SnackbarHelper.showWarning(
@@ -530,6 +569,7 @@ class _ChatScreenState extends State<ChatScreen> {
       return;
     }
     
+    // Không có chữ và ảnh
     if (textEditingController.text.isEmpty && _selectedImage == null) {
       if (!mounted) return;
       SnackbarHelper.showWarning(context, "Please type a message or select an image");
@@ -550,6 +590,7 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       }
       
+      // Đang ghi âm
       if (_isListening) {
         setState(() {
           _isListening = false;
@@ -559,12 +600,14 @@ class _ChatScreenState extends State<ChatScreen> {
       
       setState(() {
         _isTyping = true;
+        // Thêm tin nhắn người dùng
         chatProvider.addUserMessage(msg: msg.isEmpty ? "[Image]" : msg);
         textEditingController.clear();
-        _selectedImage = null; // Clear selected image
+        _selectedImage = null; // Dọn dẹp ảnh được chọn
         focusNode.unfocus();
       });
       
+      // Lấy câu trả lời từ Chatbot
       await chatProvider.sendMessageAndGetAnswers(
         msg: msg.isEmpty ? "I sent you an image" : msg,
         imageUrl: imageUrl,
@@ -573,11 +616,13 @@ class _ChatScreenState extends State<ChatScreen> {
       if (mounted) {
         setState(() {});
       }
-    } catch (error) {
+    } 
+    catch (error) {
       log("error $error");
       if (!mounted) return;
       SnackbarHelper.showError(context, error.toString());
-    } finally {
+    } 
+    finally {
       if (mounted) {
         setState(() {
           scrollListToEND();

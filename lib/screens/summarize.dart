@@ -1,4 +1,9 @@
 //just add the provider for summarize screen : ))
+// Wrapper thêm Provider cho summarize_screen
+// •	Bọc SummarizeScreen trong ChangeNotifierProvider
+// •	Cung cấp ChatProvider cho toàn bộ widget tree bên dưới
+// •	Áp dụng theme
+// Tách biệt logic provider khỏi UI
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

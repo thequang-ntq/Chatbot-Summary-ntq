@@ -1,3 +1,12 @@
+// Đây là trang chủ Home, ban đầu khi mới mở App sẽ hiển thị trang này. Tabs.dart là quản lý các trang.
+// Còn home.dart là nội dung trang chủ.
+// Nghĩa là hiển thị là từ tabs.dart định nghĩa. Còn lại là nội dung các trang con trong tabs.dart.
+// Màn hình đăng nhập.
+// •	Hiển thị form nhập API key và username
+// •	Validate dữ liệu nhập vào
+// •	Hiển thị trạng thái verified sau khi submit
+// •	2 nút chuyển sang Chat hoặc Summarize
+
 import 'dart:convert';
 // import 'package:chatgpt/screens/loading.dart';
 import 'package:flutter/material.dart';
@@ -6,18 +15,19 @@ import 'package:chatgpt/screens/internet.dart';
 import 'package:http/http.dart' as http;
 import 'package:chatgpt/theme/app_theme.dart';
 
+// Class GetV là lưu các biến global, chia sẻ dữ liệu giữa các màn hình mà không cần truyền constructor.
 class GetV {
-  static TextEditingController apiKey = TextEditingController();
+  static TextEditingController apiKey = TextEditingController(); // API Key OpenAI
   static bool isAPI = false;
-  static TextEditingController userName = TextEditingController();
-  static String userChatID = '';
-  static String userSummaryID = '';
-  static String summaryText = '';
-  static String messageChatID = '';
-  static String messageSummaryID = '';
+  static TextEditingController userName = TextEditingController(); // Tên user
+  static String userChatID = ''; // ID Collection Chat chứa các đoạn chat
+  static String userSummaryID = ''; // ID Collection Summary ...
+  static String summaryText = ''; // 
+  static String messageChatID = ''; // ID document đoạn chat hiện tại
+  static String messageSummaryID = ''; // ID document đoạn summary hiện tại
   static late String filetype;
-  static late int chatNum;
-  static late int summaryNum;
+  static late int chatNum; // số thứ tự đoạn chat
+  static late int summaryNum; // số thứ tự đoạn summary
   static late String filepath;
   static late String fileurl;
   static String text = '';
@@ -30,12 +40,12 @@ class GetV {
   static bool submited = false;
   static bool chated = false;
   static bool summarized = false;
-  static bool hasFiled = false;
+  static bool hasFiled = false; // Đã upload file chưa
   static bool menuPressed = false;
   static bool menuSumPressed = false;
   // File summarize
-  static String fileName = '';
-  static String fileType = '';
+  static String fileName = ''; // Thông tin file
+  static String fileType = ''; // Thông tin file
   // Image chat
   static String imageUrl = '';
   static bool isImageMessage = false;
@@ -63,23 +73,38 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+// with SingleTickerProviderStateMixin là mixin trong Flutter 
+// dùng khi cần 1 AnimationController duy nhất trong một StatefulWidget.
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   bool _isObscured = true;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
+  // initState()
+  // ├─ tạo AnimationController
+  // ├─ tạo FadeAnimation
+  // ├─ chạy animation (fade in)
+  // └─ UI render xong
+  //    └─ gọi _name()
+  //         └─ gọi _api()
   @override
   void initState() {
     super.initState();
+    // Lấy từ with SingleTickerProviderStateMixin
+    // giúp animation chỉ chạy khi widget đang hiển thị
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
+    // Tạo hiệu ứng Fade mờ -> rõ
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      // animation mượt. easein: bắt đầu chậm -> nhanh dần.
       CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
     );
+    // Chạy animation từ 0 -> 1.
     _animationController.forward();
     
+    // Chạy sau khi UI render xong frame đầu tiên.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _name();
       await _api();
@@ -92,6 +117,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     super.dispose();
   }
 
+  // Lấy ApiKeys cuối cùng trong Realtime DB, phần api-keys, là api key vừa được thêm vào sau khi check validate xong.
   Future<void> _api() async {
     final url = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'api-keys.json');
     final response = await http.get(url);
@@ -106,6 +132,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     });
   }
 
+  // Lấy username cuối cùng vừa được thêm vào sau khi validate xong, là username vừa tạo.
   Future<void> _name() async {
     final url = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userNames.json');
     final response = await http.get(url);
@@ -120,6 +147,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     });
   }
 
+  // Hàm kiểm tra Api Key hợp lệ. Hàm bên tabs.dart được sử dụng.
+  // Nên hiện tại hàm này là thừa, không cần thiết.
   Future<bool> checkApiKey(String apiKey) async {
     try {
       final response = await http.get(
@@ -142,6 +171,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     }
   }
 
+  // Đóng/mở nhìn mật khẩu
   void _togglePasswordVisibility() {
     setState(() {
       _isObscured = !_isObscured;
@@ -198,6 +228,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  // Widget header cho app
   Widget _buildHeader() {
     return Column(
       children: [
@@ -215,6 +246,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  // Logo app
   Widget _buildLogo() {
     return Hero(
       tag: 'app_logo',
@@ -240,18 +272,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  // Các trường nhập vào
   Widget _buildInputFields(bool isWideScreen) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: AppTheme.getCardDecoration(),
       child: Column(
         children: [
+          // Nếu xác thực đúng thì chặn không cho nhập nữa
           if (GetV.isAPI) ...[
+            // Verified field là sau khi xác thực thành công, không nhập được nữa.
             _buildVerifiedField(
               controller: TextEditingController(text: GetV.userName.text.isNotEmpty ? GetV.userName.text : widget.name.text),
               icon: Icons.person,
               label: 'Username',
               onClear: () async {
+                // Lấy username cuối cùng (Mới nhất) trong Realtime DB cho input textfield, là cái người dùng vừa nhập.
                 final url2 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userNames.json');
                 final response = await http.get(url2);
                 final Map<String, dynamic> resData = json.decode(response.body);
@@ -265,6 +301,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               },
             ),
             const SizedBox(height: AppSpacing.md),
+            // Lấy api key cuối cùng (Mới nhất) trong Realtime DB cho input textfield, là cái người dùng vừa nhập.
             _buildVerifiedField(
               controller: TextEditingController(text: GetV.apiKey.text.isNotEmpty ? GetV.apiKey.text : widget.apiKeyValue.text),
               icon: Icons.key,
@@ -283,12 +320,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 });
               },
             ),
-          ] else ...[
+          ]
+          // Nếu không thì cho nhập trường Input bình thường 
+          else ...[
             _buildInputField(
               controller: widget.name,
               icon: Icons.person,
               hintText: 'Enter your Username',
               onReload: () async {
+                // Lấy username cuối cùng (username mới nhất) làm mặc định cho input field, vừa vào đã có username này.
                 final url2 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userNames.json');
                 final response = await http.get(url2);
                 final Map<String, dynamic> resData = json.decode(response.body);
@@ -307,6 +347,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               hintText: 'Enter your API Key',
               isPassword: true,
               onReload: () async {
+                // Lấy api key cuối cùng (username mới nhất) làm mặc định cho input field, vừa vào đã có username này.
                 final url = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'api-keys.json');
                 final response = await http.get(url);
                 final Map<String, dynamic> resData = json.decode(response.body);
@@ -321,6 +362,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  // Input Field chưa xác thực cho username và api key.
   Widget _buildInputField({
     required TextEditingController controller,
     required IconData icon,
@@ -332,10 +374,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       controller: controller,
       obscureText: isPassword ? _isObscured : false,
       decoration: InputDecoration(
+        // Bấm vào IconButton ở đầu input field thì reload lấy lại username mới nhất ở realtime db.
         prefixIcon: IconButton(
           icon: Icon(icon),
           onPressed: onReload,
         ),
+        // Nút đóng/mở nhìn mật khẩu.
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(_isObscured ? Icons.visibility : Icons.visibility_off),
@@ -347,6 +391,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  // Đã được xác thực thì chặn không cho nhập nữa.
   Widget _buildVerifiedField({
     required TextEditingController controller,
     required IconData icon,
@@ -377,13 +422,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  // Nút submit để validate.
   Widget _buildSubmitButton() {
     return SizedBox(
       width: double.infinity,
       height: 50,
       child: ElevatedButton.icon(
         onPressed: () async {
+          // Lấy hàm toSubmit bên tabs. Hàm checkApiKey bên tabs.dart được gọi trong này.
           widget.toSubmit(widget.apiKeyValue, widget.name);
+          // Nếu toSubmit thành công thì qua dưới.
           setState(() {
             GetV.apiKey = widget.apiKeyValue;
             GetV.userName = widget.name;
@@ -396,6 +444,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  // 2 nút Chat và Summary để qua trang Chat và trang Summary.
   Widget _buildActionButtons(bool isWideScreen) {
     return Column(
       children: [
@@ -424,6 +473,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  // Nút Chat, dùng hàm toChat bên tabs.dart.
   Widget _buildChatButton() {
     return SizedBox(
       width: double.infinity,
@@ -445,6 +495,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  // Nút Summary, dùng hàm toSummarize bên tabs.dart.
   Widget _buildSummaryButton() {
     return SizedBox(
       width: double.infinity,
