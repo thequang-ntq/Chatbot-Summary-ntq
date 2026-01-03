@@ -287,7 +287,26 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               icon: Icons.person,
               label: 'Username',
               onClear: () async {
+                // Hàm reload/reset trạng thái xác thực và lấy lại dữ liệu mới nhất từ Firebase.
                 // Lấy username cuối cùng (Mới nhất) trong Realtime DB cho input textfield, là cái người dùng vừa nhập.
+                // User đã verified (GetV.isAPI = true)
+                //        ↓
+                //  Hiển thị verified fields (disabled, có icon ✓)
+                //        ↓
+                //  User nhấn vào icon ở prefixIcon
+                //        ↓
+                //  Gọi hàm onClear()
+                //        ↓
+                //  1. Lấy dữ liệu mới nhất từ Firebase
+                //  2. Cập nhật vào controllers
+                //  3. Set GetV.isAPI = false
+                //        ↓
+                //  TextField chuyển về dạng input bình thường
+                //        ↓
+                //  User có thể nhập lại username/API key mới
+                // Hủy trạng thái verified
+                // Lấy lại dữ liệu mới nhất từ database
+                // Cho phép người dùng chỉnh sửa/nhập lại thông tin
                 final url2 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userNames.json');
                 final response = await http.get(url2);
                 final Map<String, dynamic> resData = json.decode(response.body);
@@ -301,13 +320,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               },
             ),
             const SizedBox(height: AppSpacing.md),
-            // Lấy api key cuối cùng (Mới nhất) trong Realtime DB cho input textfield, là cái người dùng vừa nhập.
+            
             _buildVerifiedField(
               controller: TextEditingController(text: GetV.apiKey.text.isNotEmpty ? GetV.apiKey.text : widget.apiKeyValue.text),
               icon: Icons.key,
               label: 'API Key',
               isPassword: true,
               onClear: () async {
+                // Tương tự cho api key.
                 final url = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'api-keys.json');
                 final response = await http.get(url);
                 final Map<String, dynamic> resData = json.decode(response.body);
@@ -329,6 +349,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               hintText: 'Enter your Username',
               onReload: () async {
                 // Lấy username cuối cùng (username mới nhất) làm mặc định cho input field, vừa vào đã có username này.
+                // tải lại dữ liệu mới nhất từ Firebase và điền sẵn vào TextField.
+                // Khi nhấn vào prefix Icon thì thực hiện chức năng này
                 final url2 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'userNames.json');
                 final response = await http.get(url2);
                 final Map<String, dynamic> resData = json.decode(response.body);
@@ -348,6 +370,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               isPassword: true,
               onReload: () async {
                 // Lấy api key cuối cùng (username mới nhất) làm mặc định cho input field, vừa vào đã có username này.
+                // tải lại dữ liệu mới nhất từ Firebase và điền sẵn vào TextField.
+                // Khi nhấn vào prefix Icon thì thực hiện chức năng này
                 final url = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'api-keys.json');
                 final response = await http.get(url);
                 final Map<String, dynamic> resData = json.decode(response.body);

@@ -42,7 +42,7 @@ class _MenuSumState extends State<MenuSum> with SingleTickerProviderStateMixin {
 
   // Tạo đoạn summary mới
   Future<void> _createNewSummary() async {
-    // Lấy sumamry num của mới nhất
+    // Lấy sumamry num của mới nhất, lớn nhất
     final upURL = Uri.https(
         'your-project-name-b1e6c-default-rtdb.firebaseio.com', 'summaryNum.json');
     final res = await http.get(upURL);
@@ -109,7 +109,7 @@ class _MenuSumState extends State<MenuSum> with SingleTickerProviderStateMixin {
       'createdAt': Timestamp.now(),
     });
 
-    // Gán giá trị summary num mới
+    // Gán giá trị summary num mới cho user name tương ứng
     final url2 = Uri.https(
         'your-project-name-b1e6c-default-rtdb.firebaseio.com', 'summaryNum.json');
     final response2 = await http.get(url2);
@@ -291,7 +291,7 @@ class _MenuSumState extends State<MenuSum> with SingleTickerProviderStateMixin {
               return const SizedBox.shrink();
             }
 
-            // Tạo nội dung tóm tắt và nội dung câu hỏi - trả lời trong đoạn summary
+            // Tạo giao diện các đoạn summary
             return _buildSummaryHistoryItem(chatMessage);
           },
         );
@@ -299,7 +299,7 @@ class _MenuSumState extends State<MenuSum> with SingleTickerProviderStateMixin {
     );
   }
 
-  // Tạo nội dung trong đoạn summary
+  // Tạo giao diện các đoạn summary
   Widget _buildSummaryHistoryItem(Map<String, dynamic> chatMessage) {
     // THÊM: Kiểm tra xem item này có đang được chọn không
     final bool isSelected = chatMessage['messageID'] == GetV.messageSummaryID;
@@ -491,7 +491,7 @@ class _MenuSumState extends State<MenuSum> with SingleTickerProviderStateMixin {
         GetV.loadingUploadFile = false;
       });
       
-      // Lấy ra số summary num
+      // Lấy ra số summary num mới nhất, lớn nhất
       final upURL = Uri.https(
           'your-project-name-b1e6c-default-rtdb.firebaseio.com', 'summaryNum.json');
       final res = await http.get(upURL);
@@ -511,13 +511,14 @@ class _MenuSumState extends State<MenuSum> with SingleTickerProviderStateMixin {
           .doc(GetV.messageSummaryID)
           .delete();
 
+      // Cập nhật
       setState(() {
         GetV.title = '';
         GetV.summaryNum = maxNum + 1;
         GetV.menuSumPressed = true;
       });
 
-      // Tạo mới
+      // Tạo mới và cập nhật message Summary ID
       await FirebaseFirestore.instance
           .collection(GetV.userName.text)
           .doc(GetV.userSummaryID)
@@ -543,7 +544,7 @@ class _MenuSumState extends State<MenuSum> with SingleTickerProviderStateMixin {
         'createdAt': Timestamp.now(),
       });
 
-      // Cập nhật số summary num
+      // Cập nhật số summary num cho user tương ứng
       final url2 = Uri.https(
           'your-project-name-b1e6c-default-rtdb.firebaseio.com', 'summaryNum.json');
       final response2 = await http.get(url2);

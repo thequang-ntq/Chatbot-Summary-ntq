@@ -37,6 +37,7 @@ import 'package:path_provider/path_provider.dart';
 // Template này dùng để tóm tắt nội dung file được gửi.
 // Trả lời theo ngôn ngữ được phát hiện trong nội dung file, rồi gửi 3 câu hỏi liên quan.
 // Tất cả tóm lại thành 1 câu trả lời từ Chatbot.
+// Dùng trong file txt
 const template = '''
 Detect language and respond in that language.
 
@@ -59,7 +60,7 @@ QUESTION 3:
 [Question here]
 ''';
 
-// Tương tự template trên nhưng tóm tắt trong dưới 250 từ.
+// Tương tự template trên nhưng tóm tắt trong dưới 250 từ. Dùng trong file PDF, ... ngoại trừ TXT
 const templateX = '''
 Detect language and respond in that language.
 
@@ -117,6 +118,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   bool _first = true;
 
   @override
+  // Khởi tạo Controllers và Speech to text
   void initState() {
     _askText = TextEditingController();
     _summarizeText = TextEditingController();
@@ -127,6 +129,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   }
 
   @override
+  // Hàm: Load lại dữ liệu khi quay lại từ menu
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Load lại thông tin khi vào từ menu
@@ -140,7 +143,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         // KHÔNG CẦN CHECK fileName nữa
         // Vì GetV.hasFiled đã được set đúng trong menu_sum.dart
         
-        // Load lại questions từ Firestore
+        // Load lại questions từ Firestore, load lại 3 câu hỏi từ Firestore
         _loadQuestionsFromFirestore();
       });
     }
@@ -153,7 +156,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   // q2: Câu hỏi 2
   // q3: Câu hỏi 3
   // text: Nội dung tóm tắt
-  // index = 3 cho biết là nội dung tóm tắt chứ không phải câu hỏi câu trả lời sau khi tóm tắt.
+  // index = 3 cho biết là nội dung tóm tắt chứ không phải câu hỏi hoặc câu trả lời sau khi tóm tắt.
   Future<void> _loadQuestionsFromFirestore() async {
     try {
       final summaryData = await FirebaseFirestore.instance
@@ -186,6 +189,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   }
 
   @override
+  // Giải phóng bộ nhớ
   void dispose() {
     _listScrollController.dispose();
     _summarizeText.dispose();
@@ -193,7 +197,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     super.dispose();
   }
 
-  // Thông báo
+  // Thông báo snackbar với nội dung là message
   void notify(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -208,7 +212,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     );
   }
 
-  // Tải lại từ menu
+  // Tải lại trang từ menu. Thoát ra menu tải lại trang Summarize.
   void toRefresh(){
     if (!mounted) return;
     // Reset state
@@ -237,7 +241,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   }
 
   // Updated PDF text extraction using syncfusion_flutter_pdf
-  // Hàm tách nội dung trong file PDF
+  // Hàm tách nội dung text trong file PDF
   Future<String> extractTextFromPdf(String filePath) async {
     try {
       final File pdfFile = File(filePath);
@@ -255,6 +259,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
   }
 
   // Speech to Text, chuyển nội dung nói thành nội dung chữ viết.
+  // Chuyển file audio thành text
   Future<String> convertSpeechToText(String filePath) async {
     String apiKey = GetV.apiKey.text;
     var url = Uri.https("api.openai.com", "v1/audio/transcriptions");
@@ -270,7 +275,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     return responseData['text'];
   }
 
-  // Hàm upload file ngoại trừ loại file txt lên cloudinary
+  // Hàm upload file local từ máy ngoại trừ loại file txt lên cloudinary
   // File txt thì không upload không có file url
   Future<void> _uploadFile() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.any);
@@ -356,7 +361,9 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
-  // Hàm mở FileOption dialog 
+  // Hàm mở FileOption dialog.
+  // Đây là dialog xem / tải file đã upload lên cloudinary.
+  // Lý do: File local có thể bị xóa, nhưng file trên Cloudinary vẫn còn → Dialog giúp tải lại file đã mất.
   void _showFileOptionsDialog(String fileName, String fileType) {
     showDialog(
       context: context,
@@ -366,6 +373,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
         ),
         title: Row(
           children: [
+            // Icon + text: File Options
             Icon(_getFileIconForType(fileType), color: Colors.blue),
             const SizedBox(width: 8),
             const Flexible(
@@ -380,6 +388,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Tên file
             Text(
               fileName,
               style: const TextStyle(
@@ -388,6 +397,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
               ),
             ),
             const SizedBox(height: 8),
+            // Loại file
             Text(
               'Type: ${fileType.toUpperCase()}',
               style: TextStyle(
@@ -429,7 +439,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             icon: const Icon(Icons.copy),
             label: const Text('Copy URL'),
           ),
-          // Nút tải file
+          // Nút tải file xong mở file được tải về
           ElevatedButton.icon(
             onPressed: () async {
               Navigator.pop(context);
@@ -538,7 +548,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
-  // Hàm Speech to Text
+  // Hàm Speech to Text. Đóng / mở ghi âm, nghe văn bản để hỏi. Cóp nội dung nghe được vào phần gửi tin nhắn của user.
   void onListen() async {
     if (!_isListening) {
       bool available = await _speech.initialize(
@@ -632,7 +642,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
     }
   }
 
-  // Hàm nhấn vào thì lấy nội dung câu hỏi
+  // Hàm nhấn vào thì lấy nội dung câu hỏi, cóp vào phần nội dung gửi tin nhắn của user.
   void onPress(String question){
     setState(() {
       _askText.text = question;
@@ -731,6 +741,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
           child: Center(
             child: ElevatedButton(
               onPressed: () {
+                // Tải file lên cloudinary trừ file txt, lấy nội dung file
                 _uploadFile();
               },
               style: ElevatedButton.styleFrom(
@@ -840,7 +851,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
               onPressed: () async {
                 // Nếu có file name
                 if (displayFileName.isNotEmpty) {
-                  // Nếu có file path
+                  // Nếu có file path. Ưu tiên mở file path tức là mở file local. Nếu local không có mới tới mở file server.
                   if (hasLocalFile) {
                     // Mở file local
                     OpenFilex.open(GetV.filepath);
@@ -957,6 +968,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
             String formattedDate = DateFormat('dd/MM/yyyy, hh:mm a').format(time);
             // DocsWidget để hiển thị tin tóm tắt
             // ChatWidgets để hiển thị tin hỏi và trả lời của user và chatbot.
+            // Tin đầu (_first) luôn là nội dung tóm tắt
             return _first
                 ? DocsWidget(
                     msg: chatMessage['text'],
@@ -1101,6 +1113,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
 
   // Updated saveDocsSummarize function
   // Tạo nội dung trả lời tóm tắt, tách các câu hỏi ra và lưu vào Firestore
+  // Thực hiện ngay sau khi gửi file cần tóm tắt, và lấy được nội dung file.
   Future<void> saveDocsSummarize({
     required String msg, 
     required PlatformFile file,
@@ -1245,6 +1258,7 @@ class _SummarizeScreenState extends State<SummarizeScreen> {
       else {
         // Nếu không phải file txt
         // For other file types (PDF, DOCX, etc.)
+        // Lấy 4000 ký tự đầu
         String embeddedText = '';
         if (msg.length > 4000) {
           embeddedText = msg.substring(0, 4000);

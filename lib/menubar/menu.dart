@@ -284,7 +284,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
               return const SizedBox.shrink();
             }
 
-            // Bấm đoạn chat thì tạo lịch sử tin nhắn của đoạn chat
+            // Tạo giao diện các đoạn chat
             return _buildChatHistoryItem(chatMessage);
           },
         );
@@ -292,7 +292,7 @@ class _MenuState extends State<Menu> with SingleTickerProviderStateMixin {
     );
   }
 
-  // Tạo lịch sử tin nhắn của đoạn chat
+  // Tạo giao diện các đoạn chat
   Widget _buildChatHistoryItem(Map<String, dynamic> chatMessage) {
     // THÊM: Kiểm tra xem item này có đang được chọn không
     final bool isSelected = chatMessage['messageID'] == GetV.messageChatID;

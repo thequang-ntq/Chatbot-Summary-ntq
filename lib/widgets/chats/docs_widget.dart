@@ -44,7 +44,7 @@ class _DocsWidgetState extends State<DocsWidget> {
     super.dispose();
   }
 
-  // Hàm speech to text
+  // Hàm text to speech, đọc tin nhắn
   void _speak() async {
     setState(() {
       _isSpeaking = !_isSpeaking;
@@ -60,6 +60,7 @@ class _DocsWidgetState extends State<DocsWidget> {
     }
   }
 
+  // Hàm cóp nội dung tin nhắn vào clipboard
   void _copyToClipboard() {
     Clipboard.setData(ClipboardData(text: widget.msg));
     ScaffoldMessenger.of(context).showSnackBar(
@@ -262,6 +263,7 @@ class _DocsWidgetState extends State<DocsWidget> {
     );
   }
 
+  // Tạo avatar user / Chatbot
   Widget _buildAvatar(bool isUser) {
     return Container(
       width: 40,
@@ -315,7 +317,7 @@ class _DocsWidgetState extends State<DocsWidget> {
     );
   }
 
-  // Nút này để điền nội dung câu hỏi gợi ý được chọn vào text input
+  // Nút này để điền nội dung câu hỏi gợi ý được chọn vào text input trong Summarize Screen.
   Widget _buildQuestionButton({
     required String question,
     required IconData icon,

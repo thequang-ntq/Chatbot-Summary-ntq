@@ -76,7 +76,7 @@ class _TabsState extends State<Tabs> {
     }
   }
 
-  //Submit function - Fix
+  // Submit function - Fix
   // Xác thực và lưu thông tin User
   void toSubmit(TextEditingController apiKeyValue, TextEditingController userName) async {
     _apiKeyValue = apiKeyValue;
@@ -445,8 +445,13 @@ class _TabsState extends State<Tabs> {
         // sẽ lấy số trong chatNum trong dữ liệu realtime DB hiện tại + 1, bảo đảm ra index đoạn chat mới, không trùng
         // index những đoạn chat trước đó. Đây là trường hợp username đã có trong realtime DB, username cũ, 
         // đã có dùng và vào trang chat, chatNum đã có trước đó.
+        // Trong realtime db, mỗi user chỉ có 1 chatNum hiện tại.
+        // chatNum là số của đoạn chat bảo đảm là mới - chưa thuộc về đoạn chat nào, là số lớn nhất sao cho nhỏ nhất có thể.
+        // nghĩa là sau này khi bấm vào đoạn chat cũ thì chatNum không thay đổi.
+        // Bấm NewChat thì ChatNum tăng 1.
         final url2 = Uri.https('your-project-name-b1e6c-default-rtdb.firebaseio.com', 'chatNum.json');
         final response2 = await http.get(url2);
+        // User đã có chatNum
         if (response2.body.contains(_enteredUserName) == true){
           final Map<String,dynamic> resData2 = json.decode(response2.body);
           for(final item in resData2.entries){

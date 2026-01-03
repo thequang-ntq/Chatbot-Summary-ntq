@@ -58,6 +58,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   // Hàm ghi âm speech to text
+  // Thực hiện khi bấm vào nút Microphone để mở / dừng ghi âm
   void onListen() async {
     if (!_isListening) {
       // Khởi tọa speech recognition
@@ -95,7 +96,7 @@ class _ChatScreenState extends State<ChatScreen> {
         },
       );
       
-      
+      // Nếu nghe thành công
       if (available) {
         setState(() {
           _isListening = true;
@@ -146,6 +147,8 @@ class _ChatScreenState extends State<ChatScreen> {
       await _speech.stop();
       
       // Hiện thông báo dừng
+      // mounted = true: Widget đang hiển thị trên màn hình, State còn active
+      // mounted = false: Widget đã bị dispose (đã rời khỏi widget tree)
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -221,6 +224,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   // Tải lại của Menu
+  // Đang từ Menu thoát ra về lại trang Chat ban đầu.
   void toRefresh() {
     if (!mounted) return;
     Navigator.pop(context);
@@ -590,7 +594,7 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       }
       
-      // Đang ghi âm
+      // Đang ghi âm thì dừng ghi âm
       if (_isListening) {
         setState(() {
           _isListening = false;
@@ -598,9 +602,10 @@ class _ChatScreenState extends State<ChatScreen> {
         });
       }
       
+      // Hiện trạng thái đang xử lý tin nhắn
       setState(() {
         _isTyping = true;
-        // Thêm tin nhắn người dùng
+        // Thêm tin nhắn người dùng vào chatList để hiển thị
         chatProvider.addUserMessage(msg: msg.isEmpty ? "[Image]" : msg);
         textEditingController.clear();
         _selectedImage = null; // Dọn dẹp ảnh được chọn

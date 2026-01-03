@@ -86,7 +86,7 @@ class ChatProvider with ChangeNotifier {
         }
       }
       
-      // Add current message - Tin nhắn hiện tại
+      // Add current message - Tin nhắn hiện tại vào lịch sử để AI trả lời
       messages.add(ChatMessage.humanText(msg));
       
       // Get response - trả lời dựa vào lịch sử các tin nhắn trước đó, gồm cả tin nhắn của người dùng mới thêm
@@ -94,7 +94,7 @@ class ChatProvider with ChangeNotifier {
         PromptValue.chat(messages),
       );
       
-      // Lưu tin trả lời Chatbot vào chatList
+      // Lưu tin trả lời Chatbot vào chatList để hiển thị
       final aiResponse = response.outputAsString;
       chatList.add(aiResponse);
       

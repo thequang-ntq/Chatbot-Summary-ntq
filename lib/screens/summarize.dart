@@ -4,6 +4,8 @@
 // •	Cung cấp ChatProvider cho toàn bộ widget tree bên dưới
 // •	Áp dụng theme
 // Tách biệt logic provider khỏi UI
+// quản lý trạng thái và xử lý logic AI một cách tập trung.
+// Provider = Người quản lý, UI chỉ việc gọi và hiển thị kết quả!
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

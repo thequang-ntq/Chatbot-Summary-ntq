@@ -40,7 +40,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     super.dispose();
   }
 
-  // Hàm text to speech
+  // Hàm text to speech, giọng đọc nội dung tin nhắn
   void _speak() async {
     setState(() {
       _isSpeaking = !_isSpeaking;
